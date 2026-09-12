@@ -1,4 +1,5 @@
 # Welcome to Allison Hub 
+# If you need help join Discord Server
 
 # Script [Link](https://pastebin.com/HjmSscY5)
 # Discord [Link](https://discord.gg/tru5cweGaf)
