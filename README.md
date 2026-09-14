@@ -7,6 +7,7 @@ If you need help, join our Discord server!
 ### Links & Resources
 
 - 📜 **Script:** [Get Script](https://pastebin.com/HjmSscY5)
+- 🔑 **Key:** [Get Key](https://jnkie.com/overview/allison)
 - 💬 **Discord:** [Join Server](https://discord.gg/tru5cweGaf)
 - 📺 **YouTube:** [@Boom1K](https://www.youtube.com/@Boom1K)
 
