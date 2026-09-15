@@ -1,4 +1,5 @@
-
+-- REASON: Dumbass customer put their library in a request and flexed his non existant security and ended up getting it leaked by himself... 😭
+-- The code here is horrendous this is my 2nd library, the added on code was made to suit the old code however I should have just converted to a newer version of my code kind of an oopsie. 
 
 -- variables
 	local uis = cloneref(game:GetService("UserInputService"))
@@ -218,12 +219,14 @@
 	}
 		
 	library.__index = library
+	library.cloud_config_names = library.cloud_config_names or {}
 
-	for _, path in next, library.folders do 
+	for _, path in next, library.folders do
 		makefolder(library.directory .. path)
-	end 
+	end
 
-	writefile("ffff.ttf", game:HttpGet("https://github.com/weasely111/beta/raw/refs/heads/main/fs-tahoma-8px.ttf"))
+	writefile("ffff.ttf", game:HttpGet("https://github.com/boom1k/Allison-Murder-Mystery-2-Script-FREE/blob/main/smallest_pixel-7.ttf"))
+	
 
 	local tahoma = {
 		name = "SmallestPixel7",
@@ -241,7 +244,55 @@
 
 	library.font = Font.new(getcustomasset("dddd.ttf"), Enum.FontWeight.Regular)
 
-	local config_holder 
+	-- Cloud config icon: shown in the Configurations list before the name of
+	-- any config a caller has flagged as cloud-synced via
+	-- library.cloud_config_names[name] = true (see library:list below).
+	-- Base64-embedded (no external fetch) same as the font's own asset above.
+	library.cloud_icon = ""
+	do
+		local CLOUD_ICON_B64 = "iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAADVklEQVR4Ae3BS6hUZQAA4G/O3NQ0GQuLCeGoITFR2U9JlGFtolqE/iEIcikJqoXQQ3ATIYWtelC4sHARGRo9Np2oEEWk2kWvg1QMVKAniumxGYsyy3u7wcAdbzqeuY6aMN9naGhoaOhUVJyiNMS5uBM3YzFm4xC+xr4Kuw/m2RGnScU0pSHWsQnrMMeJ/YIX8GyRZ78asIppSEO8Fa9hvvK+RSzy7AsDVNWnNMTVeAtz9ecijNbqjX3tVvN7A1LVhzTE6/EuZpieWbirVm+80W412wagoqSFIVbHyXGVU/cOtuB+rEAdv+IT7Kjw6sE8+1sJFSWlIY5ipzNjP1YXefaNk0iUt96ZsxTvpyEuchKJEtIQL8aNzqwFeDUNsaKHRDnXoOLMW4479JAo51Jnzxo9JMpJTM8evIcx07dUDyPK+V1/xrGhyLMtJqQh3o3tSPRvlh5G9JCGeAWeRFTeGNYXebZNR5FnO9IQq3gJif58p4cRx7EoRGM8gqcwQ3njWF/k2TZTFHm2PQ3xKF5GVXl79ZA4jjEex/OYobxxbCjybJsTKPJsB+7FmPIO6KFqijTEUWxBRXljWF/k2VYn0W4199fqjQIrUXFya2r1xpJavbG33WoeMUVVlzTEBdiFmfrzUJFnL+qShjiz3WoeNSENcUat3hhrt5r+1W4181q98R1WKWcpbqvVG2+2W83DuiSO9Rjm6s+P2KpLGuJmLDNpMZ7Wpcizl/GV8q7D6wtDrOiS6EhDvAD36N8FmKcjDXEzNvmvjWmIz6QhVkxYGOJszNef28dZp8uISSswR//mYE8a4nbchLVObCMuT0PcM84oLtG/RxeF+MqBPBs3YcSkq03fMixTzkqsNH2Xj3EtPjUhManu3HGLjsS56TIdiUk/O3fM1JGYtN9gnWfSeQbrJx0jJn2AP3C+wbgvDfFDjOMBg/WZjhEdRZ79lob4Ou41GKNYjqNYYnAOY6+OxLE24zeDsxhLDNbOIs/aOhJdijw7gIf9f7XxhC5VU7Rbzc9r9caFuMH/y1GsLfLsY12qjmNevbEbf+JmVJ19h7C2yLO3TVHRQxrilXgOtzl7duHBIs++dRwVJaQhXolVuAEpZjl9/sIP+AhvFHn2paGhoaGh0+UfS23nqt7jUgwAAAAASUVORK5CYII="
+
+		local B64C = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+		local function pureDecode(s)
+			s = tostring(s):gsub("[^%w%+/=]", "")
+			local out, acc, nbits = {}, 0, 0
+			for i = 1, #s do
+				local c = s:sub(i, i)
+				if c == "=" then break end
+				local idx = B64C:find(c, 1, true)
+				if idx then
+					acc   = acc * 64 + (idx - 1)
+					nbits = nbits + 6
+					if nbits >= 8 then
+						nbits = nbits - 8
+						out[#out + 1] = string.char(math.floor(acc / (2 ^ nbits)) % 256)
+						acc = acc % (2 ^ nbits)
+					end
+				end
+			end
+			return table.concat(out)
+		end
+
+		local function decode(data)
+			local fn = (crypt and (crypt.base64decode or crypt.base64_decode
+				or (crypt.base64 and crypt.base64.decode)))
+				or (base64 and (base64.decode or base64.Decode))
+				or (getgenv and getgenv().base64 and getgenv().base64.decode)
+			if type(fn) == "function" then
+				local ok, res = pcall(fn, data)
+				if ok and type(res) == "string" and #res > 8 then return res end
+			end
+			return pureDecode(data)
+		end
+
+		local ok = pcall(function()
+			writefile("cloud_icon.png", decode(CLOUD_ICON_B64))
+			library.cloud_icon = getcustomasset("cloud_icon.png")
+		end)
+		if not ok then library.cloud_icon = "" end
+	end
+
+	local config_holder
 -- 
 
 -- library functions 
@@ -5141,7 +5192,9 @@
 				})
 			--  
 
-			function cfg.render_option(text) 
+			function cfg.render_option(text)
+				local is_cloud = library.cloud_config_names[tostring(text)] == true
+
 				local TextButton = library:create("TextButton", {
 					Parent = ScrollingFrame,
 					Name = "",
@@ -5153,19 +5206,42 @@
 					Size = dim2(1, 0, 0, 0),
 					BorderSizePixel = 0,
 					AutomaticSize = Enum.AutomaticSize.Y,
+					TextXAlignment = is_cloud and Enum.TextXAlignment.Left or Enum.TextXAlignment.Center,
 					TextSize = 12,
 					BackgroundColor3 = rgb(255, 255, 255)
 				})
 
-				library:apply_theme(TextButton, "accent", "TextColor3") 
+				library:apply_theme(TextButton, "accent", "TextColor3")
 
 				local UIStroke = library:create("UIStroke", {
 					Parent = TextButton,
 					Name = ""
 				})
 
-				return TextButton 
-			end 
+				-- Cloud-synced configs (library.cloud_config_names[name] = true,
+				-- set by whatever caller manages the cloud save/load) get a small
+				-- icon before their name instead of the default centered text.
+				if is_cloud and library.cloud_icon ~= "" then
+					library:create("UIPadding", {
+						Parent = TextButton,
+						Name = "",
+						PaddingLeft = dim(0, 16)
+					})
+
+					library:create("ImageLabel", {
+						Parent = TextButton,
+						Name = "",
+						Image = library.cloud_icon,
+						BackgroundTransparency = 1,
+						AnchorPoint = vec2(0, 0.5),
+						Position = dim2(0, 0, 0.5, 0),
+						Size = dim2(0, 12, 0, 12),
+						ZIndex = 2
+					})
+				end
+
+				return TextButton
+			end
 
 			function cfg.set_element_visible(bool)
 				list_holder.Visible = bool 
