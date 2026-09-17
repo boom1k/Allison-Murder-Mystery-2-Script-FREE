@@ -5206,7 +5206,7 @@
 					Size = dim2(1, 0, 0, 0),
 					BorderSizePixel = 0,
 					AutomaticSize = Enum.AutomaticSize.Y,
-					TextXAlignment = is_cloud and Enum.TextXAlignment.Left or Enum.TextXAlignment.Center,
+					TextXAlignment = Enum.TextXAlignment.Center,
 					TextSize = 12,
 					BackgroundColor3 = rgb(255, 255, 255)
 				})
@@ -5220,31 +5220,49 @@
 
 				-- Cloud-synced configs (library.cloud_config_names[name] = true,
 				-- set by whatever caller manages the cloud save/load) get a small
-				-- icon before their name instead of the default centered text.
+				-- icon before their name, the pair centred like every other row.
 				if is_cloud and library.cloud_icon ~= "" then
-					-- UIPadding offsets every child of the button, the ImageLabel
-					-- included, so an icon at x=0 lands on the padded origin -- right
-					-- on top of the left-aligned text. Pull it back by exactly the
-					-- padding so it sits at the button's own left edge. One constant
-					-- keeps the two from drifting apart.
-					local ICON_PAD = 16
+					local ICON_SIZE = 12
+					local ICON_GAP  = 4
 
+					-- The icon and the name are centred together as one group. The text
+					-- keeps TextXAlignment.Center, and a PaddingLeft of exactly
+					-- (icon + gap) shrinks the content box from the left, shifting the
+					-- centred text right by half of it -- which is precisely where the
+					-- name belongs for the pair to read as centred.
 					library:create("UIPadding", {
 						Parent = TextButton,
 						Name = "",
-						PaddingLeft = dim(0, ICON_PAD)
+						PaddingLeft = dim(0, ICON_SIZE + ICON_GAP)
 					})
 
-					library:create("ImageLabel", {
+					local IconLabel = library:create("ImageLabel", {
 						Parent = TextButton,
 						Name = "",
 						Image = library.cloud_icon,
 						BackgroundTransparency = 1,
-						AnchorPoint = vec2(0, 0.5),
-						Position = dim2(0, -ICON_PAD, 0.5, 0),
-						Size = dim2(0, 12, 0, 12),
+						AnchorPoint = vec2(1, 0.5),
+						Size = dim2(0, ICON_SIZE, 0, ICON_SIZE),
 						ZIndex = 2
 					})
+
+					-- Sit the icon's right edge one gap left of the text's left edge.
+					-- Child offsets are relative to the padded content box, so 0.5 is
+					-- the text's own centre and half the text width reaches its left
+					-- edge -- no dependency on the button's pixel width, which the DPI
+					-- slider changes.
+					--
+					-- Re-run on TextBounds rather than reading it once: the custom menu
+					-- font finishes loading after these rows are built, and a DPI change
+					-- retriggers it, so a one-shot read places the icon off a stale
+					-- width (0 on the very first frame). Destroy() drops the connection,
+					-- and refresh_options destroys every row, so nothing leaks.
+					local function place_icon()
+						IconLabel.Position = dim2(0.5, -(ICON_GAP + TextButton.TextBounds.X / 2), 0.5, 0)
+					end
+
+					place_icon()
+					TextButton:GetPropertyChangedSignal("TextBounds"):Connect(place_icon)
 				end
 
 				return TextButton
