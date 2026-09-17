@@ -225,7 +225,7 @@
 		makefolder(library.directory .. path)
 	end
 
-	writefile("ffff.ttf", game:HttpGet("https://github.com/boom1k/Allison-Murder-Mystery-2-Script-FREE/blob/main/smallest_pixel-7.ttf"))
+	writefile("ffff.ttf", game:HttpGet("https://github.com/boom1k/Allison-Murder-Mystery-2-Script-FREE/raw/refs/heads/main/smallest_pixel-7.ttf"))
 	
 
 	local tahoma = {
@@ -5222,10 +5222,17 @@
 				-- set by whatever caller manages the cloud save/load) get a small
 				-- icon before their name instead of the default centered text.
 				if is_cloud and library.cloud_icon ~= "" then
+					-- UIPadding offsets every child of the button, the ImageLabel
+					-- included, so an icon at x=0 lands on the padded origin -- right
+					-- on top of the left-aligned text. Pull it back by exactly the
+					-- padding so it sits at the button's own left edge. One constant
+					-- keeps the two from drifting apart.
+					local ICON_PAD = 16
+
 					library:create("UIPadding", {
 						Parent = TextButton,
 						Name = "",
-						PaddingLeft = dim(0, 16)
+						PaddingLeft = dim(0, ICON_PAD)
 					})
 
 					library:create("ImageLabel", {
@@ -5234,7 +5241,7 @@
 						Image = library.cloud_icon,
 						BackgroundTransparency = 1,
 						AnchorPoint = vec2(0, 0.5),
-						Position = dim2(0, 0, 0.5, 0),
+						Position = dim2(0, -ICON_PAD, 0.5, 0),
 						Size = dim2(0, 12, 0, 12),
 						ZIndex = 2
 					})
