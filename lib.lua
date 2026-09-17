@@ -225,11 +225,11 @@
 		makefolder(library.directory .. path)
 	end
 
-	writefile("ffff.ttf", game:HttpGet("https://github.com/boom1k/Allison-Murder-Mystery-2-Script-FREE/blob/main/tahoma.ttf"))
+	writefile("ffff.ttf", game:HttpGet("https://github.com/boom1k/Allison-Murder-Mystery-2-Script-FREE/raw/refs/heads/main/tahoma.ttf"))
 	
 
 	local tahoma = {
-		name = "SmallestPixel7",
+		name = "Tahoma",
 		faces = {
 			{
 				name = "Regular",
