@@ -4290,9 +4290,9 @@ local Library do
             Items["Content"] = Instances:Create("Frame", {
                 Parent = Items["Inline"].Instance,
                 Name = "\0",
-                Position = UDim2New(0, 13, 0, 77),
+                Position = UDim2New(0, 13, 0, 109),
                 BorderColor3 = FromRGB(0, 0, 0),
-                Size = UDim2New(1, -28, 1, -93),
+                Size = UDim2New(1, -28, 1, -125),
                 BorderSizePixel = 2,
                 BackgroundColor3 = FromRGB(12, 12, 12)
             })  Items["Content"]:AddToTheme({BackgroundColor3 = "Inline", BorderColor3 = "Outline"})
@@ -4303,7 +4303,80 @@ local Library do
                 LineJoinMode = Enum.LineJoinMode.Miter,
                 ApplyStrokeMode = Enum.ApplyStrokeMode.Border
             }):AddToTheme({Color = "Border"})
+
+            -- feature search: filters every page's sections / elements by name (see Library.SearchWindow)
+            Items["Search"] = Instances:Create("Frame", {
+                Parent = Items["Inline"].Instance,
+                Name = "\0",
+                Position = UDim2New(0, 13, 0, 77),
+                BorderColor3 = FromRGB(0, 0, 0),
+                Size = UDim2New(1, -28, 0, 24),
+                BorderSizePixel = 2,
+                BackgroundColor3 = FromRGB(12, 12, 12)
+            })  Items["Search"]:AddToTheme({BackgroundColor3 = "Inline", BorderColor3 = "Outline"})
+
+            Instances:Create("UIStroke", {
+                Parent = Items["Search"].Instance,
+                Color = FromRGB(68, 68, 68),
+                LineJoinMode = Enum.LineJoinMode.Miter,
+                ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+            }):AddToTheme({Color = "Border"})
+
+            Items["SearchBox"] = Instances:Create("TextBox", {
+                Parent = Items["Search"].Instance,
+                Name = "\0",
+                BackgroundTransparency = 1,
+                Position = UDim2New(0, 10, 0, 0),
+                Size = UDim2New(1, -110, 1, 0),
+                BorderSizePixel = 0,
+                Text = "",
+                PlaceholderText = "Search features...",
+                PlaceholderColor3 = FromRGB(120, 120, 120),
+                TextColor3 = FromRGB(180, 180, 180),
+                TextXAlignment = Enum.TextXAlignment.Left,
+                ClearTextOnFocus = false,
+                FontFace = Library.Font,
+                TextSize = 12
+            })  Items["SearchBox"]:AddToTheme({TextColor3 = "Text"})
+
+            Items["SearchCount"] = Instances:Create("TextLabel", {
+                Parent = Items["Search"].Instance,
+                Name = "\0",
+                BackgroundTransparency = 1,
+                AnchorPoint = Vector2New(1, 0),
+                Position = UDim2New(1, -28, 0, 0),
+                Size = UDim2New(0, 70, 1, 0),
+                BorderSizePixel = 0,
+                Text = "",
+                TextColor3 = FromRGB(120, 120, 120),
+                TextXAlignment = Enum.TextXAlignment.Right,
+                FontFace = Library.Font,
+                TextSize = 12
+            })
+
+            Items["SearchClear"] = Instances:Create("TextButton", {
+                Parent = Items["Search"].Instance,
+                Name = "\0",
+                BackgroundTransparency = 1,
+                AnchorPoint = Vector2New(1, 0),
+                Position = UDim2New(1, -4, 0, 0),
+                Size = UDim2New(0, 20, 1, 0),
+                BorderSizePixel = 0,
+                AutoButtonColor = false,
+                Text = "x",
+                TextColor3 = FromRGB(180, 180, 180),
+                FontFace = Library.Font,
+                TextSize = 12
+            })  Items["SearchClear"]:AddToTheme({TextColor3 = "Text"})
         end
+
+        Library:Connect(Items["SearchBox"].Instance:GetPropertyChangedSignal("Text"), function()
+            Library.SearchWindow(Window, Items["SearchBox"].Instance.Text)
+        end)
+
+        Items["SearchClear"]:Connect("MouseButton1Click", function()
+            Items["SearchBox"].Instance.Text = ""
+        end)
 
         function Window:SetOpen(Bool)
             Window.IsOpen = Bool
@@ -5306,6 +5379,182 @@ local Library do
         end
 
         return Listbox
+    end
+end
+
+-- ---- feature search ------------------------------------------------------------------------------
+-- Pages, sections and elements register themselves when they are created (the constructors are wrapped here),
+-- and Library.SearchWindow(window, text) hides everything that does not match: an element matches by its own name,
+-- by its section's name or by its page's name; sections with no match are hidden too, tabs with no match are dimmed,
+-- and the page switches to the first one with a match. Clearing the text puts back exactly what it hid.
+do
+    local function lower(Value)
+        return string.lower(tostring(Value or ""))
+    end
+
+    local function list(Window, Field)
+        local Found = rawget(Window, Field)
+
+        if not Found then
+            Found = { }
+            rawset(Window, Field, Found)
+        end
+
+        return Found
+    end
+
+    local OriginalPage = Library.Page
+    Library.Page = function(self, Data)
+        local Page = OriginalPage(self, Data)
+        table.insert(list(self, "SearchPages"), Page)
+        return Page
+    end
+
+    local OriginalSection = Library.Pages.Section
+    Library.Pages.Section = function(self, Data)
+        local Section = OriginalSection(self, Data)
+        table.insert(list(self.Window, "SearchSections"), Section)
+        return Section
+    end
+
+    local function wrap(Kind, NameOf)
+        local Original = Library.Sections[Kind]
+
+        if not Original then
+            return
+        end
+
+        Library.Sections[Kind] = function(self, A, B)
+            local Content = self.Items and self.Items["Content"] and self.Items["Content"].Instance
+            local Before = { }
+
+            if Content then
+                for _, Child in Content:GetChildren() do
+                    Before[Child] = true
+                end
+            end
+
+            local Object = Original(self, A, B)
+
+            if Content then
+                local Frame
+
+                for _, Child in Content:GetChildren() do
+                    if not Before[Child] and Child:IsA("GuiObject") then
+                        Frame = Child
+                    end
+                end
+
+                if Frame then
+                    table.insert(list(self.Window, "SearchEntries"), {
+                        Frame = Frame,
+                        Name = lower(NameOf(A, B)),
+                        Section = self
+                    })
+                end
+            end
+
+            return Object
+        end
+    end
+
+    local function DataName(Data)
+        return type(Data) == "table" and (Data.Name or Data.name) or ""
+    end
+
+    wrap("Toggle", DataName)
+    wrap("Button", DataName)
+    wrap("Slider", DataName)
+    wrap("Dropdown", DataName)
+    wrap("Textbox", DataName)
+    wrap("Listbox", DataName)
+    wrap("Label", function(Text)
+        return type(Text) == "string" and (Text:gsub("<[^>]*>", "")) or ""   -- labels can carry rich-text tags
+    end)
+
+    Library.SearchWindow = function(Window, Query)
+        local Hidden = rawget(Window, "SearchHidden") or { }
+        rawset(Window, "SearchHidden", Hidden)
+
+        for Object in Hidden do
+            pcall(function()
+                Object.Visible = true
+            end)
+        end
+
+        table.clear(Hidden)
+
+        local Pages = rawget(Window, "SearchPages") or { }
+
+        for _, Page in Pages do
+            pcall(function()
+                Page.Items["Inactive"].Instance.TextTransparency = 0
+            end)
+        end
+
+        local CountLabel = Window.Items["SearchCount"]
+        local Text = lower(Query)
+        Text = Text:gsub("^%s+", "")
+        Text = Text:gsub("%s+$", "")
+
+        if Text == "" then
+            CountLabel.Instance.Text = ""
+            return
+        end
+
+        local Count = 0
+        local PageHit, SectionHit = { }, { }
+
+        for _, Entry in (rawget(Window, "SearchEntries") or { }) do
+            local Shown = string.find(Entry.Name, Text, 1, true)
+                or string.find(lower(Entry.Section.Name), Text, 1, true)
+                or string.find(lower(Entry.Section.Page.Name), Text, 1, true)
+
+            if Shown then
+                Count += 1
+                SectionHit[Entry.Section] = true
+                PageHit[Entry.Section.Page] = true
+            elseif Entry.Frame.Visible then
+                Entry.Frame.Visible = false
+                Hidden[Entry.Frame] = true
+            end
+        end
+
+        for _, Section in (rawget(Window, "SearchSections") or { }) do
+            if not SectionHit[Section] then
+                local Frame = Section.Items["Section"].Instance
+
+                if Frame.Visible then
+                    Frame.Visible = false
+                    Hidden[Frame] = true
+                end
+            end
+        end
+
+        local Current, FirstHit
+
+        for _, Page in Pages do
+            if PageHit[Page] then
+                FirstHit = FirstHit or Page
+            else
+                pcall(function()
+                    Page.Items["Inactive"].Instance.TextTransparency = 0.65
+                end)
+            end
+
+            if Page.Items["Page"].Instance.Visible then
+                Current = Page
+            end
+        end
+
+        if FirstHit and not PageHit[Current] then
+            for _, Page in Pages do
+                Page:Turn(Page == FirstHit)
+            end
+        end
+
+        CountLabel.Instance.Text = Count == 0 and "no results" or (Count .. " found")
+        CountLabel.Instance.TextColor3 = Count == 0 and Color3.fromRGB(226, 90, 90) or Color3.fromRGB(120, 120, 120)
     end
 end
 
