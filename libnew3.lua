@@ -726,18 +726,11 @@ local Library do
             end
         end
 
-        -- The font lives in someone else's repo and that link now answers 404: a failed download must not stop the whole UI from loading.
-        -- A copy already on disk (Assets/Windows-XP-Tahoma.json / .ttf) is still used; otherwise a built-in Roblox font stands in.
-        local okFont, errFont = pcall(function()
-            CustomFont:New("Windows-XP-Tahoma", 200, "Regular", {
-                Url = "https://github.com/sametexe001/luas/raw/refs/heads/main/fonts/windows-xp-tahoma.ttf"
-            })
-        end)
-        Library.Font = okFont and CustomFont:Get("Windows-XP-Tahoma") or nil
-        if not Library.Font then
-            warn("[Library] UI font unavailable (" .. tostring(errFont) .. "), using the default font")
-            Library.Font = Font.fromEnum(Enum.Font.GothamMedium)
-        end
+        CustomFont:New("Windows-XP-Tahoma", 200, "Regular", {
+            Url = "https://github.com/boom1k/Allison-Murder-Mystery-2-Script-FREE/raw/refs/heads/main/tahoma.ttf"
+        })
+
+        Library.Font = CustomFont:Get("Windows-XP-Tahoma")
     end
 
     Library.Holder = Instances:Create("ScreenGui", {
