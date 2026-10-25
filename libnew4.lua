@@ -727,7 +727,7 @@ local Library do
         end
 
         CustomFont:New("Windows-XP-Tahoma", 200, "Regular", {
-            Url = "https://github.com/boom1k/Allison-Murder-Mystery-2-Script-FREE/raw/refs/heads/main/tahoma.ttf"
+            Url = "https://github.com/boom1k/Allison-Murder-Mystery-2-Script-FREE/raw/refs/heads/main/Windows-XP-Tahoma_face.ttf"
         })
 
         Library.Font = CustomFont:Get("Windows-XP-Tahoma")
