@@ -2470,7 +2470,7 @@ function Library:KeybindList()
 			-- [G] - Keybind (Toggle): the key in the accent; the name brightens while the bind is active
 			local shown = tostring(key or ""):gsub("Enum%.KeyCode%.", ""):gsub("Enum%.UserInputType%.", ""):gsub("[%[%]]", "")
 			R.text.Text = ('<font color="%s"><b>[%s]</b></font> <font color="%s">- %s</font> <font color="%s">(%s)</font>'):format(
-				hex(status and ACTIVE or Library.Theme.Accent), esc(shown), hex(status and ACTIVE or Library.Theme.Text), esc(name), hex(Library.Theme["Dim Text"]), esc(mode))
+				hex(Library.Theme.Accent), esc(shown), hex(status and ACTIVE or Library.Theme.Text), esc(name), hex(Library.Theme["Dim Text"]), esc(mode))
 		end
 		row.Draw = draw
 		function row:Set(m, n, k)
