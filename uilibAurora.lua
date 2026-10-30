@@ -2944,10 +2944,21 @@ end
 -- uilibAurora runtime part 8: the extras - ESP preview window, body part picker, loader.
 
 -- ---- Library:EspPreview(Data) -> preview ----
--- A floating window with a turning model of your character (a ViewportFrame) and the ESP drawn over it: box, name, health bar,
--- distance, weapon, chams. preview:Set(key, value) for Box / Name / Health / Distance / Weapon / Chams (booleans) and BoxColor /
--- NameColor / ChamsColor (Color3); or Data.Flags = { Box = "MyBoxFlag", ... } and it follows those flags (Color3 or colorpicker flags).
--- The model only turns while the preview is shown (it is the expensive part).
+-- A floating window with a turning model of your character (a ViewportFrame) and the ESP drawn over it, laid out like a real ESP: flags right of the box,
+-- name + weapon above it, distance below. preview:Sync({ key = value, ... }) sets many at once, preview:Set(key, value) one. Keys (defaults in `state` below):
+--   Box, BoxColor, OutlineColor | Fill, FillColor1, FillColor2, FillTransparency1, FillTransparency2, FillSpin | Glow
+--   Name, NameText, NameColor, NameSize, NameOutline, NameOutlineColor | Distance | Weapon, WeaponText, FlagSize, FlagColor, FlagLines ({ { text, col } ... })
+--   Health, HealthPos (Left / Right / Top / Bottom), HealthGap, HealthWidth, HealthOutline (Full / Fit / None), HealthOutlineColor, HealthGradient, HealthColor1 / 2 / 3,
+--   HealthText, HealthTextFollow, HealthTextHideFull, HealthTextGradient, HealthTextSize
+--   Chams, ChamsColor, ChamsStyle (Flat / Liquid), ChamsTransparency, LiquidSpeed | Skeleton, HeadCircle, LookDir, LookCone, LookLength, LineColor
+-- Or Data.Flags = { Box = "MyBoxFlag", ... } and it follows those flags (Color3 or colorpicker flags). The model only turns while the preview is shown.
+local PREVIEW_BONES = {
+	{ "Head", "UpperTorso" }, { "UpperTorso", "LowerTorso" },
+	{ "UpperTorso", "LeftUpperArm" }, { "LeftUpperArm", "LeftLowerArm" }, { "LeftLowerArm", "LeftHand" },
+	{ "UpperTorso", "RightUpperArm" }, { "RightUpperArm", "RightLowerArm" }, { "RightLowerArm", "RightHand" },
+	{ "LowerTorso", "LeftUpperLeg" }, { "LeftUpperLeg", "LeftLowerLeg" }, { "LeftLowerLeg", "LeftFoot" },
+	{ "LowerTorso", "RightUpperLeg" }, { "RightUpperLeg", "RightLowerLeg" }, { "RightLowerLeg", "RightFoot" },
+}
 function Library:EspPreview(Data)
 	Data = Data or {}
 	local fx = Library.fx
@@ -2955,7 +2966,9 @@ function Library:EspPreview(Data)
 	local root = P.Root
 	root.Name = "\0"
 	root.ZIndex = 1400
+	root.Size = UDim2.fromOffset(320, 370)   -- room for the flags right of the box
 	P.title.Text = tostring(Library.field(Data, "Name", "name") or "esp preview")
+	P.view.ClipsDescendants = true
 	-- next to the first window when there is one
 	local main = Library.Windows[1]
 	if main then
@@ -2966,9 +2979,17 @@ function Library:EspPreview(Data)
 		root.Position = UDim2.new(0.5, 330, 0.5, -165)
 	end
 	Library.MakeDraggable(P.title, root)
+	local white, black = Color3.new(1, 1, 1), Color3.new(0, 0, 0)
 	local state = {
-		Box = true, Name = true, Health = true, Distance = true, Weapon = true, Chams = false,
-		BoxColor = Color3.new(1, 1, 1), NameColor = Color3.new(1, 1, 1), ChamsColor = Library.Theme.Accent,
+		Box = true, BoxColor = white, OutlineColor = black,
+		Fill = false, FillColor1 = white, FillColor2 = white, FillTransparency1 = 0.5, FillTransparency2 = 1, FillSpin = false, Glow = false,
+		Name = true, NameText = Players.LocalPlayer.Name, NameColor = white, NameSize = 13, NameOutline = true, NameOutlineColor = black,
+		Distance = true, Weapon = true, WeaponText = tostring(Library.field(Data, "Weapon", "weapon") or "AK-47"), FlagSize = 12, FlagColor = Color3.fromRGB(235, 235, 235), FlagLines = {},
+		Health = true, HealthPos = "Left", HealthGap = 2, HealthWidth = 2, HealthOutline = "Full", HealthOutlineColor = black, HealthGradient = false,
+		HealthColor1 = Color3.fromRGB(0, 255, 0), HealthColor2 = Color3.fromRGB(255, 255, 0), HealthColor3 = Color3.fromRGB(255, 0, 0),
+		HealthText = false, HealthTextFollow = false, HealthTextHideFull = false, HealthTextGradient = false, HealthTextSize = 9,
+		Chams = false, ChamsColor = Library.Theme.Accent, ChamsStyle = "Flat", ChamsTransparency = 0, LiquidSpeed = 1,
+		Skeleton = false, HeadCircle = false, LookDir = false, LookCone = true, LookLength = 8, LineColor = white,
 	}
 
 	-- the model
@@ -2976,7 +2997,7 @@ function Library:EspPreview(Data)
 	vp.Name = "\0"
 	vp.BackgroundTransparency, vp.BorderSizePixel = 1, 0
 	vp.Size = UDim2.fromScale(1, 1)
-	vp.Ambient, vp.LightColor = Color3.fromRGB(150, 150, 150), Color3.new(1, 1, 1)
+	vp.Ambient, vp.LightColor = Color3.fromRGB(150, 150, 150), white
 	vp.Parent = P.view
 	local cam = Instance.new("Camera")
 	cam.FieldOfView = 40
@@ -2984,9 +3005,9 @@ function Library:EspPreview(Data)
 	vp.CurrentCamera = cam
 	local world = Instance.new("WorldModel")
 	world.Parent = vp
-	local model, parts = nil, {}
+	local model, parts, skins = nil, {}, {}
 	local function buildModel()
-		if model then model:Destroy() model, parts = nil, {} end
+		if model then model:Destroy() model, parts, skins = nil, {}, {} end
 		local char = Players.LocalPlayer.Character
 		if not char then return end
 		local was = char.Archivable
@@ -2998,7 +3019,9 @@ function Library:EspPreview(Data)
 			if d:IsA("Script") or d:IsA("LocalScript") or d:IsA("ModuleScript") or d:IsA("Sound") then d:Destroy()
 			elseif d:IsA("BasePart") then
 				d.Anchored = true
-				parts[#parts + 1] = { part = d, color = d.Color, mat = d.Material }
+				parts[#parts + 1] = { part = d, color = d.Color, mat = d.Material, trans = d.Transparency }
+			elseif d:IsA("SurfaceAppearance") or d:IsA("Decal") or d:IsA("Texture") then
+				skins[#skins + 1] = { inst = d, parent = d.Parent }
 			end
 		end
 		c:PivotTo(CFrame.new())
@@ -3006,10 +3029,13 @@ function Library:EspPreview(Data)
 		model = c
 	end
 	local function paintChams()
+		-- the skins hide the colour, so they come off while chams are on
+		for _, sk in skins do sk.inst.Parent = (not state.Chams) and sk.parent or nil end
 		for _, p in parts do
-			if p.part.Name ~= "HumanoidRootPart" then
+			if p.part.Name ~= "HumanoidRootPart" and p.trans < 1 then
 				p.part.Color = state.Chams and state.ChamsColor or p.color
 				p.part.Material = state.Chams and Enum.Material.Neon or p.mat
+				p.part.Transparency = state.Chams and math.clamp(state.ChamsTransparency, 0, 0.95) or p.trans
 			end
 		end
 	end
@@ -3022,77 +3048,242 @@ function Library:EspPreview(Data)
 	overlay.ZIndex = 5
 	overlay.Parent = P.view
 	local box = Instance.new("Frame")
+	box.Name = "\0"
 	box.BackgroundTransparency = 1
 	box.AnchorPoint = Vector2.new(0.5, 0.5)
-	box.Position, box.Size = UDim2.fromScale(0.5, 0.52), UDim2.fromScale(0.46, 0.72)
+	box.Position, box.Size = UDim2.fromScale(0.5, 0.5), UDim2.new(0, 100, 0.68, 0)
 	box.Parent = overlay
+	local fill = Instance.new("Frame")
+	fill.Name = "\0"
+	fill.BorderSizePixel = 0
+	fill.BackgroundColor3 = white
+	fill.Size = UDim2.fromScale(1, 1)
+	fill.Parent = box
+	local fillGrad = Instance.new("UIGradient", fill)
+	local glow = fx.shadow(box, { force = true, glow = true, radius = 10, transparency = 0.45, color = white })
 	local boxStroke = Instance.new("UIStroke", box)
 	boxStroke.Thickness = 1
-	local outer = Instance.new("UIStroke")   -- the black outline around the box
 	local boxOuter = Instance.new("Frame")
+	boxOuter.Name = "\0"
 	boxOuter.BackgroundTransparency = 1
 	boxOuter.AnchorPoint, boxOuter.Position, boxOuter.Size = Vector2.new(0.5, 0.5), UDim2.fromScale(0.5, 0.5), UDim2.new(1, 2, 1, 2)
 	boxOuter.Parent = box
-	outer.Color, outer.Thickness = Color3.new(0, 0, 0), 1
-	outer.Parent = boxOuter
-	local function text(name, pos, anchor, size)
+	local outer = Instance.new("UIStroke", boxOuter)
+	outer.Thickness = 1
+	local function text(size)
 		local t = Instance.new("TextLabel")
-		t.Name = name
+		t.Name = "\0"
 		t.BackgroundTransparency = 1
 		t.FontFace, t.TextSize = Library.Font, size or 12
-		t.TextColor3 = Color3.new(1, 1, 1)
+		t.TextColor3 = white
 		t.TextStrokeTransparency = 0.4
-		t.AnchorPoint, t.Position, t.Size = anchor, pos, UDim2.new(1, 0, 0, 14)
+		t.Size = UDim2.fromOffset(160, size or 12)
+		t.ZIndex = 3
 		t.Parent = box
 		return t
 	end
-	local nameT = text("name", UDim2.new(0.5, 0, 0, -3), Vector2.new(0.5, 1))
-	nameT.Text = Players.LocalPlayer.Name
-	local distT = text("distance", UDim2.new(0.5, 0, 1, 3), Vector2.new(0.5, 0))
-	distT.Text = "2m"
-	local weapT = text("weapon", UDim2.new(0.5, 0, 1, 16), Vector2.new(0.5, 0), 11)
-	weapT.Text = tostring(Library.field(Data, "Weapon", "weapon") or "AK-47")
+	local nameT, weapT, distT, hpT = text(13), text(12), text(12), text(9)
+	nameT.AnchorPoint, weapT.AnchorPoint, distT.AnchorPoint = Vector2.new(0.5, 1), Vector2.new(0.5, 1), Vector2.new(0.5, 0)
 	local hpBack = Instance.new("Frame")
+	hpBack.Name = "\0"
 	hpBack.BorderSizePixel = 0
-	hpBack.BackgroundColor3 = Color3.new(0, 0, 0)
-	hpBack.AnchorPoint, hpBack.Position, hpBack.Size = Vector2.new(1, 0), UDim2.new(0, -4, 0, -1), UDim2.new(0, 4, 1, 2)
 	hpBack.Parent = box
 	local hpFill = Instance.new("Frame")
+	hpFill.Name = "\0"
 	hpFill.BorderSizePixel = 0
-	hpFill.AnchorPoint, hpFill.Position, hpFill.Size = Vector2.new(0, 1), UDim2.new(0, 1, 1, -1), UDim2.new(1, -2, 0.75, -2)
-	hpFill.BackgroundColor3 = Color3.fromRGB(80, 220, 120)
 	hpFill.Parent = hpBack
-	local hpT = text("hp", UDim2.new(0, -8, 0.25, 0), Vector2.new(1, 0.5), 11)
-	hpT.Size, hpT.TextXAlignment, hpT.Text = UDim2.new(0, 30, 0, 12), Enum.TextXAlignment.Right, "75"
+	local flagRows = {}
+
+	-- skeleton, head circle, look line: projected from the model each frame
+	local lines = Instance.new("Frame")
+	lines.Name = "\0"
+	lines.BackgroundTransparency = 1
+	lines.Size = UDim2.fromScale(1, 1)
+	lines.ZIndex = 4
+	lines.Parent = overlay
+	local function line()
+		local l = Instance.new("Frame")
+		l.Name = "\0"
+		l.BorderSizePixel = 0
+		l.AnchorPoint = Vector2.new(0.5, 0.5)
+		l.Visible = false
+		l.Parent = lines
+		return l
+	end
+	local bones = {}
+	for i = 1, #PREVIEW_BONES do bones[i] = line() end
+	local lookLine, lookTip = line(), line()
+	lookTip.Rotation = 45
+	local headRing = line()
+	headRing.BackgroundTransparency = 1
+	Instance.new("UICorner", headRing).CornerRadius = UDim.new(1, 0)
+	local ringStroke = Instance.new("UIStroke", headRing)
+	local function project(pos)
+		local o = cam.CFrame:PointToObjectSpace(pos)
+		if o.Z >= -0.1 then return nil end
+		local size = P.view.AbsoluteSize
+		local t = math.tan(math.rad(cam.FieldOfView / 2))
+		return Vector2.new((0.5 + o.X / (-o.Z * t * (size.X / math.max(size.Y, 1))) / 2) * size.X, (0.5 - o.Y / (-o.Z * t) / 2) * size.Y), o.Z
+	end
+	local function place(l, a, b, thick)
+		local d, m = b - a, (a + b) / 2
+		l.Position, l.Size, l.Rotation = UDim2.fromOffset(m.X, m.Y), UDim2.fromOffset(d.Magnitude + 1, thick or 1), math.deg(math.atan2(d.Y, d.X))
+		l.Visible = true
+	end
+	local function hpColor(hp)
+		if hp > 0.5 then return state.HealthColor2:Lerp(state.HealthColor1, (hp - 0.5) * 2) end
+		return state.HealthColor3:Lerp(state.HealthColor2, hp * 2)
+	end
 
 	local function paint()
 		boxStroke.Enabled, outer.Enabled = state.Box, state.Box
-		boxStroke.Color = state.BoxColor
-		nameT.Visible, nameT.TextColor3 = state.Name, state.NameColor
-		hpBack.Visible, hpT.Visible = state.Health, state.Health
-		distT.Visible, weapT.Visible = state.Distance, state.Weapon
-		weapT.Position = state.Distance and UDim2.new(0.5, 0, 1, 16) or UDim2.new(0.5, 0, 1, 3)
+		boxStroke.Color, outer.Color = state.BoxColor, state.OutlineColor
+		fill.Visible = state.Box and state.Fill
+		fillGrad.Color = ColorSequence.new(state.FillColor1, state.FillColor2)
+		fillGrad.Transparency = NumberSequence.new(math.clamp(state.FillTransparency1, 0, 1), math.clamp(state.FillTransparency2, 0, 1))
+		glow.Visible = state.Box and state.Glow
+		glow.ImageColor3 = state.BoxColor
+		-- above the box: the weapon, then the name; a Top bar pushes them up
+		local width = math.max(math.floor(state.HealthWidth), 1)
+		local gap = math.max(math.floor(state.HealthGap), 0)
+		local side = state.Health and state.HealthPos or nil
+		local y = -2 - (side == "Top" and width + gap + 2 or 0)
+		weapT.Visible = state.Weapon
+		weapT.Text, weapT.TextSize, weapT.TextColor3 = tostring(state.WeaponText), state.FlagSize, state.FlagColor
+		weapT.Size = UDim2.fromOffset(160, state.FlagSize)
+		weapT.Position = UDim2.new(0.5, 0, 0, y)
+		if state.Weapon then y -= state.FlagSize + 1 end
+		nameT.Visible = state.Name
+		nameT.Text, nameT.TextSize, nameT.TextColor3 = tostring(state.NameText), state.NameSize, state.NameColor
+		nameT.Size = UDim2.fromOffset(160, state.NameSize)
+		nameT.TextStrokeTransparency = state.NameOutline and 0.2 or 1
+		nameT.TextStrokeColor3 = state.NameOutlineColor
+		nameT.Position = UDim2.new(0.5, 0, 0, y)
+		distT.Visible = state.Distance
+		distT.Text = "[2m]"
+		distT.Position = UDim2.new(0.5, 0, 1, 2 + (side == "Bottom" and width + gap + 2 or 0))
+		-- the flags, right of the box (past a Right bar)
+		local fx0 = 3 + (side == "Right" and width + gap + 4 + (state.HealthText and 18 or 0) or 0)
+		for i, ln in state.FlagLines do
+			local r = flagRows[i]
+			if not r then
+				r = text(12)
+				r.TextXAlignment = Enum.TextXAlignment.Left
+				flagRows[i] = r
+			end
+			r.Visible = true
+			r.Text, r.TextSize, r.TextColor3 = tostring(ln.text), state.FlagSize, ln.col or state.FlagColor
+			r.Size = UDim2.fromOffset(120, state.FlagSize)
+			r.Position = UDim2.new(1, fx0, 0, 1 + (i - 1) * (state.FlagSize + 1))
+		end
+		for i = #state.FlagLines + 1, #flagRows do flagRows[i].Visible = false end
+		hpBack.BackgroundColor3 = state.HealthOutlineColor
+		hpBack.BackgroundTransparency = state.HealthOutline == "None" and 1 or 0
+		hpBack.Visible = state.Health
+		hpT.TextSize = state.HealthTextSize
+		hpT.Size = UDim2.fromOffset(30, state.HealthTextSize)
+		ringStroke.Color = state.LineColor
+		for _, l in bones do l.BackgroundColor3 = state.LineColor end
+		lookLine.BackgroundColor3, lookTip.BackgroundColor3 = state.LineColor, state.LineColor
 		paintChams()
+	end
+	local function layoutHealth(hp)
+		if not state.Health then hpT.Visible = false return end
+		local w = math.max(math.floor(state.HealthWidth), 1)
+		local g = math.max(math.floor(state.HealthGap), 0)
+		local pos, fit = state.HealthPos, state.HealthOutline == "Fit"
+		local horizontal = pos == "Top" or pos == "Bottom"
+		if horizontal then
+			hpBack.AnchorPoint = Vector2.new(0, pos == "Top" and 1 or 0)
+			hpBack.Position = UDim2.new(0, -1, pos == "Top" and 0 or 1, pos == "Top" and -g - 1 or g + 1)
+			hpBack.Size = fit and UDim2.new(hp, 2, 0, w + 2) or UDim2.new(1, 2, 0, w + 2)
+			hpFill.AnchorPoint, hpFill.Position = Vector2.zero, UDim2.fromOffset(1, 1)
+			hpFill.Size = fit and UDim2.new(1, -2, 1, -2) or UDim2.new(hp, -2, 1, -2)
+		else
+			hpBack.AnchorPoint = Vector2.new(pos == "Right" and 0 or 1, fit and 1 or 0)
+			hpBack.Position = UDim2.new(pos == "Right" and 1 or 0, pos == "Right" and g + 1 or -g - 1, fit and 1 or 0, fit and 1 or -1)
+			hpBack.Size = fit and UDim2.new(0, w + 2, hp, 2) or UDim2.new(0, w + 2, 1, 2)
+			hpFill.AnchorPoint, hpFill.Position = Vector2.new(0, 1), UDim2.new(0, 1, 1, -1)
+			hpFill.Size = fit and UDim2.new(1, -2, 1, -2) or UDim2.new(1, -2, hp, -2)
+		end
+		local col = hpColor(hp)
+		hpFill.BackgroundColor3 = col
+		local showText = state.HealthText and not (state.HealthTextHideFull and hp >= 0.995)
+		hpT.Visible = showText
+		if showText then
+			hpT.Text = tostring(math.floor(hp * 100))
+			hpT.TextColor3 = state.HealthTextGradient and col or white
+			local along = state.HealthTextFollow and (horizontal and hp or 1 - hp) or 0
+			if horizontal then
+				hpT.AnchorPoint = Vector2.new(0.5, pos == "Top" and 1 or 0)
+				hpT.Position = UDim2.new(along, 0, pos == "Top" and 0 or 1, pos == "Top" and -g - w - 3 or g + w + 3)
+			elseif pos == "Right" then
+				hpT.AnchorPoint = Vector2.new(0, 0.5)
+				hpT.Position = UDim2.new(1, g + w + 4, along, 0)
+			else
+				hpT.AnchorPoint = Vector2.new(1, 0.5)
+				hpT.Position = UDim2.new(0, -g - w - 4, along, 0)
+			end
+		end
 	end
 	local preview = { Instance = root, State = state }
 	function preview:Set(key, value) state[key] = value paint() end
+	function preview:Sync(values)
+		for k, v in values do state[k] = v end
+		paint()
+	end
 	function preview:SetVisibility(b) root.Visible = b end
 	function preview:Refresh() buildModel() paint() end
 	buildModel()
 	paint()
 	-- the health bar sweeps 100 -> 25 -> 100 so it shows how it moves
 	local t0 = os.clock()
-	Library:Connect(RunService.RenderStepped, function()
+	Library:Connect(RunService.RenderStepped, function(dt)
 		if not (root.Visible and root.Parent) then return end
 		local t = os.clock() - t0
 		local cf = CFrame.Angles(0, t * 0.6, 0)
 		cam.CFrame = cf * CFrame.new(0, 0.6, 11)
 		cam.CFrame = CFrame.lookAt(cam.CFrame.Position, Vector3.new(0, 0.2, 0))
 		local hp = 0.625 + 0.375 * math.cos(t * 0.8)
-		hpFill.Size = UDim2.new(1, -2, hp, -2)
-		hpFill.BackgroundColor3 = Color3.fromRGB(235, 70, 70):Lerp(Color3.fromRGB(80, 220, 120), hp)
-		hpT.Text = tostring(math.floor(hp * 100))
-		hpT.Position = UDim2.new(0, -8, 1 - hp, 0)
+		layoutHealth(hp)
+		if state.Fill and state.FillSpin then fillGrad.Rotation = (fillGrad.Rotation + dt * 40) % 360 end
+		-- liquid chams: a bright band runs up the body
+		if state.Chams and state.ChamsStyle == "Liquid" then
+			local wave = (t * state.LiquidSpeed * 0.6) % 1
+			for _, p in parts do
+				if p.part.Name ~= "HumanoidRootPart" and p.trans < 1 then
+					local band = 1 - math.clamp(math.abs((p.part.Position.Y + 3) / 6 - wave) * 4, 0, 1)
+					p.part.Color = state.ChamsColor:Lerp(white, band * 0.7)
+				end
+			end
+		end
+		local function at(name)
+			local part = model and model:FindFirstChild(name)
+			return part and part:IsA("BasePart") and part or nil
+		end
+		for i, pair in PREVIEW_BONES do
+			local a, b = at(pair[1]), at(pair[2])
+			local pa, pb = a and project(a.Position), b and project(b.Position)
+			if state.Skeleton and pa and pb then place(bones[i], pa, pb) else bones[i].Visible = false end
+		end
+		local head = at("Head")
+		local ph = head and project(head.Position)
+		if state.HeadCircle and ph then
+			local _, z = project(head.Position)
+			local r = head.Size.Y * 0.6 / (-z * math.tan(math.rad(cam.FieldOfView / 2))) * P.view.AbsoluteSize.Y / 2
+			headRing.Position, headRing.Size, headRing.Rotation = UDim2.fromOffset(ph.X, ph.Y), UDim2.fromOffset(r * 2, r * 2), 0
+			headRing.Visible = true
+		else
+			headRing.Visible = false
+		end
+		local tip = head and project(head.Position + head.CFrame.LookVector * state.LookLength)
+		if state.LookDir and ph and tip then
+			place(lookLine, ph, tip)
+			lookTip.Visible = state.LookCone
+			lookTip.Position, lookTip.Size = UDim2.fromOffset(tip.X, tip.Y), UDim2.fromOffset(6, 6)
+		else
+			lookLine.Visible, lookTip.Visible = false, false
+		end
 	end)
 	-- following flags
 	local map = Library.field(Data, "Flags", "flags")
