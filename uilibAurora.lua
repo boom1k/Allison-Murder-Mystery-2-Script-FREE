@@ -1674,7 +1674,7 @@ function Library:Dropdown(Data)
 	end
 	click(T.field, function() setOpen(not open) end)
 	Library:Connect(UserInputService.InputBegan, function(i)
-		if open and not debounce and (i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch) and not Library:IsMouseOverFrame(P.Root) then setOpen(false) end
+		if open and not debounce and (i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch) and not Library:IsMouseOverFrame(P.Root) and not Library:IsMouseOverFrame(T.field) then setOpen(false) end
 	end)
 	for _, name in field(Data, "Items", "items") or {} do store.add(name) end
 	function dd:Set(v) store.set(v) end
