@@ -3357,7 +3357,10 @@ end
 --   Name, NameText, NameColor, NameSize, NameOutline, NameOutlineColor | Distance | Weapon, WeaponText, FlagSize, FlagColor, FlagLines ({ { text, col } ... })
 --   Health, HealthPos (Left / Right / Top / Bottom), HealthGap, HealthWidth, HealthOutline (Full / Fit / None), HealthOutlineColor, HealthGradient, HealthColor1 / 2 / 3,
 --   HealthText, HealthTextFollow, HealthTextHideFull, HealthTextGradient, HealthTextSize
---   Chams, ChamsColor, ChamsStyle (Flat / Liquid), ChamsTransparency, LiquidSpeed | Skeleton, HeadCircle, LookDir, LookCone, LookLength, LineColor
+--   Chams, ChamsColor, ChamsStyle (Flat / Liquid), ChamsTransparency, LiquidSpeed, ChamsWalls, ChamsOutline, ChamsOutlineColor, ChamsOutlineThickness,
+--   ChamsOutlineWalls, ChamsVisCheck, ChamsVisibleColor | Skeleton, HeadCircle, LookDir, LookCone, LookLength, LineColor | Wall, AutoRotate
+-- The view is 3D: drag in it to turn the camera around the model, scroll to zoom. Two toggles under it: "half body behind wall" (a waist-high wall
+-- in front of the model, flag Data.WallFlag or "EspPreviewWall") and "auto rotate" (flag Data.SpinFlag or "EspPreviewSpin").
 -- Or Data.Flags = { Box = "MyBoxFlag", ... } and it follows those flags (Color3 or colorpicker flags). The model only turns while the preview is shown.
 -- A zoom slider sits under the view (flag Data.ZoomFlag, default "EspPreviewZoom", saved with configs). Text is drawn like the ESP: flags, weapon, distance and the
 -- health number in Arial, one size under the setting, with a black outline; the name in Code. Lines have an outline in OutlineColor.
@@ -3375,8 +3378,8 @@ function Library:EspPreview(Data)
 	local root = P.Root
 	root.Name = "\0"
 	root.ZIndex = 1400
-	root.Size = UDim2.fromOffset(320, 396)   -- room for the flags right of the box, the zoom under the view
-	P.view.Size = UDim2.new(1, -18, 1, -68)
+	root.Size = UDim2.fromOffset(320, 420)   -- room for the flags right of the box, the toggles and the zoom under the view
+	P.view.Size = UDim2.new(1, -18, 1, -92)
 	P.title.Text = tostring(Library.field(Data, "Name", "name") or "esp preview")
 	P.view.ClipsDescendants = true
 	-- next to the first window when there is one
@@ -3399,26 +3402,48 @@ function Library:EspPreview(Data)
 		HealthColor1 = Color3.fromRGB(0, 255, 0), HealthColor2 = Color3.fromRGB(255, 255, 0), HealthColor3 = Color3.fromRGB(255, 0, 0),
 		HealthText = false, HealthTextFollow = false, HealthTextHideFull = false, HealthTextGradient = false, HealthTextSize = 9,
 		Chams = false, ChamsColor = Library.Theme.Accent, ChamsStyle = "Flat", ChamsTransparency = 0, LiquidSpeed = 1,
+		ChamsWalls = true, ChamsOutline = false, ChamsOutlineColor = white, ChamsOutlineThickness = 0.12, ChamsOutlineWalls = true,
+		ChamsVisCheck = false, ChamsVisibleColor = Color3.fromRGB(60, 255, 60), Wall = false, AutoRotate = true,
 		Skeleton = false, HeadCircle = false, LookDir = false, LookCone = true, LookLength = 8, LineColor = white, Zoom = 1,
 	}
 	local ARIAL, CODE = Font.fromEnum(Enum.Font.Arial), Font.fromEnum(Enum.Font.Code)
 
-	-- the model
-	local vp = Instance.new("ViewportFrame")
-	vp.Name = "\0"
-	vp.BackgroundTransparency, vp.BorderSizePixel = 1, 0
-	vp.Size = UDim2.fromScale(1, 1)
-	vp.Ambient, vp.LightColor = Color3.fromRGB(150, 150, 150), white
-	vp.Parent = P.view
-	local cam = Instance.new("Camera")
-	cam.FieldOfView = 40
-	cam.Parent = vp
-	vp.CurrentCamera = cam
-	local world = Instance.new("WorldModel")
-	world.Parent = vp
-	local model, parts, skins = nil, {}, {}
+	-- the model: a clone of your character in a ViewportFrame. A second ViewportFrame on top of it, with the same camera, is the "through walls"
+	-- layer: what the real ESP draws AlwaysOnTop (the chams boxes, their outline, the Liquid shell) goes there and shows over the wall; the rest
+	-- sits in the first one, where the wall hides it. Roblox draws no adornments or Highlights inside a ViewportFrame, so the chams are built from
+	-- parts the way the in-game ones are laid out: one box per body part (its size, over the skin), thin boxes along its edges for the outline.
+	local function viewport(z)
+		local v = Instance.new("ViewportFrame")
+		v.Name = "\0"
+		v.BackgroundTransparency, v.BorderSizePixel = 1, 0
+		v.Size = UDim2.fromScale(1, 1)
+		v.Ambient, v.LightColor = Color3.fromRGB(150, 150, 150), white
+		v.LightDirection = Vector3.new(-0.4, -1, -0.6)
+		v.ZIndex = z
+		v.Parent = P.view
+		local c = Instance.new("Camera")
+		c.FieldOfView = 40
+		c.Parent = v
+		v.CurrentCamera = c
+		local w = Instance.new("WorldModel")
+		w.Parent = v
+		return v, c, w
+	end
+	local vp, cam, world = viewport(1)
+	local vpTop, camTop, worldTop = viewport(2)
+	local CHAM_PARTS = {
+		"Head", "UpperTorso", "LowerTorso", "LeftUpperArm", "LeftLowerArm", "LeftHand", "RightUpperArm", "RightLowerArm", "RightHand",
+		"LeftUpperLeg", "LeftLowerLeg", "LeftFoot", "RightUpperLeg", "RightLowerLeg", "RightFoot",
+	}
+	local FULL_EDGES = { Head = true, UpperTorso = true, LowerTorso = true }
+	local chamsBase, chamsTop = Instance.new("Folder"), Instance.new("Folder")
+	chamsBase.Parent, chamsTop.Parent = world, worldTop
+	local model, parts, body, wall = nil, {}, {}, nil
+	local chamSig, chamFills, chamLines, shells = nil, {}, {}, {}
 	local function buildModel()
-		if model then model:Destroy() model, parts, skins = nil, {}, {} end
+		if model then model:Destroy() model, parts, body = nil, {}, {} end
+		if wall then wall:Destroy() wall = nil end
+		chamSig = nil
 		local char = Players.LocalPlayer.Character
 		if not char then return end
 		local was = char.Archivable
@@ -3430,24 +3455,107 @@ function Library:EspPreview(Data)
 			if d:IsA("Script") or d:IsA("LocalScript") or d:IsA("ModuleScript") or d:IsA("Sound") then d:Destroy()
 			elseif d:IsA("BasePart") then
 				d.Anchored = true
-				parts[#parts + 1] = { part = d, color = d.Color, mat = d.Material, trans = d.Transparency }
-			elseif d:IsA("SurfaceAppearance") or d:IsA("Decal") or d:IsA("Texture") then
-				skins[#skins + 1] = { inst = d, parent = d.Parent }
+				parts[#parts + 1] = { part = d, color = d.Color, mat = d.Material, trans = d.Transparency, refl = d.Reflectance }
 			end
 		end
 		c:PivotTo(CFrame.new())
 		c.Parent = world
 		model = c
+		for _, n in CHAM_PARTS do
+			local p = c:FindFirstChild(n)
+			if p and p:IsA("BasePart") then body[#body + 1] = p end
+		end
+		-- the half wall: across the front of the model (it faces -Z), from under the feet up to the waist
+		local lo, hi = math.huge, -math.huge
+		for _, p in body do
+			lo, hi = math.min(lo, p.Position.Y - p.Size.Y / 2), math.max(hi, p.Position.Y + p.Size.Y / 2)
+		end
+		if lo < hi then
+			local top = lo + (hi - lo) * 0.5
+			wall = Instance.new("Part")
+			wall.Name = "PreviewWall"
+			wall.Anchored, wall.CanCollide, wall.CastShadow = true, false, false
+			wall.Material, wall.Color = Enum.Material.Concrete, Color3.fromRGB(120, 116, 110)
+			wall.TopSurface, wall.BottomSurface = Enum.SurfaceType.Smooth, Enum.SurfaceType.Smooth
+			wall.Size = Vector3.new(6, top - lo + 0.5, 0.6)
+			wall.CFrame = CFrame.new(0, (top + lo - 0.5) / 2, -2.4)
+		end
 	end
-	local function paintChams()
-		-- the skins hide the colour, so they come off while chams are on
-		for _, sk in skins do sk.inst.Parent = (not state.Chams) and sk.parent or nil end
-		for _, p in parts do
-			if p.part.Name ~= "HumanoidRootPart" and p.trans < 1 then
-				p.part.Color = state.Chams and state.ChamsColor or p.color
-				p.part.Material = state.Chams and Enum.Material.Neon or p.mat
-				p.part.Transparency = state.Chams and math.clamp(state.ChamsTransparency, 0, 0.95) or p.trans
+	local function clearChams()
+		chamsBase:ClearAllChildren()
+		chamsTop:ClearAllChildren()
+		chamFills, chamLines, shells = {}, {}, {}
+	end
+	local function boxPart(size, cf, parent)
+		local b = Instance.new("Part")
+		b.Name = "Cham"
+		b.Anchored, b.CanCollide, b.CanQuery, b.CastShadow = true, false, false, false
+		b.Material = Enum.Material.SmoothPlastic
+		b.TopSurface, b.BottomSurface = Enum.SurfaceType.Smooth, Enum.SurfaceType.Smooth
+		b.Size, b.CFrame = size, cf
+		b.Parent = parent
+		return b
+	end
+	-- the outline of one part: thin boxes on its edges (all 12 for head / torso, the 4 long ones for limbs), like the in-game chams
+	local function edges(p, thick, full, parent)
+		local h = p.Size / 2
+		local function corner(i)
+			return Vector3.new(i % 2 == 0 and -h.X or h.X, math.floor(i / 2) % 2 == 0 and -h.Y or h.Y, math.floor(i / 4) % 2 == 0 and -h.Z or h.Z)
+		end
+		local axes = { 1, 2, 4 }
+		if not full then
+			local sz = p.Size
+			axes = { sz.X >= sz.Y and (sz.X >= sz.Z and 1 or 4) or (sz.Y >= sz.Z and 2 or 4) }
+		end
+		for i = 0, 7 do
+			for _, bit in axes do
+				if math.floor(i / bit) % 2 == 0 then
+					local a, b = corner(i), corner(i + bit)
+					local d = b - a
+					chamLines[#chamLines + 1] = boxPart(Vector3.new(math.abs(d.X) + thick, math.abs(d.Y) + thick, math.abs(d.Z) + thick), p.CFrame * CFrame.new((a + b) / 2), parent)
+				end
 			end
+		end
+	end
+	local function restoreBody()
+		for _, p in parts do
+			p.part.Material, p.part.Color, p.part.Transparency, p.part.Reflectance = p.mat, p.color, p.trans, p.refl
+		end
+	end
+	-- (re)built when a setting that changes their shape moves; their colours are set every frame (chamsFrame)
+	local function paintChams()
+		if wall then wall.Parent = state.Wall and world or nil end
+		local sig = table.concat({ tostring(state.Chams), tostring(state.ChamsStyle), tostring(state.ChamsWalls), tostring(state.ChamsOutline),
+			tostring(state.ChamsOutlineThickness), tostring(state.ChamsOutlineWalls), tostring(state.ChamsTransparency), tostring(model) }, "|")
+		if sig == chamSig then return end
+		chamSig = sig
+		clearChams()
+		restoreBody()
+		if not (state.Chams and model) then return end
+		local fillTo = state.ChamsWalls and chamsTop or chamsBase
+		if state.ChamsStyle == "Liquid" then
+			-- the body turns to tinted glass (the wave runs up it) and a shell around it stands for the Highlight
+			local transp = math.clamp((tonumber(state.ChamsTransparency) or 0) * 0.7, 0, 0.9)
+			for _, p in body do
+				p.Material, p.Transparency = Enum.Material.Glass, transp
+				local okS, sh = pcall(function() return p:Clone() end)
+				if okS and sh then
+					sh:ClearAllChildren()
+					if sh:IsA("MeshPart") then pcall(function() sh.TextureID = "" end) end
+					sh.Name = "ChamShell"
+					sh.Material, sh.CastShadow = Enum.Material.SmoothPlastic, false
+					sh.Size, sh.CFrame = p.Size * 1.05, p.CFrame
+					sh.Parent = fillTo
+					shells[#shells + 1] = sh
+				end
+			end
+			return
+		end
+		for _, p in body do chamFills[#chamFills + 1] = boxPart(p.Size, p.CFrame, fillTo) end
+		if state.ChamsOutline then
+			local thick = math.clamp(tonumber(state.ChamsOutlineThickness) or 0.12, 0.02, 1)
+			local lineTo = state.ChamsOutlineWalls and chamsTop or chamsBase
+			for _, p in body do edges(p, thick, FULL_EDGES[p.Name] == true, lineTo) end
 		end
 	end
 
@@ -3461,8 +3569,7 @@ function Library:EspPreview(Data)
 	local box = Instance.new("Frame")
 	box.Name = "\0"
 	box.BackgroundTransparency = 1
-	box.AnchorPoint = Vector2.new(0.5, 0.5)
-	box.Position, box.Size = UDim2.fromScale(0.5, 0.5), UDim2.fromOffset(100, 200)
+	box.Position, box.Size = UDim2.fromScale(0.35, 0.15), UDim2.fromOffset(100, 200)   -- (fitted to the model every frame)
 	box.Parent = overlay
 	local fill = Instance.new("Frame")
 	fill.Name = "\0"
@@ -3654,6 +3761,7 @@ function Library:EspPreview(Data)
 	function preview:SetVisibility(b) root.Visible = b end
 	function preview:Refresh() buildModel() paint() end
 	-- the zoom slider under the view
+	local zoomSet
 	do
 		local MIN, MAX = 0.6, 2.5
 		local row = Instance.new("Frame")
@@ -3701,6 +3809,7 @@ function Library:EspPreview(Data)
 			value.Text = string.format("%.2gx", v)
 		end
 		Library.SetFlags[flag] = setZoom
+		zoomSet = setZoom
 		setZoom(1)
 		local hit = Library.click(track)
 		hit.Size, hit.Position = UDim2.new(1, 0, 1, 8), UDim2.fromOffset(0, -4)
@@ -3710,6 +3819,121 @@ function Library:EspPreview(Data)
 		Library:Connect(UserInputService.InputChanged, function(i) if drag and i.UserInputType == Enum.UserInputType.MouseMovement then at(i.Position.X) end end)
 		Library:Connect(UserInputService.InputEnded, function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 then drag = false end end)
 	end
+	-- two toggles over the zoom row (the design sheet's Toggle): the half wall and the auto turn, saved with configs
+	do
+		local row = Instance.new("Frame")
+		row.Name = "\0"
+		row.BackgroundTransparency, row.BorderSizePixel = 1, 0
+		row.AnchorPoint, row.Position, row.Size = Vector2.new(0, 1), UDim2.new(0, 9, 1, -31), UDim2.new(1, -18, 0, 19)
+		row.Parent = root
+		local function mini(name, flag, key, default, x)
+			local T = Build.Toggle(row)
+			T.Root.Position, T.Root.Size = UDim2.new(x, 0, 0, 0), UDim2.new(0.5, -4, 0, 19)
+			T.label.Text = name
+			T.label.Size = UDim2.new(1, -18, 0, 15)
+			T.check.AnchorPoint, T.check.Position, T.check.Size = Vector2.new(0.5, 0.5), UDim2.fromScale(0.5, 0.5), UDim2.fromScale(1, 1)
+			local value
+			local function set(v)
+				value = v and true or false
+				Library.Flags[flag] = value
+				Library:ChangeItemTheme(T.box, { BackgroundColor3 = value and "Accent" or "Inline" })
+				fx.tween(T.box, { BackgroundColor3 = value and Library.Theme.Accent or Library.Theme.Inline }, 0.14)
+				fx.tween(T.check, { BackgroundTransparency = value and 0 or 1 }, 0.14)
+				state[key] = value
+				paint()
+			end
+			Library.SetFlags[flag] = set
+			Library.click(T.Root, function() set(not value) end)
+			set(default)
+		end
+		mini("half body behind wall", tostring(Library.field(Data, "WallFlag", "wallflag") or "EspPreviewWall"), "Wall", false, 0)
+		mini("auto rotate", tostring(Library.field(Data, "SpinFlag", "spinflag") or "EspPreviewSpin"), "AutoRotate", true, 0.5)
+	end
+	-- the camera: drag in the view to turn around the model, the wheel zooms
+	local yaw, pitch, dragging, lastPos = math.pi, 0.05, false, nil
+	do
+		local hit = Instance.new("TextButton")
+		hit.Name = "\0"
+		hit.Text, hit.AutoButtonColor = "", false
+		hit.BackgroundTransparency = 1
+		hit.Size = UDim2.fromScale(1, 1)
+		hit.ZIndex = 20
+		hit.Parent = P.view
+		local MB1, TOUCH = Enum.UserInputType.MouseButton1, Enum.UserInputType.Touch
+		Library:Connect(hit.InputBegan, function(i)
+			if i.UserInputType == MB1 or i.UserInputType == TOUCH then dragging, lastPos = true, i.Position end
+		end)
+		Library:Connect(UserInputService.InputChanged, function(i)
+			if dragging and lastPos and (i.UserInputType == Enum.UserInputType.MouseMovement or i.UserInputType == TOUCH) then
+				local d = i.Position - lastPos
+				lastPos = i.Position
+				yaw -= d.X * 0.012
+				pitch = math.clamp(pitch + d.Y * 0.01, -1.2, 1.2)
+			end
+		end)
+		Library:Connect(UserInputService.InputEnded, function(i)
+			if i.UserInputType == MB1 or i.UserInputType == TOUCH then dragging = false end
+		end)
+		Library:Connect(hit.InputEnded, function(i)
+			if i.UserInputType == MB1 or i.UserInputType == TOUCH then dragging = false end
+		end)
+		Library:Connect(hit.InputChanged, function(i)
+			if i.UserInputType == Enum.UserInputType.MouseWheel and zoomSet then zoomSet(state.Zoom + i.Position.Z * 0.1) end
+		end)
+	end
+	-- the chams' colours: the visible colour when the camera sees the head or chest (a ray in the preview world, the wall stops it)
+	local rayParams = RaycastParams.new()
+	rayParams.FilterType = Enum.RaycastFilterType.Exclude
+	function preview:Camera() return yaw, pitch, dragging end
+	local function seenNow()
+		if not model then return false end
+		rayParams.FilterDescendantsInstances = { model, chamsBase }
+		local from = cam.CFrame.Position
+		for _, n in { "Head", "UpperTorso" } do
+			local p = model:FindFirstChild(n)
+			if p and not world:Raycast(from, p.Position - from, rayParams) then return true end
+		end
+		return false
+	end
+	local function chamsFrame(t)
+		if not (state.Chams and model) then return end
+		local col, lineCol = state.ChamsColor, state.ChamsOutlineColor
+		if state.ChamsVisCheck and seenNow() then
+			if state.ChamsOutline and state.ChamsStyle ~= "Liquid" then lineCol = state.ChamsVisibleColor else col = state.ChamsVisibleColor end
+		end
+		if state.ChamsStyle == "Liquid" then
+			local ts = t * (tonumber(state.LiquidSpeed) or 1)
+			for _, p in body do
+				local wave = 0.5 + 0.5 * math.sin(ts * 3 - p.Position.Y * 2.4)
+				p.Color = col:Lerp(white, 0.18 + 0.5 * wave * wave)
+				p.Reflectance = 0.15 + 0.35 * wave
+			end
+			local fillC = col:Lerp(white, 0.2 + 0.12 * math.sin(ts * 1.6))
+			local ft = math.clamp(0.62 + 0.12 * math.sin(ts * 1.3) + (tonumber(state.ChamsTransparency) or 0) * 0.2, 0, 1)
+			for _, sh in shells do sh.Color, sh.Transparency = fillC, ft end
+			return
+		end
+		local tr = math.clamp(tonumber(state.ChamsTransparency) or 0, 0, 1)
+		for _, b in chamFills do b.Color, b.Transparency = col, tr end
+		for _, l in chamLines do l.Color = lineCol end
+	end
+	-- the ESP box: around the body parts' corners as the camera sees them
+	local function fitBox()
+		local x0, y0, x1, y1 = math.huge, math.huge, -math.huge, -math.huge
+		for _, p in body do
+			local cf, h = p.CFrame, p.Size / 2
+			for i = 0, 7 do
+				local sp = project(cf * Vector3.new(i % 2 == 0 and -h.X or h.X, math.floor(i / 2) % 2 == 0 and -h.Y or h.Y, math.floor(i / 4) % 2 == 0 and -h.Z or h.Z))
+				if sp then
+					x0, y0, x1, y1 = math.min(x0, sp.X), math.min(y0, sp.Y), math.max(x1, sp.X), math.max(y1, sp.Y)
+				end
+			end
+		end
+		if x0 < x1 and y0 < y1 then
+			box.Position = UDim2.fromOffset(math.floor(x0) - 1, math.floor(y0) - 1)
+			box.Size = UDim2.fromOffset(math.ceil(x1 - x0) + 2, math.ceil(y1 - y0) + 2)
+		end
+	end
 	buildModel()
 	paint()
 	-- the health bar sweeps 100 -> 25 -> 100 so it shows how it moves
@@ -3717,25 +3941,18 @@ function Library:EspPreview(Data)
 	Library:Connect(RunService.RenderStepped, function(dt)
 		if not (root.Visible and root.Parent) then return end
 		local t = os.clock() - t0
-		local cf = CFrame.Angles(0, t * 0.6, 0)
-		cam.CFrame = cf * CFrame.new(0, 0.6, 11 / state.Zoom)
-		cam.CFrame = CFrame.lookAt(cam.CFrame.Position, Vector3.new(0, 0.2, 0))
-		-- the box keeps its size on the character as the zoom changes
-		local viewH = P.view.AbsoluteSize.Y
-		box.Size = UDim2.fromOffset(viewH * 0.32 * state.Zoom, viewH * 0.68 * state.Zoom)
+		-- a release the view did not see (outside the window, a menu on top) must not leave the drag on
+		if dragging and not (UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) or UserInputService.TouchEnabled) then dragging = false end
+		if state.AutoRotate and not dragging then yaw += dt * 0.6 end
+		local target = Vector3.new(0, 0.2, 0)
+		local orbit = CFrame.new(target) * CFrame.Angles(0, yaw, 0) * CFrame.Angles(-pitch, 0, 0) * CFrame.new(0, 0, 11 / state.Zoom)
+		cam.CFrame = CFrame.lookAt(orbit.Position, target)
+		camTop.CFrame = cam.CFrame
+		chamsFrame(t)
+		fitBox()
 		local hp = 0.625 + 0.375 * math.cos(t * 0.8)
 		layoutHealth(hp)
 		if state.Fill and state.FillSpin then fillGrad.Rotation = (fillGrad.Rotation + dt * 40) % 360 end
-		-- liquid chams: a bright band runs up the body
-		if state.Chams and state.ChamsStyle == "Liquid" then
-			local wave = (t * state.LiquidSpeed * 0.6) % 1
-			for _, p in parts do
-				if p.part.Name ~= "HumanoidRootPart" and p.trans < 1 then
-					local band = 1 - math.clamp(math.abs((p.part.Position.Y + 3) / 6 - wave) * 4, 0, 1)
-					p.part.Color = state.ChamsColor:Lerp(white, band * 0.7)
-				end
-			end
-		end
 		local function at(name)
 			local part = model and model:FindFirstChild(name)
 			return part and part:IsA("BasePart") and part or nil
