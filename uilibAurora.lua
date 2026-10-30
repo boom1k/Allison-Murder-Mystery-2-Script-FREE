@@ -9,6 +9,7 @@ local function Th(inst, map) if Build.Theme then Build.Theme(inst, map) end end
 Build.IconPng = {
 	["chevron"] = { w = 12, h = 12, b64 = "iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAABFklEQVR4nOyX4Q2CMBBGDybRTXQSZRK7iTqJbiKb1H6hPwzBeleuXkjuJQ2RSPteaAj0tHF62jgeYI0HWOMB1niANR5gjQdY4wHWsANijIc0XnmcSZna+TvuH9OkcXZq6LruRgpAPh0eH6fGNPeec61kC42z31eNO7EgL0IScCfliIL8QEzYWygvGNLhlMZuvqB0OxXkj2muJzERBeSFA62M0JIH4oAsEKgyQlMeVAVkkUDCCG15UB1AJItoIQ9WBQBORCt5sDoAlCJoevQ2kQcqAaAQsYSKPFALAMwINXmgGgB+RKjKA/UA8CVCXR40CQD5HelCU0QTedAs4F/4J6U1HmCNB1jjAdZ4gDUeYI0HWLP5gDcAAAD//wxFTrgAAAAGSURBVAMAEriVqSQDPsEAAAAASUVORK5CYII=" },
 	["logo"] = { w = 14, h = 14, b64 = "iVBORw0KGgoAAAANSUhEUgAAADgAAAA4CAYAAACohjseAAACUklEQVR4nOyai3HCMAyGFa5blM7RS/do9oDOQdkDOgeUORrmoFYq3xnqh5w4Mg757nzhYWz9kRwJJwuYOAuYOLPA0pkFls4ssHRmgaXzBIJcLpcXPFZV9QNCSHuwoSZGBYIoD566SavqFYQQ8yCF5xKbei3mRckQXRuv70OgvigMhcYxRdWpxg7hFEgGfKvjNoExDfMzNmgT2Xby9VswjMIjCv1S7Q16GALX4alZ9zlxaAPagjaRbTtff45ATa3anoQ2EcY1Pb+7guZEYXuyReMVWDkG68IT/LSqbVQ7+hI3hdDSNUYoZdAV98MxRvD3Lg9yzixOuAXPOjVSg3MMW8ow1teZ5nCN4fUe4hJYQxyudbpm/rbDsr5CHEMd/oUoMzw5E2PjCERW8Cco5sS2nIrIVmynyE81xBm7hXhYBbtNYGx45iIYnogtRM9QACo8nzn9rjwoVT4loOV2vA1R0f9qAwimB83jCGQk5XuhjdnyMD04Oe8hpsBJpQdNlyYSVS8StLH7OWYt+gkRl98MYGiuIBJbosdiGcMV12Tuiw6Kwr9jUevOxLttmEnsYFEm7H3RkcUmFWXSa+M3kdjRRJkM3tkmse/Ay6PdNsfYokwG33xRxh6USKwsUGjImztJcUiSnW0qnQ6MrqLikJRb9/vA91E1ZCqSCcRQBX+hsIEMpL754hLRSq89TVKBJMLmxSzikDFun92KQe9lCU9kLIHtzftsJBdoSRnTEkjolJElNZiMItBIGdnWnma0pyywRiWhWRF9jCQH87NqpTMLLJ1fAAAA//+PQu6IAAAABklEQVQDAP0W/PmmrZ7fAAAAAElFTkSuQmCC" },
+	["warn"] = { w = 14, h = 14, b64 = "iVBORw0KGgoAAAANSUhEUgAAADgAAAA4CAYAAACohjseAAAC9ElEQVR4nOyasW7bMBCGT0b2PkIVdOzWDl0VoM+QrvTWJ8ga+y2y1RnbZygQo3u7dbY6ZukruMfkrNr0UTqSd0Jk+AMI2UeR1uGnfpKSZ3DizODEOSc4dc4JarPdbmsYkdESxMQWWLb4ceM/w0hUMAKYUIOHhyA8r6pqBcaMleAGD3UQbrFcYZItGGI+RGk41kyVjzkwxlRBMpTNwGmXlipaK3grOMeBIWYKRozF08LxkDVT0VLBL0xsieWeiT9YzY8mCUaMpUWVFr7As4r7+HMdGKCeICnB3Xv3kc87bi1UtFDQMbGWlHsiomKsbRGqJtMzLfgJfR2c2wBvQqqGo60gZyyrMDkPxVbCPrJRS5CMpQnCfmjOe5p5V22DWIN9OVBCJUGhsRxBQ9HUcLQUdEzswFjwgm+w/KVys4tbTxvFJiMxFjznHR5+BvXvsf4X1Tvg771iw9FQkLuwdWAsb5hzuhjtC1fCvpMoSpCsvmGq5pCOieGUKsiuN3OGlZXhZCfYt96ETCwMJyvBnmlhCeWoqpirIJdcq/EQSXudmpwgGYtjqq5AD99XG8SyVMxRUM1YYvQYTvLGOClBC2OJoWU44gRz15uFFBtOioKOiZmot0PDcEQJ9qgnXbE8CmMg/A2xilIFxRtZDjzvBx7u9kJ3FJO0XUPBOnVwN0HGEqrnh+YlJIJ9vX760ar6k9iuhufHG3VQNR+ae2eCjtWMxSeWmhy1ayHTcIaGqGNi2caCF/PBF8ggd9qoei6mBuETMgnY31c8XNPXb9jHJ0gkZ2Pcp6BkIyu9sI/wPznPNcWSyNkYzyIX1IDeRtbzShiTkLQxjimovd78Dofz3iPFkkk1nKN7UHNaCPp9i4fP9NXPg7+hgMhr8WVogFXQyDfgjGVwvhmbiBCeA8O5CCpjb2TrMf/6UYjDsth96RQUvk+fCp2K+ybj4HToRuIFnCbdcjA0Gc6ZpoZfjHTPh7hpooYJE87Vqm94XyLn/4tOnXOCU+cfAAAA///aGZ/LAAAABklEQVQDAE5aXuQv3bm9AAAAAElFTkSuQmCC" },
 	["search"] = { w = 10, h = 10, b64 = "iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAC4klEQVR4nOxYPUwUQRR+S0wo1EQSC+8oLGzUixTQ63mcNthQ2SghGtTGSKUUdsZoiAVcrtBELTAW9tggMbGgw9iIWhi8xmiiFWhQm/N73JC8G3b+didhC77ky3s7O+/tx8zy5u31UMHRQwXHrsC8KLzAPZQB7Xb7MMwoWAUHwDLYC66BLXAZXEiS5AXlRBIyGcIqMFPgBc+Qn2ADQu9QRngLhLhbMPcpGz6B1yF0kQLhJRDinsBcSrnFD1wCV8ENsA/kVR5WVscERD6mmAIN4hrgDB72xRJXh+FVr2u3xhD3jGIITNnWr+B4yFYhB7+z97ThQeR45xOfWBLzFr2nbnFnkfgDBQK5rsI8FEOvkWfYJ9ZWB6e06/Es4hiIewQzLYZqEH3eKzZtUNW5lhjiUnGDcgJ5P8McUZdeq2hawVHteobioCn8mloIK0wCq8JftP23BkI/WU66AkwCB4S/RJGAP/QbzIoYOuGKMQksC3+V4kLuRsk12dQs9Ap/g+Lij+E5qTCt4Jrw+yguDgh/3TXZJLAl/ArFxTHDc1JhErgsfK+K7wOUlSGYfjH01hVjErgg/Io6+GNgTPh/qdMNWWE7i3/AHFSXXAvPUA4g33HqLjFPkfOyK852FjeEX1edTR7MatdNnyBXu/UR5qgYuqYO/iAgzxzMRTE0izyTPrEugfzuvdKGp5HcazXVtvLKyXeYS0sZOX755LB+dqrGdEIbvsldCTgJlgzChkAWtkLbO+r94Dzu7yMP+H6T8PbMGW6zCD6++ITgIsx1rj9l3roSt4U34DnXSoZ81Q3CPABPUzh4NW+D8+ApChAZ9F3MUJ3wFbDmmMp17jnY3Pr+UNuaJnIEc35TDIFCKDeb3M9xy8TvIh/8vI0t6pwQXDv/pcQFicwsMA9MIiGwqs/dEYEMiNwL85K6RZYg8ruct2O/bqntHKHO9jLu6uI251EBgNU8lCaOUQiBNuz+wpoXhRf4HwAA//+eLvLwAAAABklEQVQDAPF45wjNvs5dAAAAAElFTkSuQmCC" },
 	["tab_rage"] = { w = 96, h = 96, b64 = "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" },
 	["tab_legit"] = { w = 96, h = 96, b64 = "iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAYAAADimHc4AAAEAUlEQVR4AeyajVnjMAyG25vk2IRuApMUJjluEtjkmORyeoMNeY78tnUky+KJ8uvG8fdGltTy4xB/qgoEAFX5D4cAEACUFVDuPjwgACgroNx9eEAAUFZAufvwgACgrIBy9216gLLow+4DwFANhf0AoCD6sMviALquuxf7I8byKqv74QO0vl8UQBL7VUT+KcaC+EB4kmv5HOebtaIARNWz2NjC+V8BoeC3oSIucHnjxwBwjmvNQ0AkxNAyIDAlNTsdaQMAPOI3C8ECgAyBTOmBg5bMCoCsOTHhKR+0sN0RwGo5zxLAm4FgEQCkeggCgvjAsVuzCgDBm6gVLAMAAmkqccGtJ1gHkCG4TVNrAAAEPIA0lS3HbqwWAFlwILiqFWoDAAhigps0tUYAQOjTVHZqt1oBoHsPofZaoWYAPQRZMSWZDc7yfLNL7QAYHLVCtWmqBwBAwAOqhOAFQIZAmgoMjqswTwCy4ECoplbwCAAQBOYqagWvAIBQRZrqGUAPQVYPlmsF7wBE/4Pp3xVaAAAEs7VCKwCAQHpqrlbwCQC5xw0IpKl4xHiLnc+2BiDLiyeYqBVaBQAIE7VCywCAcJYUVfVf5VsH0EOQFSCID7K77xIAPvQmHjAl7Q4hAHwAYE1mRHDeFUIAQPovQ/xdIQSAL/HzHhCoFZiW8rli2wAwLS0xoTiEADANgCtAIDawX8RuCKDI81m4Kd+mFnuOALAsbXjAskZFW7yXvHt4wLK6v5ebXN4iAExr9yaXTsfjseiP+94APIpgt1pOciMgCIdyizcAal+qXYrIGwCq2KJZy6VCT33OGwDGWZUX1ALgWZRdmw5W5QU1AHiTYEgmsiUd3M0L5MW4arEOAPFPjDBBcOcFlgG8i+i9+ABI5s4LrALgTf9f/IMAYSriWuIxu6kiFlgFQEE1JbQrL7AIYLYC9eYF1gDw5q8p/914gSUAz/J2v8zO6umitHMTC6wAIN1E1CTxqo0LL7AAAPG/ZTxLCLx4gTaAsVx/Sfvh9eq9oBgAeUP/DpUa2Uf8u5Hzy6dSC+mDaWsqXU2tPjcm64JiANKw58R5TG2u3Wzygms7u/XnSwOYEmc2198yyK1e0HUdnrCli6JtiwJI4vCm4wkYaebNxB8oMwV60ORz19QPNkUBMGSB8CJ2l2xtocVHV5vce2ssWH3v0g2LAyg9gMH913oBXjj4mO6uGwArvYCag6lQV/VB724ApDFR0E0JzHniUWpqY+MKgHhBri2YZhAcYz/HIY5tKJ+ewhWANCZ+uCHYDwO/uTc/P6tLAHlwNWw3AKhhOPU9YwBQZhYAAoCyAsrdhwcEAGUFlLsPDwgAygoodx8eEACUFVDuPjxgAUDpy/8AAAD//9KZN5QAAAAGSURBVAMA/AEq0JKotroAAAAASUVORK5CYII=" },
@@ -630,6 +631,52 @@ function Build.Loader(parent)
 	local n8_1 = N("TextLabel", { Name = "buttonText", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 1, 0, 5), Size = UDim2.new(1, -2, 1, -6), BackgroundTransparency = 1, Text = "load", TextSize = 13, TextXAlignment = Enum.TextXAlignment.Center, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(200, 200, 200) }, n8)
 	P["buttonText"] = n8_1
 	Th(n8_1, { TextColor3 = "Text" })
+	return P
+end
+
+function Build.ConfirmBox(parent)
+	local P = {}
+	local root = N("Frame", { Name = "ConfirmBox", BorderSizePixel = 0, Size = UDim2.new(0, 260, 0, 92), BackgroundColor3 = Color3.fromRGB(11, 11, 11), BackgroundTransparency = 0 }, parent)
+	P.Root = root
+	Th(root, { BackgroundColor3 = "Outline" })
+	local rootS = N("UIStroke", { Color = Color3.fromRGB(11, 11, 11), Thickness = 1, ApplyStrokeMode = Enum.ApplyStrokeMode.Border }, root)
+	Th(rootS, { Color = "Outline" })
+	local n1 = N("Frame", { Name = "inner", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 2, 0, 2), Size = UDim2.new(1, -4, 1, -4), BackgroundColor3 = Color3.fromRGB(30, 30, 30), BackgroundTransparency = 0 }, root)
+	P["inner"] = n1
+	Th(n1, { BackgroundColor3 = "Window Background" })
+	local n1S = N("UIStroke", { Color = Color3.fromRGB(58, 58, 58), Thickness = 1, ApplyStrokeMode = Enum.ApplyStrokeMode.Border }, n1)
+	Th(n1S, { Color = "Border" })
+	local n2 = N("Frame", { Name = "line", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 3, 0, 3), Size = UDim2.new(1, -6, 0, 2), BackgroundColor3 = Color3.fromRGB(207, 31, 69), BackgroundTransparency = 0 }, root)
+	P["line"] = n2
+	Th(n2, { BackgroundColor3 = "Accent" })
+	local n3 = N("ImageLabel", { Name = "icon", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 12, 0, 13), Size = UDim2.new(0, 14, 0, 14), BackgroundTransparency = 1, Image = Build.IconAsset["warn"] or "", ImageColor3 = Color3.fromRGB(207, 31, 69) }, root)
+	P["icon"] = n3
+	Th(n3, { ImageColor3 = "Accent" })
+	local n4 = N("TextLabel", { Name = "title", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 33, 0, 11), Size = UDim2.new(1, -44, 0, 19.5), BackgroundTransparency = 1, Text = "Unload Menu?", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.FontBold, TextColor3 = Color3.fromRGB(255, 255, 255) }, root)
+	P["title"] = n4
+	Th(n4, { TextColor3 = "Bright Text" })
+	local n5 = N("TextLabel", { Name = "text", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 33, 0, 29), Size = UDim2.new(1, -44, 0, 30), BackgroundTransparency = 1, Text = "The menu and every feature are switched off.", TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(138, 138, 138) }, root)
+	P["text"] = n5
+	Th(n5, { TextColor3 = "Dim Text" })
+	local n6 = N("Frame", { Name = "cancel", BorderSizePixel = 0, AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -101, 0, 63), Size = UDim2.new(0, 82, 0, 20), BackgroundColor3 = Color3.fromRGB(42, 42, 42), BackgroundTransparency = 0 }, root)
+	P["cancel"] = n6
+	Th(n6, { BackgroundColor3 = "Element" })
+	local n6S = N("UIStroke", { Color = Color3.fromRGB(11, 11, 11), Thickness = 1, ApplyStrokeMode = Enum.ApplyStrokeMode.Border }, n6)
+	Th(n6S, { Color = "Outline" })
+	local n6_1 = N("TextLabel", { Name = "cancelText", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 1, 0, 3), Size = UDim2.new(1, -2, 1, -2), BackgroundTransparency = 1, Text = "cancel", TextSize = 13, TextXAlignment = Enum.TextXAlignment.Center, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(200, 200, 200) }, n6)
+	P["cancelText"] = n6_1
+	Th(n6_1, { TextColor3 = "Text" })
+	local n7 = N("Frame", { Name = "confirm", BorderSizePixel = 0, AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -11, 0, 63), Size = UDim2.new(0, 86, 0, 20), BackgroundColor3 = Color3.fromRGB(207, 31, 69), BackgroundTransparency = 0 }, root)
+	P["confirm"] = n7
+	Th(n7, { BackgroundColor3 = "Accent" })
+	local n7S = N("UIStroke", { Color = Color3.fromRGB(11, 11, 11), Thickness = 1, ApplyStrokeMode = Enum.ApplyStrokeMode.Border }, n7)
+	Th(n7S, { Color = "Outline" })
+	local n7_1 = N("TextLabel", { Name = "confirmText", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 1, 0, 3), Size = UDim2.new(1, -2, 1, -2), BackgroundTransparency = 1, Text = "confirm", TextSize = 13, TextXAlignment = Enum.TextXAlignment.Center, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.FontBold, TextColor3 = Color3.fromRGB(255, 255, 255) }, n7)
+	P["confirmText"] = n7_1
+	Th(n7_1, { TextColor3 = "Bright Text" })
+	local n8 = N("Frame", { Name = "caret", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 25, 0, 88), Size = UDim2.new(0, 8, 0, 8), BackgroundColor3 = Color3.fromRGB(30, 30, 30), BackgroundTransparency = 0 }, root)
+	P["caret"] = n8
+	Th(n8, { BackgroundColor3 = "Window Background" })
 	return P
 end
 
@@ -1556,9 +1603,10 @@ function Library.riskyMessage(name)
 	return nil
 end
 
--- Library:Confirm({ Title, Text, Yes, No, Danger, Anchor, Root }, onYes): the box sits right above Anchor (the button) inside Root
--- (the window), or below it when there is no room above; with no Anchor it is centred in Root. Escape or a click anywhere else
--- cancels. Returns { Close }.
+-- Library:Confirm({ Title, Text, Yes, No, Danger, Anchor, Root }, onYes): the ConfirmBox of the design sheet (Build.ConfirmBox:
+-- double edge, accent line, warning icon, title, message, cancel / confirm) sits right above Anchor (the button) inside Root (the
+-- window), as wide as the button, with its notch pointing at it; below the button when there is no room above; with no Anchor it is
+-- centred in Root. Danger paints the line, the icon and confirm in Risky. Escape or a click anywhere else cancels. Returns { Close }.
 local openConfirm
 function Library:Confirm(Data, onYes)
 	Data = Data or {}
@@ -1566,51 +1614,47 @@ function Library:Confirm(Data, onYes)
 	if openConfirm then openConfirm(false) end
 	local root = Data.Root or (Library.Windows[1] and Library.Windows[1]._W.Root) or Library.Holder.Instance
 	local anchor = Data.Anchor
-	local W = anchor and math.max(anchor.AbsoluteSize.X, 200) or 240
-	local H = 74
-	local box = Instance.new("Frame")
+	local C = Build.ConfirmBox(root)
+	local box = C.Root
 	box.Name = "ConfirmBox"
-	box.BorderSizePixel = 0
-	box.BackgroundColor3 = Library.Theme["Section Background"]
 	box.ZIndex = 3001
-	box.Parent = root
-	local edge = Instance.new("UIStroke", box)
-	edge.Color = Library.Theme.Outline
-	local line = Instance.new("Frame")   -- the accent line along the top, like the menu's tabs
-	line.BorderSizePixel = 0
-	line.BackgroundColor3 = Data.Danger and Library.Theme.Risky or Library.Theme.Accent
-	line.Size = UDim2.new(1, 0, 0, 2)
-	line.ZIndex = 3002
-	line.Parent = box
-	local function label(text, font, size, color, y, h)
-		local t = Instance.new("TextLabel")
-		t.BackgroundTransparency = 1
-		t.FontFace, t.TextSize, t.TextColor3 = font, size, color
-		t.TextXAlignment, t.TextYAlignment = Enum.TextXAlignment.Left, Enum.TextYAlignment.Top
-		t.TextWrapped, t.TextTruncate = true, Enum.TextTruncate.AtEnd
-		t.Text = tostring(text)
-		t.Position, t.Size = UDim2.new(0, 8, 0, y), UDim2.new(1, -16, 0, h)
-		t.ZIndex = 3003
-		t.Parent = box
-		return t
+	local H = box.Size.Y.Offset
+	C.title.Text = tostring(Data.Title or "Are you sure?")
+	C.title.FontFace = Library.FontBold
+	C.title.TextTruncate = Enum.TextTruncate.AtEnd
+	C.text.Text = tostring(Data.Text or "")
+	C.text.TextWrapped, C.text.TextYAlignment = true, Enum.TextYAlignment.Top
+	C.cancelText.Text = tostring(Data.No or "cancel")
+	C.confirmText.Text = tostring(Data.Yes or "confirm")
+	C.confirmText.FontFace = Library.FontBold
+	if Data.Danger then
+		Library.themed(C.line, "BackgroundColor3", "Risky")
+		Library.themed(C.icon, "ImageColor3", "Risky")
+		Library.themed(C.confirm, "BackgroundColor3", "Risky")
 	end
-	label(Data.Title or "Are you sure?", Library.FontBold, 13, Library.Theme["Bright Text"], 7, 15)
-	label(Data.Text or "", Library.Font, 12, Library.Theme["Dim Text"], 23, 26)
 	-- where: above the button (window coordinates, without the window's DPI scale), else below it, else centred
 	local sc = root:FindFirstChildOfClass("UIScale")
 	local k = (sc and sc.Scale > 0) and sc.Scale or 1
-	box.Size = UDim2.fromOffset(W / k, H)
+	local below = false
 	if anchor then
+		local W = math.max(anchor.AbsoluteSize.X / k, 220)
+		box.Size = UDim2.fromOffset(W, H)
 		local ra, a, s = root.AbsolutePosition, anchor.AbsolutePosition, anchor.AbsoluteSize
 		local x, top = (a.X - ra.X) / k, (a.Y - ra.Y) / k
-		local y = top - H - 4
-		if y < 4 then y = top + s.Y / k + 4 end
+		local y = top - H - 6
+		if y < 4 then y, below = top + s.Y / k + 6, true end
 		box.Position = UDim2.fromOffset(x, y)
 		-- the window can shift its children (padding): measure where the box landed and correct by the difference
 		local wantX, wantY = ra.X + x * k, ra.Y + y * k
 		local got = box.AbsolutePosition
 		box.Position = UDim2.fromOffset(x + (wantX - got.X) / k, y + (wantY - got.Y) / k)
+		-- the notch: a turned square of the box colour on the edge facing the button, over the button's middle (inside the box)
+		local cx = math.clamp((a.X + s.X / 2 - box.AbsolutePosition.X) / k, 14, W - 14)
+		C.caret.AnchorPoint, C.caret.Rotation = Vector2.new(0.5, 0.5), 45
+		C.caret.Position = below and UDim2.new(0, cx, 0, 0) or UDim2.new(0, cx, 1, 0)
+		C.caret.ZIndex = 3
 	else
+		C.caret.Visible = false
 		box.AnchorPoint, box.Position = Vector2.new(0.5, 0.5), UDim2.fromScale(0.5, 0.5)
 	end
 	local done = false
@@ -1620,32 +1664,28 @@ function Library:Confirm(Data, onYes)
 		done = true
 		openConfirm = nil
 		for _, c in conns do pcall(function() c:Disconnect() end) end
-		pcall(function() box:Destroy() end)
+		fx.tween(box, { Position = box.Position + UDim2.fromOffset(0, below and 4 or -4) }, 0.1)
+		task.delay(0.1, function() pcall(function() box:Destroy() end) end)
 		if yes and onYes then task.spawn(function() Library:SafeCall(onYes) end) end
 	end
 	openConfirm = close
-	local function button(text, x, primary)
-		local b = Instance.new("TextButton")
-		b.AutoButtonColor = false
-		b.BorderSizePixel = 0
-		b.AnchorPoint, b.Position, b.Size = Vector2.new(0, 1), UDim2.new(x, x == 0 and 8 or 2, 1, -7), UDim2.new(0.5, -10, 0, 20)
-		local base = primary and (Data.Danger and Library.Theme.Risky or Library.Theme.Accent) or Library.Theme.Element
-		b.BackgroundColor3 = base
-		b.FontFace, b.TextSize = Library.Font, 12
-		b.TextColor3 = primary and Library.Theme["Bright Text"] or Library.Theme.Text
-		b.Text = text
-		b.ZIndex = 3003
-		b.Parent = box
-		local bs = Instance.new("UIStroke", b)
-		bs.ApplyStrokeMode, bs.Color = Enum.ApplyStrokeMode.Border, Library.Theme.Outline
-		conns[#conns + 1] = b.MouseEnter:Connect(function() fx.tween(b, { BackgroundColor3 = base:Lerp(Color3.new(1, 1, 1), 0.12) }, 0.1) end)
-		conns[#conns + 1] = b.MouseLeave:Connect(function() fx.tween(b, { BackgroundColor3 = base }, 0.12) end)
-		return b
+	-- the two buttons: hover lightens them, a press flashes their edge in the accent colour
+	local function wire(frame, label, yes)
+		local base = frame.BackgroundColor3
+		local edge = frame:FindFirstChildOfClass("UIStroke")
+		local b = click(frame, function() close(yes) end)
+		conns[#conns + 1] = b.MouseEnter:Connect(function()
+			fx.tween(frame, { BackgroundColor3 = base:Lerp(Color3.new(1, 1, 1), 0.1) }, 0.1)
+			if not yes then fx.tween(label, { TextColor3 = Library.Theme["Bright Text"] }, 0.1) end
+		end)
+		conns[#conns + 1] = b.MouseLeave:Connect(function()
+			fx.tween(frame, { BackgroundColor3 = base }, 0.12)
+			if not yes then fx.tween(label, { TextColor3 = Library.Theme.Text }, 0.12) end
+		end)
+		if edge then conns[#conns + 1] = b.MouseButton1Down:Connect(function() edge.Color = Library.Theme.Accent end) end
 	end
-	local yes = button(Data.Yes or "confirm", 0, true)
-	local no = button(Data.No or "cancel", 0.5, false)
-	conns[#conns + 1] = yes.MouseButton1Click:Connect(function() close(true) end)
-	conns[#conns + 1] = no.MouseButton1Click:Connect(function() close(false) end)
+	wire(C.confirm, C.confirmText, true)
+	wire(C.cancel, C.cancelText, false)
 	-- Escape, or a click outside the box (the click that opened it is over by now)
 	local opened = os.clock()
 	conns[#conns + 1] = UserInputService.InputBegan:Connect(function(i)
@@ -1655,9 +1695,9 @@ function Library:Confirm(Data, onYes)
 			close(false)
 		end
 	end)
-	-- in: a short drop from just above
+	-- in: a short slide toward the button
 	local pos = box.Position
-	box.Position = pos + UDim2.fromOffset(0, -6)
+	box.Position = pos + UDim2.fromOffset(0, below and 6 or -6)
 	fx.tween(box, { Position = pos }, 0.15)
 	return { Close = function() close(false) end }
 end
