@@ -2208,19 +2208,27 @@ end
 local GuiService = game:GetService("GuiService")
 local function fade(inst, props, time) return Library:TweenTo(inst, props, time or 0.18) end
 
--- ---- Notification(Text, Duration, Color, Icon): stacked at the top centre, fades in and out ----
+-- how far down the corners start: under Roblox's top bar when it is showing
+local function cornerY()
+	local ok, on = pcall(function() return game:GetService("StarterGui"):GetCore("TopbarEnabled") end)
+	if ok and on == false then return 12 end
+	local inset = GuiService:GetGuiInset()
+	return inset.Y + 8
+end
+
+-- ---- Notification(Text, Duration, Color, Icon): stacked in the top left corner, slides in and fades out ----
 do
 	local holder = Instance.new("Frame")
 	holder.Name = "\0"
 	holder.BackgroundTransparency = 1
-	holder.AnchorPoint = Vector2.new(0.5, 0)
-	holder.Position = UDim2.new(0.5, 0, 0, 22)
+	holder.AnchorPoint = Vector2.new(0, 0)
+	holder.Position = UDim2.new(0, 12, 0, cornerY())
 	holder.Size = UDim2.new(0, 10, 0, 10)
 	holder.AutomaticSize = Enum.AutomaticSize.XY
 	holder.ZIndex = 2000
 	holder.Parent = Library.Holder.Instance
 	local l = Library.listLayout(holder, 6)
-	l.HorizontalAlignment = Enum.HorizontalAlignment.Center
+	l.HorizontalAlignment = Enum.HorizontalAlignment.Left
 	Library.NotifHolder = Library.Wrap(holder)
 end
 function Library:Notification(Text, Duration, Color, Icon)
@@ -2230,11 +2238,15 @@ function Library:Notification(Text, Duration, Color, Icon)
 	local root, text, bar, progress = N.Root, N.text, N.bar, N.progress
 	local duration = tonumber(Duration) or 4
 	root.AutomaticSize = Enum.AutomaticSize.X
-	root.Size = UDim2.new(0, 0, 0, 26)
+	root.Size = UDim2.new(0, 0, 0, 30)
 	root.ZIndex = 2001
+	Library:ChangeItemTheme(root, { BackgroundColor3 = "Section Background" })
+	root.BackgroundColor3 = Library.Theme["Section Background"]
+	Library:ChangeItemTheme(text, { TextColor3 = "Bright Text" })
+	text.TextColor3 = Library.Theme["Bright Text"]
 	local pad = Instance.new("UIPadding", root)
-	pad.PaddingRight = UDim.new(0, 10)
-	text.Position = UDim2.new(0, 10, 0, 0)
+	pad.PaddingRight = UDim.new(0, 12)
+	text.Position = UDim2.new(0, 12, 0, 0)
 	text.Size = UDim2.new(0, 0, 1, -1)
 	text.AutomaticSize = Enum.AutomaticSize.X
 	text.TextWrapped = false
@@ -2243,7 +2255,7 @@ function Library:Notification(Text, Duration, Color, Icon)
 	text.ZIndex = 2003
 	bar.AnchorPoint, bar.Position, bar.Size = Vector2.new(0, 0), UDim2.new(), UDim2.new(0, 2, 1, 0)
 	bar.ZIndex = 2002
-	progress.Position, progress.Size, progress.ZIndex = UDim2.new(0, 0, 1, -1), UDim2.new(1, 10, 0, 1), 2002
+	progress.Position, progress.Size, progress.ZIndex = UDim2.new(0, 0, 1, -1), UDim2.new(1, 12, 0, 1), 2002
 	if typeof(Color) == "Color3" then bar.BackgroundColor3, progress.BackgroundColor3 = Color, Color end
 	local shadow = fx.shadow(root, { radius = 10, transparency = 0.25 })
 	fx.bevel(root, 0.1)
@@ -2278,7 +2290,8 @@ end
 function Library:Watermark(Text, Icon)
 	local Wm = Build.Watermark(Library.Holder.Instance)
 	local root = Wm.Root
-	root.Position = UDim2.new(0, 12, 0, 12)
+	root.AnchorPoint = Vector2.new(1, 0)
+	root.Position = UDim2.new(1, -12, 0, cornerY())
 	root.AutomaticSize = Enum.AutomaticSize.X
 	root.Size = UDim2.new(0, 0, 0, 24)
 	root.ZIndex = 1500
@@ -2311,46 +2324,78 @@ function Library:KeybindList()
 	root.Position = UDim2.new(1, -196, 0, 220)
 	root.ZIndex = 1500
 	root.AutomaticSize = Enum.AutomaticSize.Y
-	root.Size = UDim2.new(0, 180, 0, 0)
+	root.Size = UDim2.new(0, 210, 0, 0)
 	local pad = Instance.new("UIPadding", root)
-	pad.PaddingBottom = UDim.new(0, 6)
+	pad.PaddingBottom = UDim.new(0, 8)
 	Library.fx.shadow(root, { radius = 12, transparency = 0.3 })
 	Library.fx.bevel(root, 0.1)
+	Library:ChangeItemTheme(root, { BackgroundColor3 = "Section Background" })
+	root.BackgroundColor3 = Library.Theme["Section Background"]
+	-- "Keybind" in the accent, "List" in white, centred under an accent line along the top edge
+	Kw.line.Position, Kw.line.Size, Kw.line.ZIndex = UDim2.new(), UDim2.new(1, 0, 0, 2), 1502
+	Kw.header.Position, Kw.header.Size = UDim2.fromOffset(0, 2), UDim2.new(1, 0, 0, 28)
+	Kw.title.Position, Kw.title.Size = UDim2.new(), UDim2.fromScale(1, 1)
 	Kw.title.FontFace = Library.FontBold
-	Kw.header.Size = UDim2.new(1, 0, 0, 22)
-	Kw.header.Position = UDim2.new()
-	Kw.line.ZIndex = 1502
+	Kw.title.TextSize = 14
+	Kw.title.RichText = true
 	Kw.rows.AutomaticSize = Enum.AutomaticSize.Y
-	Kw.rows.Position = UDim2.new(0, 6, 0, 28)
+	Kw.rows.Position = UDim2.new(0, 6, 0, 32)
 	Kw.rows.Size = UDim2.new(1, -12, 0, 0)
-	local rl = Library.listLayout(Kw.rows, 0)
+	Library.listLayout(Kw.rows, 3)
 	Library.MakeDraggable(Kw.header, root)
 	-- an empty keybind list keeps a minimum height so the frame does not collapse
 	local minH = Instance.new("UISizeConstraint", root)
-	minH.MinSize = Vector2.new(180, 36)
+	minH.MinSize = Vector2.new(210, 38)
 	local list = { Instance = root, Rows = {} }
+	local function hex(c) return "#" .. c:ToHex() end
+	local function drawTitle()
+		Kw.title.Text = ('<font color="%s">Keybind</font> <font color="%s">List</font>'):format(hex(Library.Theme.Accent), hex(Library.Theme["Bright Text"]))
+	end
+	drawTitle()
 	function list:SetVisibility(b) root.Visible = b end
 	function list:Add(Mode, Name, Key)
 		local R = Build.KeybindRow(Kw.rows)
 		R.Root.Size = UDim2.new(1, 0, 0, 17)
 		R.Root.ZIndex = 1502
 		R.text.ZIndex = 1503
-		R.text.TextXAlignment = Enum.TextXAlignment.Left
+		R.text.Position, R.text.Size = UDim2.new(), UDim2.fromScale(1, 1)
+		R.text.TextXAlignment = Enum.TextXAlignment.Center
+		R.text.TextSize = 12
+		R.text.RichText = true
 		local row = { Instance = R.Root, Label = R.text }
-		function row:Set(mode, name, key)
-			R.text.Text = "( " .. tostring(mode) .. " ) " .. tostring(name) .. " - " .. tostring(key)
-			local k = tostring(key or "")
+		local mode, name, key, status = Mode, Name, Key, false
+		local function esc(t) return (tostring(t):gsub("&", "&amp;"):gsub("<", "&lt;"):gsub(">", "&gt;")) end
+		local function draw()
+			-- [G] - Keybind (Toggle): the key in the accent; the name brightens while the bind is active
+			local shown = tostring(key or ""):gsub("Enum%.KeyCode%.", ""):gsub("Enum%.UserInputType%.", ""):gsub("[%[%]]", "")
+			R.text.Text = ('<font color="%s"><b>[%s]</b></font> <font color="%s">- %s</font> <font color="%s">(%s)</font>'):format(
+				hex(Library.Theme.Accent), esc(shown), hex(status and Library.Theme["Bright Text"] or Library.Theme.Text), esc(name), hex(Library.Theme["Dim Text"]), esc(mode))
+		end
+		row.Draw = draw
+		function row:Set(m, n, k)
+			mode, name, key = m, n, k
+			draw()
+			local text = tostring(k or "")
 			-- a keybind with no key bound stays off the list
-			R.Root.Visible = k ~= "" and k ~= "None" and k ~= "-" and k ~= "[-]" and not string.find(k, "Unknown", 1, true)
+			R.Root.Visible = text ~= "" and text ~= "None" and text ~= "-" and text ~= "[-]" and not string.find(text, "Unknown", 1, true)
 		end
 		function row:SetStatus(on)
-			Library:ChangeItemTheme(R.text, { TextColor3 = on and "Accent" or "Text" })
-			fade(R.text, { TextColor3 = on and Library.Theme.Accent or Library.Theme.Text }, 0.15)
+			status = on
+			draw()
 		end
 		row:Set(Mode, Name, Key)
 		self.Rows[#self.Rows + 1] = row
 		return row
 	end
+	-- the coloured words are rich text, so a theme change redraws them
+	local lastAccent, lastText = Library.Theme.Accent, Library.Theme.Text
+	Library:Connect(RunService.Heartbeat, function()
+		if Library.Theme.Accent ~= lastAccent or Library.Theme.Text ~= lastText then
+			lastAccent, lastText = Library.Theme.Accent, Library.Theme.Text
+			drawTitle()
+			for _, row in list.Rows do row.Draw() end
+		end
+	end)
 	Library.KeyList = list
 	return list
 end
