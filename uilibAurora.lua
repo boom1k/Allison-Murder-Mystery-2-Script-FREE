@@ -2448,6 +2448,7 @@ function Library:KeybindList()
 	minH.MinSize = Vector2.new(210, 38)
 	local list = { Instance = root, Rows = {} }
 	local function hex(c) return "#" .. c:ToHex() end
+	local ACTIVE = Color3.fromRGB(255, 214, 64)   -- a bind that is on
 	local function drawTitle()
 		Kw.title.Text = ('<font color="%s">Keybind</font> <font color="%s">List</font>'):format(hex(Library.Theme.Accent), hex(Library.Theme["Bright Text"]))
 	end
@@ -2469,7 +2470,7 @@ function Library:KeybindList()
 			-- [G] - Keybind (Toggle): the key in the accent; the name brightens while the bind is active
 			local shown = tostring(key or ""):gsub("Enum%.KeyCode%.", ""):gsub("Enum%.UserInputType%.", ""):gsub("[%[%]]", "")
 			R.text.Text = ('<font color="%s"><b>[%s]</b></font> <font color="%s">- %s</font> <font color="%s">(%s)</font>'):format(
-				hex(Library.Theme.Accent), esc(shown), hex(status and Library.Theme["Bright Text"] or Library.Theme.Text), esc(name), hex(Library.Theme["Dim Text"]), esc(mode))
+				hex(status and ACTIVE or Library.Theme.Accent), esc(shown), hex(status and ACTIVE or Library.Theme.Text), esc(name), hex(Library.Theme["Dim Text"]), esc(mode))
 		end
 		row.Draw = draw
 		function row:Set(m, n, k)
@@ -2479,9 +2480,21 @@ function Library:KeybindList()
 			-- a keybind with no key bound stays off the list
 			R.Root.Visible = text ~= "" and text ~= "None" and text ~= "-" and text ~= "[-]" and not string.find(text, "Unknown", 1, true)
 		end
+		-- on / off: the text fades out, changes colour (yellow while on) and fades back in
+		local token = 0
 		function row:SetStatus(on)
+			on = on == true
+			if on == status then return end
 			status = on
-			draw()
+			if not (Library.Animations and R.Root.Visible) then draw() return end
+			token += 1
+			local my = token
+			local out = fade(R.text, { TextTransparency = 1 }, 0.1)
+			out.Completed:Connect(function()
+				if token ~= my then return end
+				draw()
+				fade(R.text, { TextTransparency = 0 }, 0.18)
+			end)
 		end
 		row:Set(Mode, Name, Key)
 		self.Rows[#self.Rows + 1] = row
