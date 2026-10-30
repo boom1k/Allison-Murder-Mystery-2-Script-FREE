@@ -3366,7 +3366,7 @@ end
 
 -- ---- Library:BombWindow(Data) -> bomb ----
 -- A floating window: a ring that runs down around a C4, then time left, HP left, damage and status. Data: Name.
--- bomb:Set({ left, total, hp, damage, status, statusColor }), bomb:SetVisibility(b), bomb:Destroy(), bomb.Instance. Hidden until shown; drag it by the title.
+-- bomb:Set({ left, total, hp, damage, status, statusColor, site }) (site = the bombsite letter, shown under the C4), bomb:SetVisibility(b), bomb:Destroy(), bomb.Instance. Hidden until shown; drag it by the title.
 function Library:BombWindow(Data)
 	Data = Data or {}
 	local P = Build.BombWindow(Library.Holder.Instance)
@@ -3423,6 +3423,15 @@ function Library:BombWindow(Data)
 	for r = 0, 2 do
 		for c = 0, 2 do block(c4, 44 + c * 8, 6 + r * 12, 5, 8, "Dark Liner") end
 	end
+	local siteLabel = Instance.new("TextLabel")
+	siteLabel.Name = "\0"
+	siteLabel.BackgroundTransparency, siteLabel.BorderSizePixel = 1, 0
+	siteLabel.AnchorPoint, siteLabel.Position, siteLabel.Size = Vector2.new(0.5, 0), UDim2.new(0.5, 0, 0.5, 26), UDim2.fromOffset(90, 18)
+	siteLabel.FontFace, siteLabel.TextSize = Library.FontBold or Library.Font, 14
+	siteLabel.TextColor3 = Library.Theme["Bright Text"]
+	Library:AddToTheme(siteLabel, { TextColor3 = "Bright Text" })
+	siteLabel.Text = ""
+	siteLabel.Parent = holder
 	local bomb = { Instance = root }
 	local GREEN, RED = Color3.fromRGB(90, 230, 120), Color3.fromRGB(255, 85, 75)
 	local lit, litColor = -1, nil
@@ -3444,6 +3453,7 @@ function Library:BombWindow(Data)
 		P.damage.Text = tostring(math.floor((tonumber(d.damage) or 0) + 0.5))
 		P.status.Text = tostring(d.status or "")
 		P.status.TextColor3 = d.statusColor or Library.Theme.Text
+		siteLabel.Text = d.site and ("Site " .. tostring(d.site)) or ""
 	end
 	function bomb:SetVisibility(b) root.Visible = b end
 	function bomb:Destroy() root:Destroy() end
