@@ -620,6 +620,57 @@ Library.Themes = {
 		["Shadow"] = Color3.fromRGB(0, 0, 0), ["Highlight"] = Color3.fromRGB(80, 80, 80), ["Element Hover"] = Color3.fromRGB(56, 56, 56),
 	},
 }
+-- every palette keeps the Default's structure (same light / dark order of the surfaces), so nothing loses contrast: a tint for the greys,
+-- a brightness for them, and the accent. Fields: name, tint r g b, brightness, accent.
+local THEME_LIST = {
+	{ "Midnight",   0.85, 0.92, 1.20, 1.00, 88, 140, 255 },
+	{ "Ocean",      0.80, 1.00, 1.15, 1.00, 40, 190, 230 },
+	{ "Mint",       0.85, 1.10, 1.05, 1.00, 80, 230, 190 },
+	{ "Emerald",    0.85, 1.12, 0.92, 1.00, 70, 205, 125 },
+	{ "Lime",       0.98, 1.06, 0.85, 1.00, 170, 240, 50 },
+	{ "Gold",       1.12, 1.02, 0.80, 1.00, 240, 190, 55 },
+	{ "Sunset",     1.15, 0.98, 0.85, 1.00, 255, 125, 50 },
+	{ "Rose",       1.12, 0.92, 1.00, 1.00, 255, 110, 165 },
+	{ "Violet",     0.98, 0.90, 1.20, 1.00, 150, 105, 255 },
+	{ "Cyberpunk",  0.95, 0.82, 1.25, 1.00, 255, 46, 196 },
+	{ "Nord",       0.90, 0.98, 1.12, 1.35, 136, 192, 208 },
+	{ "Dracula",    0.95, 0.95, 1.20, 1.25, 189, 147, 249 },
+	{ "Gruvbox",    1.10, 1.02, 0.85, 1.20, 250, 189, 47 },
+	{ "Graphite",   1.00, 1.00, 1.04, 1.10, 150, 160, 175 },
+	{ "Monochrome", 1.00, 1.00, 1.00, 0.85, 235, 235, 235 },
+	{ "Pitch Black", 1.00, 1.00, 1.00, 0.45, 207, 31, 69 },
+}
+local function makeTheme(d)
+	local function grey(v)
+		v *= d[5]
+		return Color3.fromRGB(math.min(v * d[2], 255), math.min(v * d[3], 255), math.min(v * d[4], 255))
+	end
+	-- text only takes half of the tint, so it stays easy to read
+	local function ink(v)
+		local function half(t) return math.min(v * (1 + t) / 2, 255) end
+		return Color3.fromRGB(half(d[2]), half(d[3]), half(d[4]))
+	end
+	return {
+		["Window Background"] = grey(30), ["Section Background"] = grey(26), ["Inline"] = grey(64), ["Element"] = grey(42), ["Border"] = grey(58),
+		["Outline"] = grey(11), ["Dark Liner"] = grey(22), ["Highlight"] = grey(80), ["Element Hover"] = grey(56), ["Shadow"] = Color3.new(0, 0, 0),
+		["Text"] = ink(200), ["Bright Text"] = Color3.new(1, 1, 1), ["Dim Text"] = ink(138), ["Risky"] = Color3.fromRGB(235, 80, 80),
+		["Accent"] = Color3.fromRGB(d[6], d[7], d[8]),
+	}
+end
+Library.ThemeOrder = { "Default" }
+for _, d in THEME_LIST do
+	Library.Themes[d[1]] = makeTheme(d)
+	table.insert(Library.ThemeOrder, d[1])
+end
+do
+	local rgb = Color3.fromRGB
+	Library.Themes["Light"] = {
+		["Window Background"] = rgb(232, 233, 237), ["Section Background"] = rgb(242, 243, 246), ["Inline"] = rgb(186, 189, 198), ["Element"] = rgb(220, 222, 228), ["Border"] = rgb(198, 201, 209),
+		["Outline"] = rgb(150, 154, 165), ["Dark Liner"] = rgb(226, 228, 233), ["Highlight"] = rgb(170, 174, 185), ["Element Hover"] = rgb(206, 209, 217), ["Shadow"] = rgb(90, 92, 100),
+		["Text"] = rgb(48, 50, 58), ["Bright Text"] = rgb(14, 15, 20), ["Dim Text"] = rgb(112, 116, 128), ["Risky"] = rgb(205, 50, 50), ["Accent"] = rgb(207, 31, 69),
+	}
+	table.insert(Library.ThemeOrder, "Light")
+end
 Library.Theme = table.clone(Library.Themes.Default)
 
 local function wrapInst(inst) return { Instance = inst } end
