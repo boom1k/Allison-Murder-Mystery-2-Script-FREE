@@ -1250,6 +1250,134 @@ function Library.raiseButton(root, btn)
 	Library:Connect(btn.MouseButton1Down, function(x, y) fx.ripple(root, x, y) end)
 end
 
+-- ---- confirmation for risky buttons ----
+-- A button whose name says it overwrites, deletes, resets, leaves the server or spends money asks first. Data.Confirm on a Button:
+-- true = always ask, a string = ask with that message, false = never ask; nil = decided from the name by RISKY below.
+-- { pattern on the lowercased name, the message, red (destructive) confirm button }
+Library.RiskyButtons = {
+	{ "^delete", "This deletes it for good.", true },
+	{ "^unload", "The menu and every feature are switched off.", true },
+	{ "^clear", "This cannot be undone.", true },
+	{ "^reset .*stat", "The counters are set back to zero.", true },
+	{ "^reset session", "The counters are set back to zero.", true },
+	{ "^save config", "The saved file is overwritten with your current settings.", false },
+	{ "^save ", "The saved one is overwritten.", false },
+	{ "^load config", "Your current settings are replaced by the config.", false },
+	{ "^load selected", "Your current settings are replaced.", false },
+	{ "^import", "Your current settings are replaced by the imported ones.", false },
+	{ "autoload", "This changes which config loads when the script starts.", false },
+	{ "server hop", "You leave this server.", false },
+	{ "^join", "You leave this server.", false },
+	{ "^buy", "This spends in-game money.", false },
+	{ "^steal", "Other players or the game may notice this.", false },
+}
+function Library.riskyMessage(name)
+	local n = tostring(name or ""):lower()
+	for _, r in Library.RiskyButtons do
+		if n:find(r[1]) then return r[2], r[3] end
+	end
+	return nil
+end
+
+-- Library:Confirm({ Title, Text, Yes, No, Danger, Root }, onYes): a small dialog over the window (Root, default the first window);
+-- clicking outside it or Escape cancels.
+function Library:Confirm(Data, onYes)
+	Data = Data or {}
+	local fx = Library.fx
+	local host = Data.Root or (Library.Windows[1] and Library.Windows[1]._W.Root) or Library.Holder.Instance
+	local function label(parent, text, font, size, color, pos, sz, alignX)
+		local t = Instance.new("TextLabel")
+		t.BackgroundTransparency = 1
+		t.FontFace, t.TextSize, t.TextColor3 = font, size, color
+		t.TextWrapped = true
+		t.TextXAlignment = alignX or Enum.TextXAlignment.Left
+		t.TextYAlignment = Enum.TextYAlignment.Top
+		t.Text = tostring(text)
+		t.Position, t.Size = pos, sz
+		t.ZIndex = 3003
+		t.Parent = parent
+		return t
+	end
+	-- the dim layer over the window: a click on it cancels
+	local cover = Instance.new("TextButton")
+	cover.Name = "ConfirmCover"
+	cover.Text, cover.AutoButtonColor = "", false
+	cover.BackgroundColor3, cover.BackgroundTransparency = Color3.new(0, 0, 0), 1
+	cover.Size = UDim2.fromScale(1, 1)
+	cover.ZIndex = 3000
+	cover.Parent = host
+	local hc = host:FindFirstChildOfClass("UICorner")
+	if hc then Instance.new("UICorner", cover).CornerRadius = hc.CornerRadius end
+	local box = Instance.new("Frame")
+	box.Name = "ConfirmBox"
+	box.AnchorPoint, box.Position, box.Size = Vector2.new(0.5, 0.5), UDim2.fromScale(0.5, 0.5), UDim2.new(0, 300, 0, 132)
+	box.BackgroundColor3 = Library.Theme["Section Background"]
+	box.ZIndex = 3001
+	box.Parent = host
+	Instance.new("UICorner", box).CornerRadius = UDim.new(0, 10)
+	local st = Instance.new("UIStroke", box)
+	st.Color = Library.Theme.Border
+	fx.shadow(box, { radius = 10, transparency = 0.2 })
+	local scale = Instance.new("UIScale", box)
+	label(box, Data.Title or "Are you sure?", Library.FontBold, 16, Library.Theme["Bright Text"], UDim2.new(0, 16, 0, 14), UDim2.new(1, -32, 0, 20))
+	label(box, Data.Text or "", Library.Font, 14, Library.Theme["Dim Text"], UDim2.new(0, 16, 0, 40), UDim2.new(1, -32, 0, 40))
+	local done = false
+	local function close(yes)
+		if done then return end
+		done = true
+		fx.tween(cover, { BackgroundTransparency = 1 }, 0.12)
+		fx.tween(scale, { Scale = 0.94 }, 0.12).Completed:Connect(function() cover:Destroy() box:Destroy() end)
+		if yes and onYes then task.spawn(function() Library:SafeCall(onYes) end) end
+	end
+	local function makeButton(text, x, danger, primary)
+		local b = Instance.new("TextButton")
+		b.AutoButtonColor = false
+		b.AnchorPoint, b.Position, b.Size = Vector2.new(0, 1), UDim2.new(x, x == 0 and 16 or 4, 1, -14), UDim2.new(0.5, -20, 0, 32)
+		b.BackgroundColor3 = primary and (danger and Library.Theme.Risky or Library.Theme.Accent) or Library.Theme.Element
+		b.FontFace, b.TextSize = Library.FontBold, 14
+		b.TextColor3 = primary and Library.Theme["Bright Text"] or Library.Theme.Text
+		b.Text = text
+		b.ZIndex = 3003
+		b.Parent = box
+		Instance.new("UICorner", b).CornerRadius = UDim.new(0, 8)
+		local bs = Instance.new("UIStroke", b)
+		bs.ApplyStrokeMode, bs.Color = Enum.ApplyStrokeMode.Border, Library.Theme.Border
+		local base = b.BackgroundColor3
+		b.MouseEnter:Connect(function() fx.tween(b, { BackgroundColor3 = base:Lerp(Color3.new(1, 1, 1), 0.12) }, 0.12) end)
+		b.MouseLeave:Connect(function() fx.tween(b, { BackgroundColor3 = base }, 0.15) end)
+		return b
+	end
+	local no = makeButton(Data.No or "Cancel", 0, false, false)
+	local yes = makeButton(Data.Yes or "Confirm", 0.5, Data.Danger, true)
+	no.MouseButton1Click:Connect(function() close(false) end)
+	yes.MouseButton1Click:Connect(function() close(true) end)
+	cover.MouseButton1Click:Connect(function() close(false) end)
+	local esc = UserInputService.InputBegan:Connect(function(i)
+		if i.KeyCode == Enum.KeyCode.Escape then close(false) end
+	end)
+	box.Destroying:Connect(function() esc:Disconnect() end)
+	-- in
+	scale.Scale = 0.92
+	fx.tween(cover, { BackgroundTransparency = 0.45 }, 0.15)
+	fx.tween(scale, { Scale = 1 }, 0.22, Enum.EasingStyle.Back)
+	return { Close = function() close(false) end }
+end
+
+-- what a button click does: straight away, or after the confirmation when the button is risky
+local function guardedClick(section, name, confirm, fn)
+	local msg, danger
+	if confirm == nil then msg, danger = Library.riskyMessage(name)
+	elseif confirm == true then msg = "This cannot be undone."
+	elseif type(confirm) == "string" then msg = confirm end
+	return function()
+		if not fn then return end
+		if not msg then Library:SafeCall(fn) return end
+		local root = section and section.Window and section.Window._W and section.Window._W.Root
+		Library:Confirm({ Title = tostring(name) .. "?", Text = msg, Yes = "Confirm", Danger = danger, Root = root }, fn)
+	end
+end
+Library.guardedClick = guardedClick
+
 -- ---- Button (+ SubButton: a second button in the same row) ----
 function Library:Button(Data)
 	Data = Data or {}
@@ -1261,7 +1389,7 @@ function Library:Button(Data)
 	Library.regSearch(section, B.Root, B.label.Text)
 	local callback = field(Data, "Callback", "callback")
 	if field(Data, "Risky", "risky") then B.label.TextColor3 = Library.Theme.Risky end
-	local btn = click(B.Root, function() if callback then Library:SafeCall(callback) end end)
+	local btn = click(B.Root, guardedClick(section, B.label.Text, field(Data, "Confirm", "confirm"), callback))
 	Library.raiseButton(B.Root, btn)
 	local obj = { Items = { Button = Library.Wrap(B.Root) }, Section = section }
 	function obj:SetVisibility(b) B.Root.Visible = b end
@@ -1275,7 +1403,7 @@ function Library:Button(Data)
 		sub.Root.Position = UDim2.new(0.5, 3, 0, 0)
 		sub.label.Text = tostring(field(d, "Name", "name") or "Button")
 		local cb = field(d, "Callback", "callback")
-		Library.raiseButton(sub.Root, click(sub.Root, function() if cb then Library:SafeCall(cb) end end))
+		Library.raiseButton(sub.Root, click(sub.Root, guardedClick(section, sub.label.Text, field(d, "Confirm", "confirm"), cb)))
 		return { SetVisibility = function(_, b) sub.Root.Visible = b end }
 	end
 	return obj
