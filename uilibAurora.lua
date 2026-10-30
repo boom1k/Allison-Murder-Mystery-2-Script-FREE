@@ -3123,6 +3123,8 @@ end
 -- ---- Section:PartPicker(Data) -> picker ----
 -- A clickable R6 body: Head, Torso, Left Arm, Right Arm, Left Leg, Right Leg. Multi (default) keeps a list, single one name.
 -- Data: Name, Flag, Default (a name or a list), Multi, Callback(value).
+-- Data.Priority = true: each click moves a part on (off -> 1st -> 2nd -> 3rd -> off), the colour shows which, a legend sits bottom right, and the value is a map
+-- { Head = 1, Torso = 2 }. A plain list (an older config) also loads: every part in it is 1st priority.
 local R6 = {
 	{ "Head", 0.5, 0.02, 0.2, 0.17 },
 	{ "Torso", 0.5, 0.21, 0.32, 0.36 },
@@ -3137,7 +3139,13 @@ function Library:PartPicker(Data)
 	local fx = Library.fx
 	local flag = Library.field(Data, "Flag", "flag") or Library:NextFlag()
 	local multi = Library.field(Data, "Multi", "multi") ~= false
+	local priority = Library.field(Data, "Priority", "priority") == true
 	local callback = Library.field(Data, "Callback", "callback")
+	local LEVEL = { "Accent", "Priority 2", "Priority 3" }
+	if priority then
+		Library.Theme["Priority 2"] = Library.Theme["Priority 2"] or Color3.fromRGB(240, 140, 45)
+		Library.Theme["Priority 3"] = Library.Theme["Priority 3"] or Color3.fromRGB(225, 205, 70)
+	end
 	local T = Build.PartPicker(section.Items["Content"].Instance)
 	T.Root.Size = UDim2.new(1, 0, 0, 150)
 	local name = tostring(Library.field(Data, "Name", "name") or "")
@@ -3150,14 +3158,19 @@ function Library:PartPicker(Data)
 	body.BackgroundTransparency = 1
 	body.AnchorPoint, body.Position, body.Size = Vector2.new(0.5, 0.5), UDim2.fromScale(0.5, 0.5), UDim2.new(0, 100, 0, 118)
 	body.Parent = T.figure
-	local picker = { Flag = flag, Value = multi and {} or nil, Items = { Picker = Library.Wrap(T.Root) }, Section = section }
+	local picker = { Flag = flag, Value = (multi or priority) and {} or nil, Items = { Picker = Library.Wrap(T.Root) }, Section = section }
 	local blocks = {}
-	local function isOn(n) if multi then return table.find(picker.Value, n) ~= nil end return picker.Value == n end
+	local function isOn(n)
+		if priority then return picker.Value[n] ~= nil end
+		if multi then return table.find(picker.Value, n) ~= nil end
+		return picker.Value == n
+	end
 	local function paint()
 		for n, b in blocks do
 			local on = isOn(n)
-			Library:ChangeItemTheme(b, { BackgroundColor3 = on and "Accent" or "Inline" })
-			fx.tween(b, { BackgroundColor3 = on and Library.Theme.Accent or Library.Theme.Inline }, 0.15)
+			local key = on and (priority and LEVEL[picker.Value[n]] or "Accent") or "Inline"
+			Library:ChangeItemTheme(b, { BackgroundColor3 = key })
+			fx.tween(b, { BackgroundColor3 = Library.Theme[key] }, 0.15)
 		end
 	end
 	local function fire()
@@ -3165,7 +3178,19 @@ function Library:PartPicker(Data)
 		if callback then Library:SafeCall(callback, picker.Value) end
 	end
 	local function set(v)
-		if multi then
+		if priority then
+			if type(v) == "string" then v = { v } end
+			if type(v) ~= "table" then return end
+			local out = {}
+			if #v > 0 then
+				for _, n in ipairs(v) do if type(n) == "string" then out[n] = 1 end end
+			else
+				for n, level in pairs(v) do
+					if type(n) == "string" and tonumber(level) then out[n] = math.clamp(math.floor(tonumber(level)), 1, 3) end
+				end
+			end
+			picker.Value = out
+		elseif multi then
 			if type(v) == "string" then v = { v } end
 			if type(v) ~= "table" then return end
 			picker.Value = table.clone(v)
@@ -3189,7 +3214,10 @@ function Library:PartPicker(Data)
 		Library:AddToTheme(st, { Color = "Outline" })
 		blocks[n] = b
 		local btn = Library.click(b, function()
-			if multi then
+			if priority then
+				local level = (picker.Value[n] or 0) + 1
+				picker.Value[n] = level <= 3 and level or nil
+			elseif multi then
 				local at = table.find(picker.Value, n)
 				if at then table.remove(picker.Value, at) else table.insert(picker.Value, n) end
 			else
@@ -3201,6 +3229,41 @@ function Library:PartPicker(Data)
 		fx.hover(btn, function() if not isOn(n) then fx.tween(b, { BackgroundColor3 = Library.Theme["Element Hover"] }, 0.1) end end,
 			function() if not isOn(n) then fx.tween(b, { BackgroundColor3 = Library.Theme.Inline }, 0.15) end end)
 		Library.attachTooltip(b, n)
+	end
+	-- the legend, bottom right of the box
+	if priority then
+		local legend = Instance.new("Frame")
+		legend.Name = "\0"
+		legend.BackgroundTransparency, legend.BorderSizePixel = 1, 0
+		legend.AnchorPoint, legend.Position, legend.Size = Vector2.new(1, 1), UDim2.new(1, -8, 1, -6), UDim2.fromOffset(84, 56)
+		legend.Parent = T.figure
+		Library.listLayout(legend, 2)
+		for i, row in { { "Accent", "1st priority" }, { "Priority 2", "2nd priority" }, { "Priority 3", "3rd priority" }, { "Inline", "off" } } do
+			local line = Instance.new("Frame")
+			line.Name = "\0"
+			line.BackgroundTransparency, line.BorderSizePixel = 1, 0
+			line.Size, line.LayoutOrder = UDim2.new(1, 0, 0, 12), i
+			line.Parent = legend
+			local dot = Instance.new("Frame")
+			dot.Name = "\0"
+			dot.BorderSizePixel = 0
+			dot.Position, dot.Size = UDim2.fromOffset(0, 2), UDim2.fromOffset(8, 8)
+			dot.BackgroundColor3 = Library.Theme[row[1]]
+			Library:AddToTheme(dot, { BackgroundColor3 = row[1] })
+			dot.Parent = line
+			local st = Instance.new("UIStroke", dot)
+			st.Color = Library.Theme.Outline
+			Library:AddToTheme(st, { Color = "Outline" })
+			local t = Instance.new("TextLabel")
+			t.Name = "\0"
+			t.BackgroundTransparency = 1
+			t.Position, t.Size = UDim2.fromOffset(13, 0), UDim2.new(1, -13, 1, 0)
+			t.FontFace, t.TextSize, t.Text = Library.Font, 11, row[2]
+			t.TextColor3 = Library.Theme["Dim Text"]
+			t.TextXAlignment = Enum.TextXAlignment.Left
+			Library:AddToTheme(t, { TextColor3 = "Dim Text" })
+			t.Parent = line
+		end
 	end
 	function picker:Set(v) set(v) end
 	function picker:Get() return picker.Value end
