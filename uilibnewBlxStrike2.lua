@@ -764,6 +764,17 @@ function Library:Window(Data)
 	local fx = Library.fx
 	fx.shadow(root, { radius = 14, transparency = 0.1 })
 	fx.bevel(root, 0.06)
+	-- the page pill grows with the page name (the design's width only fits "Combat")
+	-- (sized from the title, not AutomaticSize: the pill's shadow child would count towards an automatic size)
+	W.pageTitle.AutomaticSize = Enum.AutomaticSize.X
+	W.pageTitle.Size = UDim2.new(0, 0, 0, W.pageTitle.Size.Y.Offset)
+	local function fitPill()
+		local sc = root:FindFirstChildOfClass("UIScale")
+		local tw = W.pageTitle.AbsoluteSize.X / ((sc and sc.Scale > 0) and sc.Scale or 1)
+		W.pageTab.Size = UDim2.new(0, W.pageTitle.Position.X.Offset + tw + 15, 0, W.pageTab.Size.Y.Offset)
+	end
+	Library:Connect(W.pageTitle:GetPropertyChangedSignal("AbsoluteSize"), fitPill)
+	fitPill()
 	fx.shadow(W.pageTab, { radius = 10, transparency = 0.5 })
 	fx.bevel(W.pageTab, 0.12)
 	W.pageTitle.FontFace = Library.FontBold
@@ -1547,9 +1558,16 @@ function Library:Dropdown(Data)
 		w = w / (sc and sc.Scale or 1)   -- AbsoluteSize is scaled by the window's UIScale, Size is not
 		if b then
 			Library.popupAt(P.Root, winRoot, T.field, 4)
-			if sc and sc.Scale ~= 1 then
-				local p = P.Root.Position
-				P.Root.Position = UDim2.new(0, p.X.Offset / sc.Scale, 0, p.Y.Offset / sc.Scale)
+			local s = sc and sc.Scale or 1
+			local x, below = P.Root.Position.X.Offset / s, P.Root.Position.Y.Offset / s
+			-- no room below the field inside the window: the list opens upwards, growing from just above the field
+			local fieldH = T.field.AbsoluteSize.Y / s
+			if below + h > winRoot.AbsoluteSize.Y / s - 8 then
+				P.Root.AnchorPoint = Vector2.new(0, 1)
+				P.Root.Position = UDim2.new(0, x, 0, below - fieldH - 8)
+			else
+				P.Root.AnchorPoint = Vector2.new(0, 0)
+				P.Root.Position = UDim2.new(0, x, 0, below)
 			end
 			if not P.Root.Visible then P.Root.Size = UDim2.new(0, w, 0, 0) end
 			P.Root.Visible = true
