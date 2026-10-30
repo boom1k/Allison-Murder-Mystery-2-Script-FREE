@@ -383,6 +383,92 @@ function Build.Notification(parent)
 	return P
 end
 
+function Build.BombWindow(parent)
+	local P = {}
+	local root = N("Frame", { Name = "BombWindow", BorderSizePixel = 0, Size = UDim2.new(0, 210, 0, 300), BackgroundColor3 = Color3.fromRGB(11, 11, 11), BackgroundTransparency = 0 }, parent)
+	P.Root = root
+	Th(root, { BackgroundColor3 = "Outline" })
+	local rootS = N("UIStroke", { Color = Color3.fromRGB(11, 11, 11), Thickness = 1, ApplyStrokeMode = Enum.ApplyStrokeMode.Border }, root)
+	Th(rootS, { Color = "Outline" })
+	local n1 = N("Frame", { Name = "inner", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 2, 0, 2), Size = UDim2.new(1, -4, 1, -4), BackgroundColor3 = Color3.fromRGB(30, 30, 30), BackgroundTransparency = 0 }, root)
+	P["inner"] = n1
+	Th(n1, { BackgroundColor3 = "Window Background" })
+	local n1S = N("UIStroke", { Color = Color3.fromRGB(58, 58, 58), Thickness = 1, ApplyStrokeMode = Enum.ApplyStrokeMode.Border }, n1)
+	Th(n1S, { Color = "Border" })
+	local n2 = N("TextLabel", { Name = "title", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 3, 0, 7), Size = UDim2.new(1, -6, 0, 18), BackgroundTransparency = 1, Text = "bomb", TextSize = 13, TextXAlignment = Enum.TextXAlignment.Center, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(200, 200, 200) }, root)
+	P["title"] = n2
+	Th(n2, { TextColor3 = "Text" })
+	local n3 = N("Frame", { Name = "line", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 9, 0, 25), Size = UDim2.new(1, -18, 0, 2), BackgroundColor3 = Color3.fromRGB(207, 31, 69), BackgroundTransparency = 0 }, root)
+	P["line"] = n3
+	Th(n3, { BackgroundColor3 = "Accent" })
+	local n4 = N("Frame", { Name = "view", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 9, 0, 33), Size = UDim2.new(1, -18, 0, 170), BackgroundColor3 = Color3.fromRGB(22, 22, 22), BackgroundTransparency = 0 }, root)
+	P["view"] = n4
+	Th(n4, { BackgroundColor3 = "Dark Liner" })
+	local n4S = N("UIStroke", { Color = Color3.fromRGB(11, 11, 11), Thickness = 1, ApplyStrokeMode = Enum.ApplyStrokeMode.Border }, n4)
+	Th(n4S, { Color = "Outline" })
+	local n5 = N("TextLabel", { Name = "timeLabel", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 13, 0, 211), Size = UDim2.new(0, 42.02, 0, 18), BackgroundTransparency = 1, Text = "time left", TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(138, 138, 138) }, root)
+	P["timeLabel"] = n5
+	Th(n5, { TextColor3 = "Dim Text" })
+	local n6 = N("TextLabel", { Name = "hpLabel", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 13, 0, 231), Size = UDim2.new(0, 32.7, 0, 18), BackgroundTransparency = 1, Text = "hp left", TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(138, 138, 138) }, root)
+	P["hpLabel"] = n6
+	Th(n6, { TextColor3 = "Dim Text" })
+	local n7 = N("TextLabel", { Name = "damageLabel", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 13, 0, 251), Size = UDim2.new(0, 43.38, 0, 18), BackgroundTransparency = 1, Text = "damage", TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(138, 138, 138) }, root)
+	P["damageLabel"] = n7
+	Th(n7, { TextColor3 = "Dim Text" })
+	local n8 = N("TextLabel", { Name = "statusLabel", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 13, 0, 271), Size = UDim2.new(0, 32.02, 0, 18), BackgroundTransparency = 1, Text = "status", TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(138, 138, 138) }, root)
+	P["statusLabel"] = n8
+	Th(n8, { TextColor3 = "Dim Text" })
+	local n9 = N("TextLabel", { Name = "time", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 101, 0, 211), Size = UDim2.new(0, 96, 0, 18), BackgroundTransparency = 1, Text = "0.0s", TextSize = 13, TextXAlignment = Enum.TextXAlignment.Right, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(255, 255, 255) }, root)
+	P["time"] = n9
+	Th(n9, { TextColor3 = "Bright Text" })
+	local n10 = N("TextLabel", { Name = "hp", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 101, 0, 231), Size = UDim2.new(0, 96, 0, 18), BackgroundTransparency = 1, Text = "100", TextSize = 13, TextXAlignment = Enum.TextXAlignment.Right, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(200, 200, 200) }, root)
+	P["hp"] = n10
+	Th(n10, { TextColor3 = "Text" })
+	local n11 = N("TextLabel", { Name = "damage", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 101, 0, 251), Size = UDim2.new(0, 96, 0, 18), BackgroundTransparency = 1, Text = "0", TextSize = 13, TextXAlignment = Enum.TextXAlignment.Right, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(200, 200, 200) }, root)
+	P["damage"] = n11
+	Th(n11, { TextColor3 = "Text" })
+	local n12 = N("TextLabel", { Name = "status", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 101, 0, 271), Size = UDim2.new(0, 96, 0, 18), BackgroundTransparency = 1, Text = "survive", TextSize = 13, TextXAlignment = Enum.TextXAlignment.Right, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(200, 200, 200) }, root)
+	P["status"] = n12
+	Th(n12, { TextColor3 = "Text" })
+	return P
+end
+
+function Build.ChatWindow(parent)
+	local P = {}
+	local root = N("Frame", { Name = "ChatWindow", BorderSizePixel = 0, Size = UDim2.new(0, 420, 0, 320), BackgroundColor3 = Color3.fromRGB(11, 11, 11), BackgroundTransparency = 0 }, parent)
+	P.Root = root
+	Th(root, { BackgroundColor3 = "Outline" })
+	local rootS = N("UIStroke", { Color = Color3.fromRGB(11, 11, 11), Thickness = 1, ApplyStrokeMode = Enum.ApplyStrokeMode.Border }, root)
+	Th(rootS, { Color = "Outline" })
+	local n1 = N("Frame", { Name = "inner", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 2, 0, 2), Size = UDim2.new(1, -4, 1, -4), BackgroundColor3 = Color3.fromRGB(30, 30, 30), BackgroundTransparency = 0 }, root)
+	P["inner"] = n1
+	Th(n1, { BackgroundColor3 = "Window Background" })
+	local n1S = N("UIStroke", { Color = Color3.fromRGB(58, 58, 58), Thickness = 1, ApplyStrokeMode = Enum.ApplyStrokeMode.Border }, n1)
+	Th(n1S, { Color = "Border" })
+	local n2 = N("Frame", { Name = "dragBar", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 3, 0, 3), Size = UDim2.new(1, -6, 0, 22), BackgroundTransparency = 1 }, root)
+	P["dragBar"] = n2
+	local n3 = N("TextLabel", { Name = "title", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 11, 0, 7), Size = UDim2.new(0, 22.69, 0, 18), BackgroundTransparency = 1, Text = "chat", TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(200, 200, 200) }, root)
+	P["title"] = n3
+	Th(n3, { TextColor3 = "Text" })
+	local n4 = N("TextLabel", { Name = "who", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 211, 0, 7), Size = UDim2.new(0, 198, 0, 18), BackgroundTransparency = 1, Text = "you", TextSize = 13, TextXAlignment = Enum.TextXAlignment.Right, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(207, 31, 69) }, root)
+	P["who"] = n4
+	Th(n4, { TextColor3 = "Accent" })
+	local n5 = N("Frame", { Name = "line", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 9, 0, 25), Size = UDim2.new(1, -18, 0, 2), BackgroundColor3 = Color3.fromRGB(207, 31, 69), BackgroundTransparency = 0 }, root)
+	P["line"] = n5
+	Th(n5, { BackgroundColor3 = "Accent" })
+	local n6 = N("Frame", { Name = "list", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 9, 0, 33), Size = UDim2.new(1, -18, 1, -76), BackgroundColor3 = Color3.fromRGB(22, 22, 22), BackgroundTransparency = 0 }, root)
+	P["list"] = n6
+	Th(n6, { BackgroundColor3 = "Dark Liner" })
+	local n6S = N("UIStroke", { Color = Color3.fromRGB(11, 11, 11), Thickness = 1, ApplyStrokeMode = Enum.ApplyStrokeMode.Border }, n6)
+	Th(n6S, { Color = "Outline" })
+	local n7 = N("Frame", { Name = "field", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 9, 0, 285), Size = UDim2.new(0, 402, 0, 24), BackgroundColor3 = Color3.fromRGB(42, 42, 42), BackgroundTransparency = 0 }, root)
+	P["field"] = n7
+	Th(n7, { BackgroundColor3 = "Element" })
+	local n7S = N("UIStroke", { Color = Color3.fromRGB(11, 11, 11), Thickness = 1, ApplyStrokeMode = Enum.ApplyStrokeMode.Border }, n7)
+	Th(n7S, { Color = "Outline" })
+	return P
+end
+
 function Build.Watermark(parent)
 	local P = {}
 	local root = N("Frame", { Name = "Watermark", BorderSizePixel = 0, Size = UDim2.new(0, 220, 0, 24), BackgroundColor3 = Color3.fromRGB(30, 30, 30), BackgroundTransparency = 0 }, parent)
@@ -3212,6 +3298,257 @@ function Library:Loader(Data)
 	popScale.Scale = 0.94
 	fx.tween(popScale, { Scale = 1 }, 0.22)
 	return loader
+end
+
+-- ---- Library:BombWindow(Data) -> bomb ----
+-- A floating window: a ring that runs down around a C4, then time left, HP left, damage and status. Data: Name.
+-- bomb:Set({ left, total, hp, damage, status, statusColor }), bomb:SetVisibility(b), bomb:Destroy(), bomb.Instance. Hidden until shown; drag it by the title.
+function Library:BombWindow(Data)
+	Data = Data or {}
+	local P = Build.BombWindow(Library.Holder.Instance)
+	local root = P.Root
+	root.Name = "\0"
+	root.ZIndex = 1300
+	root.Visible = false
+	root.Position = UDim2.fromOffset(24, 300)
+	P.title.Text = tostring(Library.field(Data, "Name", "name") or "bomb")
+	Library.MakeDraggable(P.title, root)
+	for _, k in { "time", "hp", "damage", "status" } do P[k].TextXAlignment = Enum.TextXAlignment.Right end
+	P.title.Active = true
+	-- the ring: square segments, bright while there is time left
+	local N, SIZE = 60, 150
+	local holder = Instance.new("Frame")
+	holder.Name = "\0"
+	holder.BackgroundTransparency, holder.BorderSizePixel = 1, 0
+	holder.AnchorPoint, holder.Position, holder.Size = Vector2.new(0.5, 0.5), UDim2.fromScale(0.5, 0.5), UDim2.fromOffset(SIZE, SIZE)
+	holder.Parent = P.view
+	local ring = {}
+	for i = 1, N do
+		local a = (i - 1) / N * math.pi * 2
+		local seg = Instance.new("Frame")
+		seg.Name = "\0"
+		seg.BorderSizePixel = 0
+		seg.AnchorPoint = Vector2.new(0.5, 0.5)
+		seg.Position = UDim2.fromOffset(SIZE / 2 + math.sin(a) * (SIZE / 2 - 6), SIZE / 2 - math.cos(a) * (SIZE / 2 - 6))
+		seg.Size, seg.Rotation = UDim2.fromOffset(3, 9), math.deg(a)
+		seg.BackgroundColor3 = Library.Theme.Inline
+		seg.Parent = holder
+		ring[i] = seg
+	end
+	-- the C4: flat blocks in the theme's greys
+	local function block(parent, x, y, w, h, key)
+		local f = Instance.new("Frame")
+		f.Name = "\0"
+		f.BorderSizePixel = 0
+		f.Position, f.Size = UDim2.fromOffset(x, y), UDim2.fromOffset(w, h)
+		f.BackgroundColor3 = Library.Theme[key]
+		Library:AddToTheme(f, { BackgroundColor3 = key })
+		f.Parent = parent
+		return f
+	end
+	local c4 = Instance.new("Frame")
+	c4.Name = "\0"
+	c4.BackgroundTransparency, c4.BorderSizePixel = 1, 0
+	c4.AnchorPoint, c4.Position, c4.Size = Vector2.new(0.5, 0.5), UDim2.fromScale(0.5, 0.5), UDim2.fromOffset(70, 46)
+	c4.Parent = holder
+	block(c4, 0, 12, 8, 22, "Border")
+	block(c4, 8, 0, 62, 46, "Inline")
+	block(c4, 13, 6, 26, 14, "Outline")
+	local led = block(c4, 16, 9, 8, 8, "Accent")
+	block(c4, 13, 26, 26, 12, "Highlight")
+	for r = 0, 2 do
+		for c = 0, 2 do block(c4, 44 + c * 8, 6 + r * 12, 5, 8, "Dark Liner") end
+	end
+	local bomb = { Instance = root }
+	local GREEN, RED = Color3.fromRGB(90, 230, 120), Color3.fromRGB(255, 85, 75)
+	local lit, litColor = -1, nil
+	function bomb:Set(d)
+		d = d or {}
+		local total = math.max(tonumber(d.total) or 40, 0.1)
+		local left = math.max(tonumber(d.left) or 0, 0)
+		local frac = math.clamp(left / total, 0, 1)
+		local n = math.floor(frac * N + 0.5)
+		local col = RED:Lerp(GREEN, frac)
+		if n ~= lit or col ~= litColor then
+			lit, litColor = n, col
+			for i = 1, N do ring[i].BackgroundColor3 = i <= n and col or Library.Theme.Inline end
+		end
+		-- the light on the C4 blinks faster as it runs down
+		led.Visible = left <= 0 or (os.clock() * (1 + (1 - frac) * 5)) % 1 < 0.5
+		P.time.Text, P.time.TextColor3 = string.format("%.1fs", left), col
+		P.hp.Text = tostring(math.floor((tonumber(d.hp) or 0) + 0.5))
+		P.damage.Text = tostring(math.floor((tonumber(d.damage) or 0) + 0.5))
+		P.status.Text = tostring(d.status or "")
+		P.status.TextColor3 = d.statusColor or Library.Theme.Text
+	end
+	function bomb:SetVisibility(b) root.Visible = b end
+	function bomb:Destroy() root:Destroy() end
+	return bomb
+end
+
+-- ---- Library:ChatWindow(Data) -> chat ----
+-- A floating, resizable chat. Data: Name, Who (top right), Placeholder, Size, OnSend(text) -> false keeps the text, CanDrag() -> false locks it in place.
+-- chat:Add({ name, text, time, mine, color }), chat:System(text), chat:Clear(), chat:SetVisibility(b), chat.Instance, chat.Box.
+function Library:ChatWindow(Data)
+	Data = Data or {}
+	local P = Build.ChatWindow(Library.Holder.Instance)
+	local root = P.Root
+	root.Name = "\0"
+	root.ZIndex = 1200
+	root.Visible = false
+	local size = Library.field(Data, "Size", "size")
+	if size then root.Size = size end
+	P.title.Text = tostring(Library.field(Data, "Name", "name") or "chat")
+	P.who.Text = tostring(Library.field(Data, "Who", "who") or "")
+	P.who.TextXAlignment = Enum.TextXAlignment.Right
+	-- the corners follow the window as it is resized
+	P.who.AnchorPoint, P.who.Position = Vector2.new(1, 0), UDim2.new(1, -10, 0, P.who.Position.Y.Offset)
+	P.field.AnchorPoint, P.field.Position, P.field.Size = Vector2.new(0, 1), UDim2.new(0, 9, 1, -10), UDim2.new(1, -18, 0, 24)
+	P.list.Size = UDim2.new(1, -18, 1, -74)
+	P.dragBar.Active = true
+	local canDrag = Library.field(Data, "CanDrag", "candrag")
+	local dragging, start, from
+	Library:Connect(P.dragBar.InputBegan, function(i)
+		if i.UserInputType == Enum.UserInputType.MouseButton1 and not (canDrag and canDrag() == false) then
+			dragging, start, from = true, i.Position, root.Position
+		end
+	end)
+	local resizing, startSize
+	local grip = Instance.new("TextButton")
+	grip.Name = "\0"
+	grip.Text, grip.AutoButtonColor, grip.BorderSizePixel = "", false, 0
+	grip.AnchorPoint, grip.Position, grip.Size = Vector2.new(1, 1), UDim2.new(1, -2, 1, -2), UDim2.fromOffset(6, 6)
+	grip.BackgroundColor3 = Library.Theme.Border
+	Library:AddToTheme(grip, { BackgroundColor3 = "Border" })
+	grip.ZIndex = 5
+	grip.Parent = root
+	Library:Connect(grip.InputBegan, function(i)
+		if i.UserInputType == Enum.UserInputType.MouseButton1 then resizing, start, startSize = true, i.Position, root.AbsoluteSize end
+	end)
+	Library:Connect(UserInputService.InputChanged, function(i)
+		if not (dragging or resizing) or i.UserInputType ~= Enum.UserInputType.MouseMovement then return end
+		local d = i.Position - start
+		if dragging then
+			root.Position = UDim2.new(from.X.Scale, from.X.Offset + d.X, from.Y.Scale, from.Y.Offset + d.Y)
+		else
+			root.Size = UDim2.fromOffset(math.clamp(startSize.X + d.X, 280, 900), math.clamp(startSize.Y + d.Y, 180, 700))
+		end
+	end)
+	Library:Connect(UserInputService.InputEnded, function(i)
+		if i.UserInputType == Enum.UserInputType.MouseButton1 then dragging, resizing = false, false end
+	end)
+	-- the messages
+	local scroll = Instance.new("ScrollingFrame")
+	scroll.Name = "\0"
+	scroll.BackgroundTransparency, scroll.BorderSizePixel = 1, 0
+	scroll.Position, scroll.Size = UDim2.fromOffset(8, 6), UDim2.new(1, -12, 1, -12)
+	scroll.ScrollBarThickness, scroll.ScrollBarImageColor3 = 2, Library.Theme.Accent
+	scroll.ScrollingDirection = Enum.ScrollingDirection.Y
+	scroll.CanvasSize, scroll.AutomaticCanvasSize = UDim2.new(), Enum.AutomaticSize.Y
+	scroll.Parent = P.list
+	Library:AddToTheme(scroll, { ScrollBarImageColor3 = "Accent" })
+	Library.listLayout(scroll, 6)
+	local stick = true
+	Library:Connect(scroll:GetPropertyChangedSignal("CanvasPosition"), function()
+		stick = scroll.CanvasPosition.Y >= scroll.AbsoluteCanvasSize.Y - scroll.AbsoluteWindowSize.Y - 4
+	end)
+	Library:Connect(scroll:GetPropertyChangedSignal("AbsoluteCanvasSize"), function()
+		if stick then scroll.CanvasPosition = Vector2.new(0, math.max(0, scroll.AbsoluteCanvasSize.Y - scroll.AbsoluteWindowSize.Y)) end
+	end)
+	-- the box
+	local box = Instance.new("TextBox")
+	box.Name = "\0"
+	box.BackgroundTransparency, box.BorderSizePixel = 1, 0
+	box.Position, box.Size = UDim2.fromOffset(8, 0), UDim2.new(1, -16, 1, 0)
+	box.FontFace, box.TextSize = Library.Font, 12
+	box.TextColor3, box.PlaceholderColor3 = Library.Theme.Text, Library.Theme["Dim Text"]
+	Library:AddToTheme(box, { TextColor3 = "Text", PlaceholderColor3 = "Dim Text" })
+	box.PlaceholderText = tostring(Library.field(Data, "Placeholder", "placeholder") or "message")
+	box.TextXAlignment, box.ClearTextOnFocus, box.Text = Enum.TextXAlignment.Left, false, ""
+	box.ClipsDescendants = true
+	box.Parent = P.field
+	local fieldStroke = P.field:FindFirstChildOfClass("UIStroke")
+	Library:Connect(box.Focused, function() if fieldStroke then fieldStroke.Color = Library.Theme.Accent end end)
+	Library:Connect(box.FocusLost, function() if fieldStroke then fieldStroke.Color = Library.Theme.Outline end end)
+	local onSend = Library.field(Data, "OnSend", "onsend")
+	Library:Connect(box.FocusLost, function(enter)
+		if not enter then return end
+		local result
+		if onSend then
+			local ok, r = pcall(onSend, box.Text)
+			result = ok and r or nil
+		end
+		if result ~= false then box.Text = "" end
+		task.defer(function() if root.Parent and root.Visible then box:CaptureFocus() end end)
+	end)
+	local MAX = tonumber(Library.field(Data, "MaxLines", "maxlines")) or 150
+	local rows, order = {}, 0
+	local function esc(t) return (tostring(t):gsub("&", "&amp;"):gsub("<", "&lt;"):gsub(">", "&gt;")) end
+	local function text(parent, size, key)
+		local t = Instance.new("TextLabel")
+		t.Name = "\0"
+		t.BackgroundTransparency, t.BorderSizePixel = 1, 0
+		t.FontFace, t.TextSize = Library.Font, size
+		t.TextColor3 = Library.Theme[key]
+		Library:AddToTheme(t, { TextColor3 = key })
+		t.TextXAlignment, t.TextYAlignment = Enum.TextXAlignment.Left, Enum.TextYAlignment.Top
+		t.Parent = parent
+		return t
+	end
+	local function push(row)
+		order += 1
+		row.LayoutOrder = order
+		row.Parent = scroll
+		rows[#rows + 1] = row
+		if #rows > MAX then table.remove(rows, 1):Destroy() end
+	end
+	local chat = { Instance = root, Box = box }
+	-- a message: the name and time on top, the text under it
+	function chat:Add(m)
+		m = m or {}
+		local row = Instance.new("Frame")
+		row.Name = "\0"
+		row.BackgroundTransparency, row.BorderSizePixel = 1, 0
+		row.Size, row.AutomaticSize = UDim2.new(1, -6, 0, 0), Enum.AutomaticSize.Y
+		local bar = Instance.new("Frame")
+		bar.Name = "\0"
+		bar.BorderSizePixel = 0
+		bar.Size = UDim2.new(0, 2, 1, 0)
+		bar.BackgroundColor3 = m.mine and Library.Theme.Accent or Library.Theme.Border
+		Library:AddToTheme(bar, { BackgroundColor3 = m.mine and "Accent" or "Border" })
+		bar.Parent = row
+		local name = text(row, 12, m.mine and "Accent" or "Bright Text")
+		name.Position, name.Size = UDim2.fromOffset(8, 0), UDim2.new(1, -70, 0, 14)
+		name.Text = tostring(m.name or "") .. (m.mine and "  (you)" or "")
+		if m.color then Library:ChangeItemTheme(name, {}) name.TextColor3 = m.color end
+		local when = text(row, 11, "Dim Text")
+		when.AnchorPoint, when.Position, when.Size = Vector2.new(1, 0), UDim2.new(1, 0, 0, 1), UDim2.fromOffset(60, 12)
+		when.TextXAlignment = Enum.TextXAlignment.Right
+		when.Text = tostring(m.time or "")
+		local body = text(row, 12, "Text")
+		body.Position, body.Size = UDim2.fromOffset(8, 15), UDim2.new(1, -8, 0, 0)
+		body.AutomaticSize = Enum.AutomaticSize.Y
+		body.TextWrapped = true
+		body.Text = tostring(m.text or "")
+		push(row)
+		return row
+	end
+	-- a grey line without a name
+	function chat:System(t)
+		local row = text(nil, 11, "Dim Text")
+		row.Size, row.AutomaticSize = UDim2.new(1, -6, 0, 0), Enum.AutomaticSize.Y
+		row.TextWrapped = true
+		row.Text = tostring(t)
+		push(row)
+		return row
+	end
+	function chat:Clear()
+		for _, r in rows do r:Destroy() end
+		table.clear(rows)
+	end
+	function chat:SetVisibility(b) root.Visible = b end
+	function chat:Destroy() root:Destroy() end
+	return chat
 end
 
 
