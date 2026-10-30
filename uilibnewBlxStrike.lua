@@ -1780,10 +1780,11 @@ local Library do
         end
 
         Components.Toggle = function(Data)
-            local Toggle = {
+                        local Toggle = {
                 Value = false,
+                Listeners = { },   -- keybinds attached to this toggle: called with the new value whenever it changes, however it changed
 
-                Flag = Data.Flag 
+                Flag = Data.Flag
             }
 
             local Items = { } do 
@@ -1852,10 +1853,15 @@ local Library do
                 end
             end
 
-            function Toggle:Set(Bool)
+                        function Toggle:Set(Bool)
                 Toggle.Value = Bool
 
                 Library.Flags[Toggle.Flag] = Toggle.Value
+
+                for _, Listener in Toggle.Listeners do
+                    Listener(Toggle.Value)
+                end
+
 
                 if Toggle.Value then 
                     Items["Indicator"]:ChangeItemTheme({BackgroundColor3 = "Accent"})
@@ -3482,9 +3488,22 @@ local Library do
             IsOpen = false,
         }
 
-        local KeybindListItem
+                local KeybindListItem
+        local Owner = Data.Owner   -- the toggle this keybind belongs to (nil for a label's keybind)
+        local Passive = Data.Passive == true
 
-        if Library.KeyList then 
+        -- Library.Flags[flag] is one table kept for the whole life of the keybind (it used to be replaced on every change, so anything
+        -- holding it saw a stale copy)
+        local function WriteFlags()
+            local Flag = Library.Flags[Keybind.Flag]
+            if type(Flag) ~= "table" then
+                Flag = { }
+                Library.Flags[Keybind.Flag] = Flag
+            end
+            Flag.Mode, Flag.Key, Flag.Toggled = Keybind.Mode, Keybind.Key, Keybind.Toggled
+        end
+
+        if Library.KeyList then  
             KeybindListItem = Library.KeyList:Add("None", "None", "None")
             if KeybindListItem and KeybindListItem.Instance then KeybindListItem.Instance.Visible = false end
         end
@@ -3590,7 +3609,9 @@ local Library do
 
         local Debounce = false
 
-        local Update = function()
+                local Update = function()
+            if Owner then Keybind.Toggled = Owner.Value == true end   -- a toggle's keybind always shows the toggle's state
+            WriteFlags()
             if KeybindListItem then
                 KeybindListItem:Set(Keybind.Mode, Data.Name, Keybind.Value)
                 KeybindListItem:SetStatus(Keybind.Toggled)
@@ -3650,11 +3671,7 @@ local Library do
                 Keybind.Value = TextToDisplay
                 Items["KeyButton"].Instance.Text = TextToDisplay
 
-                Library.Flags[Keybind.Flag] = {
-                    Mode = Keybind.Mode,
-                    Key = Keybind.Key,
-                    Toggled = Keybind.Toggled
-                }
+                WriteFlags()
     
                 if Data.Callback then 
                     Library:SafeCall(Data.Callback, Keybind.Toggled)
@@ -3712,17 +3729,16 @@ local Library do
                 end
             end
 
-            if Keybind.Mode == "Always" then 
+                        if Owner then
+                if Keybind.Mode == "Always" and not Passive and not Owner.Value then Owner:Set(true) end
+                Keybind.Toggled = Owner.Value == true
+            elseif Keybind.Mode == "Always" then
                 Keybind.Toggled = true
             else
                 Keybind.Toggled = false
             end
 
-            Library.Flags[Keybind.Flag] = {
-                Mode = Keybind.Mode,
-                Key = Keybind.Key,
-                Toggled = Keybind.Toggled
-            }
+            WriteFlags()
 
             if Data.Callback then 
                 Library:SafeCall(Data.Callback, Keybind.Toggled)
@@ -3731,8 +3747,20 @@ local Library do
             Update()
         end
 
-        function Keybind:Press(Bool)
-            if Keybind.Mode == "Toggle" then
+                function Keybind:Press(Bool)
+            if Owner and not Passive then
+                -- the key flips the toggle itself, so the toggle, the keybind and the keybind list can never disagree
+                if Keybind.Mode == "Toggle" then
+                    Owner:Set(not Owner.Value)
+                elseif Keybind.Mode == "Hold" then
+                    Owner:Set(Bool == true)
+                elseif Keybind.Mode == "Always" then
+                    Owner:Set(true)
+                end
+                Keybind.Toggled = Owner.Value == true
+            elseif Owner then
+                Keybind.Toggled = Owner.Value == true   -- passive: the script flips the toggle, this only follows it
+            elseif Keybind.Mode == "Toggle" then
                 Keybind.Toggled = not Keybind.Toggled
             elseif Keybind.Mode == "Hold" then
                 Keybind.Toggled = Bool
@@ -3740,11 +3768,8 @@ local Library do
                 Keybind.Toggled = true
             end
 
-            Library.Flags[Keybind.Flag] = {
-                Mode = Keybind.Mode,
-                Key = Keybind.Key,
-                Toggled = Keybind.Toggled
-            }
+
+            WriteFlags()
 
             if Data.Callback then 
                 Library:SafeCall(Data.Callback, Keybind.Toggled)
@@ -3780,9 +3805,9 @@ local Library do
             Keybind:SetOpen(not Keybind.IsOpen)
         end)
 
-        Library:Connect(UserInputService.InputBegan, function(Input)
-            if tostring(Input.KeyCode) == Keybind.Key or tostring(Input.UserInputType) == Keybind.Key then
-                if Keybind.Mode == "Toggle" then 
+                Library:Connect(UserInputService.InputBegan, function(Input)
+            if not Keybind.Picking and not UserInputService:GetFocusedTextBox() and (tostring(Input.KeyCode) == Keybind.Key or tostring(Input.UserInputType) == Keybind.Key) then
+                if Keybind.Mode == "Toggle" then  
                     Keybind:Press()
                 elseif Keybind.Mode == "Hold" then 
                     Keybind:Press(true)
@@ -3827,9 +3852,17 @@ local Library do
             Keybind:SetMode("Hold")
         end)
 
-        if Data.Default then 
+                if Data.Default then
             Keybind:Set({Key = Data.Default, Mode = Data.Mode})
         end
+
+        if Owner then
+            Owner.Listeners[#Owner.Listeners + 1] = function()
+                Update()
+            end
+            Update()
+        end
+
 
         Library.SetFlags[Keybind.Flag] = function(Value)
             Keybind:Set(Value)
@@ -5751,8 +5784,12 @@ local Library do
                 Default = Keybind.Default,
                 Tooltip = Keybind.Tooltip,
                 Mode = Keybind.Mode,
-                Callback = Keybind.Callback,
-                Count = Keybind.Count
+                                Callback = Keybind.Callback,
+                Count = Keybind.Count,
+                -- the keybind of a toggle shows (keybind list) and follows the TOGGLE's real state; Passive = the script handles the
+                -- key press itself, the keybind then only mirrors the toggle and does not flip it
+                Owner = NewToggle,
+                Passive = Data.Passive or Data.passive or false
             })
 
             function Keybind:Set(Value)
