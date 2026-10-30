@@ -969,7 +969,7 @@ function Library:Window(Data)
 	W.titleRow.ZIndex = 3
 	-- tabs and pages
 	listLayout(W.tabs, 6, Enum.FillDirection.Horizontal)
-	local window = setmetatable({ Items = {}, Pages = {}, IsOpen = true, Library = self, _W = W }, self)
+	local window = setmetatable({ Items = {}, Pages = {}, IsOpen = true, Library = self, _W = W, FadeWith = {} }, self)
 	window.Items["Outline"] = wrapInst(root)
 	window.Items["Title"] = wrapInst(W.titleRow)
 	window.Items["Pages"] = wrapInst(W.tabs)
@@ -1013,9 +1013,31 @@ function Library:Window(Data)
 			if i.UserInputType == Enum.UserInputType.MouseButton1 then dragging = false end
 		end)
 	end
-	-- open / close: the window pops in and shrinks away. It animates the UIScale already on the window (a script's DPI setting puts one
-	-- there) around its current value, or a temporary one that is removed afterwards.
+	-- open / close: the window fades and pops in, and fades and shrinks away. It animates the UIScale already on the window (a script's DPI setting puts
+	-- one there) around its current value, or a temporary one that is removed afterwards. The fade is a CanvasGroup over the whole screen that holds the
+	-- window (and window.FadeWith: frames that belong to it) only while it runs, because text in a CanvasGroup is softer.
 	local anim = { token = 0 }
+	local function fadeGroup()
+		if not anim.group then
+			local g = Instance.new("CanvasGroup")
+			g.Name = "\0"
+			g.BackgroundTransparency, g.BorderSizePixel = 1, 0
+			g.Size = UDim2.fromScale(1, 1)
+			g.ZIndex = root.ZIndex
+			g.Parent = root.Parent
+			anim.group, anim.home = g, root.Parent
+		end
+		anim.group.Visible = true
+		root.Parent = anim.group
+		for _, f in window.FadeWith do if f.Parent then f.Parent = anim.group end end
+		return anim.group
+	end
+	local function fadeDone()
+		if not anim.group then return end
+		root.Parent = anim.home
+		for _, f in window.FadeWith do if f.Parent then f.Parent = anim.home end end
+		anim.group.Visible = false
+	end
 	function window:SetOpen(bool)
 		self.IsOpen = bool
 		anim.token += 1
@@ -1039,13 +1061,20 @@ function Library:Window(Data)
 			sc.Scale = base
 			anim.base = nil
 			if anim.temp then anim.temp:Destroy() anim.temp = nil end
+			fadeDone()
 		end
+		local group = fadeGroup()
 		if bool then
-			if not root.Visible then sc.Scale = base * 0.94 end
+			if not root.Visible then
+				sc.Scale = base * 0.94
+				group.GroupTransparency = 1
+			end
 			root.Visible = true
+			fx.tween(group, { GroupTransparency = 0 }, 0.2, Enum.EasingStyle.Quad)
 			fx.tween(sc, { Scale = base }, 0.22, Enum.EasingStyle.Quint).Completed:Connect(finish)
 		else
-			fx.tween(sc, { Scale = base * 0.94 }, 0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.In).Completed:Connect(function()
+			fx.tween(group, { GroupTransparency = 1 }, 0.14, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+			fx.tween(sc, { Scale = base * 0.94 }, 0.14, Enum.EasingStyle.Quad, Enum.EasingDirection.In).Completed:Connect(function()
 				if anim.token == my then root.Visible = false end
 				finish()
 			end)
@@ -1122,22 +1151,51 @@ function Library:Page(Data)
 		p.Items["Inactive"].Instance.Size = UDim2.new(1 / n, -6 * (n - 1) / n, 1, 0)
 	end
 	local active = false
-	function page:Turn(bool)
+	page.Holder = holder
+	function page:Turn(bool, keepPage)
 		local was = active
 		active = bool
-		holder.Visible = bool
+		if not keepPage then holder.Visible = bool end
 		local key = bool and "Bright Text" or "Dim Text"
 		Library:ChangeItemTheme(T.label, { TextColor3 = key })
 		fx.tween(T.label, { TextColor3 = Library.Theme[key] }, 0.18)
 		Library:ChangeItemTheme(T.bar, { BackgroundColor3 = bool and "Accent" or "Border" })
 		fx.tween(T.bar, { BackgroundColor3 = bool and Library.Theme.Accent or Library.Theme.Border }, 0.18)
-		if bool and not was then
+		if bool and not was and not keepPage then
 			holder.Position = UDim2.new(0, 0, 0, 8)
 			fx.tween(holder, { Position = UDim2.new() }, 0.22)
 		end
 	end
+	-- changing tab: the tab lights up at once, the old page fades out under a cover in the panel's colour, the new one slides and fades in
 	local btn = click(T.Root, function()
-		for _, p in window.Pages do p:Turn(p == page) end
+		if active then return end
+		if not Library.Animations then
+			for _, p in window.Pages do p:Turn(p == page) end
+			return
+		end
+		for _, p in window.Pages do p:Turn(p == page, true) end
+		local cover = window.PageCover
+		if not cover then
+			cover = Instance.new("Frame")
+			cover.Name = "\0"
+			cover.BorderSizePixel = 0
+			cover.BackgroundColor3 = Library.Theme["Section Background"]
+			Library:AddToTheme(cover, { BackgroundColor3 = "Section Background" })
+			cover.BackgroundTransparency = 1
+			cover.Size = UDim2.new(1, 0, 1, 0)
+			cover.ZIndex = 50
+			cover.Parent = W.pages
+			window.PageCover = cover
+		end
+		window.PageToken = (window.PageToken or 0) + 1
+		local my = window.PageToken
+		fx.tween(cover, { BackgroundTransparency = 0 }, 0.09, Enum.EasingStyle.Quad).Completed:Connect(function()
+			if window.PageToken ~= my then return end
+			for _, p in window.Pages do p.Holder.Visible = p == page end
+			holder.Position = UDim2.new(0, 0, 0, 8)
+			fx.tween(holder, { Position = UDim2.new() }, 0.22)
+			fx.tween(cover, { BackgroundTransparency = 1 }, 0.18, Enum.EasingStyle.Quad)
+		end)
 	end)
 	fx.hover(btn, function() if not active then fx.tween(T.label, { TextColor3 = Library.Theme.Text }, 0.12) end end,
 		function() if not active then fx.tween(T.label, { TextColor3 = Library.Theme["Dim Text"] }, 0.18) end end)
@@ -3430,7 +3488,14 @@ function Library:EspPreview(Data)
 	-- open / close with the menu
 	if main then
 		local prev = main.OnOpen
-		main.OnOpen = function(b) if prev then prev(b) end root.Visible = b and preview.Shown ~= false end
+		table.insert(main.FadeWith, root)
+		main.OnOpen = function(b)
+			if prev then prev(b) end
+			if b then root.Visible = preview.Shown ~= false return end
+			-- closing: it fades out with the window, then hides
+			if not Library.Animations then root.Visible = false return end
+			task.delay(0.16, function() if not main.IsOpen then root.Visible = false end end)
+		end
 	end
 	function preview:SetShown(b) preview.Shown = b root.Visible = b and (not main or main.IsOpen) end
 	return preview
