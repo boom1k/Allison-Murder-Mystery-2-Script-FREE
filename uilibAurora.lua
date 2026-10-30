@@ -2952,6 +2952,8 @@ end
 --   HealthText, HealthTextFollow, HealthTextHideFull, HealthTextGradient, HealthTextSize
 --   Chams, ChamsColor, ChamsStyle (Flat / Liquid), ChamsTransparency, LiquidSpeed | Skeleton, HeadCircle, LookDir, LookCone, LookLength, LineColor
 -- Or Data.Flags = { Box = "MyBoxFlag", ... } and it follows those flags (Color3 or colorpicker flags). The model only turns while the preview is shown.
+-- A zoom slider sits under the view (flag Data.ZoomFlag, default "EspPreviewZoom", saved with configs). Text is drawn like the ESP: flags, weapon, distance and the
+-- health number in Arial, one size under the setting, with a black outline; the name in Code. Lines have an outline in OutlineColor.
 local PREVIEW_BONES = {
 	{ "Head", "UpperTorso" }, { "UpperTorso", "LowerTorso" },
 	{ "UpperTorso", "LeftUpperArm" }, { "LeftUpperArm", "LeftLowerArm" }, { "LeftLowerArm", "LeftHand" },
@@ -2966,7 +2968,8 @@ function Library:EspPreview(Data)
 	local root = P.Root
 	root.Name = "\0"
 	root.ZIndex = 1400
-	root.Size = UDim2.fromOffset(320, 370)   -- room for the flags right of the box
+	root.Size = UDim2.fromOffset(320, 396)   -- room for the flags right of the box, the zoom under the view
+	P.view.Size = UDim2.new(1, -18, 1, -68)
 	P.title.Text = tostring(Library.field(Data, "Name", "name") or "esp preview")
 	P.view.ClipsDescendants = true
 	-- next to the first window when there is one
@@ -2989,8 +2992,9 @@ function Library:EspPreview(Data)
 		HealthColor1 = Color3.fromRGB(0, 255, 0), HealthColor2 = Color3.fromRGB(255, 255, 0), HealthColor3 = Color3.fromRGB(255, 0, 0),
 		HealthText = false, HealthTextFollow = false, HealthTextHideFull = false, HealthTextGradient = false, HealthTextSize = 9,
 		Chams = false, ChamsColor = Library.Theme.Accent, ChamsStyle = "Flat", ChamsTransparency = 0, LiquidSpeed = 1,
-		Skeleton = false, HeadCircle = false, LookDir = false, LookCone = true, LookLength = 8, LineColor = white,
+		Skeleton = false, HeadCircle = false, LookDir = false, LookCone = true, LookLength = 8, LineColor = white, Zoom = 1,
 	}
+	local ARIAL, CODE = Font.fromEnum(Enum.Font.Arial), Font.fromEnum(Enum.Font.Code)
 
 	-- the model
 	local vp = Instance.new("ViewportFrame")
@@ -3051,7 +3055,7 @@ function Library:EspPreview(Data)
 	box.Name = "\0"
 	box.BackgroundTransparency = 1
 	box.AnchorPoint = Vector2.new(0.5, 0.5)
-	box.Position, box.Size = UDim2.fromScale(0.5, 0.5), UDim2.new(0, 100, 0.68, 0)
+	box.Position, box.Size = UDim2.fromScale(0.5, 0.5), UDim2.fromOffset(100, 200)
 	box.Parent = overlay
 	local fill = Instance.new("Frame")
 	fill.Name = "\0"
@@ -3074,15 +3078,16 @@ function Library:EspPreview(Data)
 		local t = Instance.new("TextLabel")
 		t.Name = "\0"
 		t.BackgroundTransparency = 1
-		t.FontFace, t.TextSize = Library.Font, size or 12
+		t.FontFace, t.TextSize = ARIAL, size or 12
 		t.TextColor3 = white
-		t.TextStrokeTransparency = 0.4
+		t.TextStrokeTransparency, t.TextStrokeColor3 = 0, black
 		t.Size = UDim2.fromOffset(160, size or 12)
 		t.ZIndex = 3
 		t.Parent = box
 		return t
 	end
 	local nameT, weapT, distT, hpT = text(13), text(12), text(12), text(9)
+	nameT.FontFace = CODE
 	nameT.AnchorPoint, weapT.AnchorPoint, distT.AnchorPoint = Vector2.new(0.5, 1), Vector2.new(0.5, 1), Vector2.new(0.5, 0)
 	local hpBack = Instance.new("Frame")
 	hpBack.Name = "\0"
@@ -3101,23 +3106,30 @@ function Library:EspPreview(Data)
 	lines.Size = UDim2.fromScale(1, 1)
 	lines.ZIndex = 4
 	lines.Parent = overlay
-	local function line()
+	local function line(z)
 		local l = Instance.new("Frame")
 		l.Name = "\0"
 		l.BorderSizePixel = 0
 		l.AnchorPoint = Vector2.new(0.5, 0.5)
 		l.Visible = false
+		l.ZIndex = z or 2
 		l.Parent = lines
 		return l
 	end
-	local bones = {}
-	for i = 1, #PREVIEW_BONES do bones[i] = line() end
-	local lookLine, lookTip = line(), line()
+	local bones, boneEdges = {}, {}
+	for i = 1, #PREVIEW_BONES do bones[i], boneEdges[i] = line(), line(1) end
+	local lookLine, lookEdge, lookTip = line(), line(1), line()
 	lookTip.Rotation = 45
-	local headRing = line()
-	headRing.BackgroundTransparency = 1
-	Instance.new("UICorner", headRing).CornerRadius = UDim.new(1, 0)
-	local ringStroke = Instance.new("UIStroke", headRing)
+	local function ring(z, thick)
+		local f = line(z)
+		f.BackgroundTransparency = 1
+		Instance.new("UICorner", f).CornerRadius = UDim.new(1, 0)
+		local st = Instance.new("UIStroke", f)
+		st.Thickness = thick
+		return f, st
+	end
+	local headRing, ringStroke = ring(2, 1)
+	local headEdge, edgeStroke = ring(1, 3)
 	local function project(pos)
 		local o = cam.CFrame:PointToObjectSpace(pos)
 		if o.Z >= -0.1 then return nil end
@@ -3127,7 +3139,7 @@ function Library:EspPreview(Data)
 	end
 	local function place(l, a, b, thick)
 		local d, m = b - a, (a + b) / 2
-		l.Position, l.Size, l.Rotation = UDim2.fromOffset(m.X, m.Y), UDim2.fromOffset(d.Magnitude + 1, thick or 1), math.deg(math.atan2(d.Y, d.X))
+		l.Position, l.Size, l.Rotation = UDim2.fromOffset(m.X, m.Y), UDim2.fromOffset(d.Magnitude + (thick or 1), thick or 1), math.deg(math.atan2(d.Y, d.X))
 		l.Visible = true
 	end
 	local function hpColor(hp)
@@ -3149,7 +3161,7 @@ function Library:EspPreview(Data)
 		local side = state.Health and state.HealthPos or nil
 		local y = -2 - (side == "Top" and width + gap + 2 or 0)
 		weapT.Visible = state.Weapon
-		weapT.Text, weapT.TextSize, weapT.TextColor3 = tostring(state.WeaponText), state.FlagSize, state.FlagColor
+		weapT.Text, weapT.TextSize, weapT.TextColor3 = tostring(state.WeaponText), state.FlagSize - 1, state.FlagColor
 		weapT.Size = UDim2.fromOffset(160, state.FlagSize)
 		weapT.Position = UDim2.new(0.5, 0, 0, y)
 		if state.Weapon then y -= state.FlagSize + 1 end
@@ -3160,7 +3172,7 @@ function Library:EspPreview(Data)
 		nameT.TextStrokeColor3 = state.NameOutlineColor
 		nameT.Position = UDim2.new(0.5, 0, 0, y)
 		distT.Visible = state.Distance
-		distT.Text = "[2m]"
+		distT.Text, distT.TextSize, distT.TextColor3 = "[2m]", state.FlagSize - 1, white
 		distT.Position = UDim2.new(0.5, 0, 1, 2 + (side == "Bottom" and width + gap + 2 or 0))
 		-- the flags, right of the box (past a Right bar)
 		local fx0 = 3 + (side == "Right" and width + gap + 4 + (state.HealthText and 18 or 0) or 0)
@@ -3172,7 +3184,7 @@ function Library:EspPreview(Data)
 				flagRows[i] = r
 			end
 			r.Visible = true
-			r.Text, r.TextSize, r.TextColor3 = tostring(ln.text), state.FlagSize, ln.col or state.FlagColor
+			r.Text, r.TextSize, r.TextColor3 = tostring(ln.text), state.FlagSize - 1, ln.col or state.FlagColor
 			r.Size = UDim2.fromOffset(120, state.FlagSize)
 			r.Position = UDim2.new(1, fx0, 0, 1 + (i - 1) * (state.FlagSize + 1))
 		end
@@ -3180,11 +3192,11 @@ function Library:EspPreview(Data)
 		hpBack.BackgroundColor3 = state.HealthOutlineColor
 		hpBack.BackgroundTransparency = state.HealthOutline == "None" and 1 or 0
 		hpBack.Visible = state.Health
-		hpT.TextSize = state.HealthTextSize
+		hpT.TextSize = state.HealthTextSize - 1
 		hpT.Size = UDim2.fromOffset(30, state.HealthTextSize)
-		ringStroke.Color = state.LineColor
-		for _, l in bones do l.BackgroundColor3 = state.LineColor end
-		lookLine.BackgroundColor3, lookTip.BackgroundColor3 = state.LineColor, state.LineColor
+		ringStroke.Color, edgeStroke.Color = state.LineColor, state.OutlineColor
+		for i, l in bones do l.BackgroundColor3, boneEdges[i].BackgroundColor3 = state.LineColor, state.OutlineColor end
+		lookLine.BackgroundColor3, lookTip.BackgroundColor3, lookEdge.BackgroundColor3 = state.LineColor, state.LineColor, state.OutlineColor
 		paintChams()
 	end
 	local function layoutHealth(hp)
@@ -3234,6 +3246,63 @@ function Library:EspPreview(Data)
 	end
 	function preview:SetVisibility(b) root.Visible = b end
 	function preview:Refresh() buildModel() paint() end
+	-- the zoom slider under the view
+	do
+		local MIN, MAX = 0.6, 2.5
+		local row = Instance.new("Frame")
+		row.Name = "\0"
+		row.BackgroundTransparency, row.BorderSizePixel = 1, 0
+		row.AnchorPoint, row.Position, row.Size = Vector2.new(0, 1), UDim2.new(0, 9, 1, -9), UDim2.new(1, -18, 0, 16)
+		row.Parent = root
+		local function small(txt, x, align, width)
+			local t = Instance.new("TextLabel")
+			t.Name = "\0"
+			t.BackgroundTransparency = 1
+			t.FontFace, t.TextSize, t.Text = Library.Font, 12, txt
+			t.TextColor3, t.TextXAlignment = Library.Theme["Dim Text"], align
+			t.AnchorPoint, t.Position, t.Size = Vector2.new(x, 0), UDim2.fromScale(x, 0), UDim2.new(0, width, 1, 0)
+			Library:AddToTheme(t, { TextColor3 = "Dim Text" })
+			t.Parent = row
+			return t
+		end
+		small("zoom", 0, Enum.TextXAlignment.Left, 36)
+		local value = small("1.0x", 1, Enum.TextXAlignment.Right, 36)
+		local track = Instance.new("Frame")
+		track.Name = "\0"
+		track.BorderSizePixel = 0
+		track.BackgroundColor3 = Library.Theme.Inline
+		Library:AddToTheme(track, { BackgroundColor3 = "Inline" })
+		track.Position, track.Size = UDim2.fromOffset(40, 4), UDim2.new(1, -80, 0, 8)
+		track.Parent = row
+		local trackStroke = Instance.new("UIStroke", track)
+		trackStroke.Color = Library.Theme.Outline
+		Library:AddToTheme(trackStroke, { Color = "Outline" })
+		local fill = Instance.new("Frame")
+		fill.Name = "\0"
+		fill.BorderSizePixel = 0
+		fill.BackgroundColor3 = Library.Theme.Accent
+		Library:AddToTheme(fill, { BackgroundColor3 = "Accent" })
+		fill.Parent = track
+		local flag = tostring(Library.field(Data, "ZoomFlag", "zoomflag") or "EspPreviewZoom")
+		local function setZoom(v)
+			v = tonumber(v)
+			if not v then return end
+			v = math.clamp(Library:Round(v, 0.05), MIN, MAX)
+			state.Zoom = v
+			Library.Flags[flag] = v
+			fill.Size = UDim2.new((v - MIN) / (MAX - MIN), 0, 1, 0)
+			value.Text = string.format("%.2gx", v)
+		end
+		Library.SetFlags[flag] = setZoom
+		setZoom(1)
+		local hit = Library.click(track)
+		hit.Size, hit.Position = UDim2.new(1, 0, 1, 8), UDim2.fromOffset(0, -4)
+		local drag = false
+		local function at(x) setZoom(MIN + (MAX - MIN) * math.clamp((x - track.AbsolutePosition.X) / math.max(track.AbsoluteSize.X, 1), 0, 1)) end
+		Library:Connect(hit.InputBegan, function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 then drag = true at(i.Position.X) end end)
+		Library:Connect(UserInputService.InputChanged, function(i) if drag and i.UserInputType == Enum.UserInputType.MouseMovement then at(i.Position.X) end end)
+		Library:Connect(UserInputService.InputEnded, function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 then drag = false end end)
+	end
 	buildModel()
 	paint()
 	-- the health bar sweeps 100 -> 25 -> 100 so it shows how it moves
@@ -3242,8 +3311,11 @@ function Library:EspPreview(Data)
 		if not (root.Visible and root.Parent) then return end
 		local t = os.clock() - t0
 		local cf = CFrame.Angles(0, t * 0.6, 0)
-		cam.CFrame = cf * CFrame.new(0, 0.6, 11)
+		cam.CFrame = cf * CFrame.new(0, 0.6, 11 / state.Zoom)
 		cam.CFrame = CFrame.lookAt(cam.CFrame.Position, Vector3.new(0, 0.2, 0))
+		-- the box keeps its size on the character as the zoom changes
+		local viewH = P.view.AbsoluteSize.Y
+		box.Size = UDim2.fromOffset(viewH * 0.32 * state.Zoom, viewH * 0.68 * state.Zoom)
 		local hp = 0.625 + 0.375 * math.cos(t * 0.8)
 		layoutHealth(hp)
 		if state.Fill and state.FillSpin then fillGrad.Rotation = (fillGrad.Rotation + dt * 40) % 360 end
@@ -3264,7 +3336,12 @@ function Library:EspPreview(Data)
 		for i, pair in PREVIEW_BONES do
 			local a, b = at(pair[1]), at(pair[2])
 			local pa, pb = a and project(a.Position), b and project(b.Position)
-			if state.Skeleton and pa and pb then place(bones[i], pa, pb) else bones[i].Visible = false end
+			if state.Skeleton and pa and pb then
+				place(boneEdges[i], pa, pb, 3)
+				place(bones[i], pa, pb, 1)
+			else
+				bones[i].Visible, boneEdges[i].Visible = false, false
+			end
 		end
 		local head = at("Head")
 		local ph = head and project(head.Position)
@@ -3272,17 +3349,19 @@ function Library:EspPreview(Data)
 			local _, z = project(head.Position)
 			local r = head.Size.Y * 0.6 / (-z * math.tan(math.rad(cam.FieldOfView / 2))) * P.view.AbsoluteSize.Y / 2
 			headRing.Position, headRing.Size, headRing.Rotation = UDim2.fromOffset(ph.X, ph.Y), UDim2.fromOffset(r * 2, r * 2), 0
-			headRing.Visible = true
+			headEdge.Position, headEdge.Size, headEdge.Rotation = headRing.Position, headRing.Size, 0
+			headRing.Visible, headEdge.Visible = true, true
 		else
-			headRing.Visible = false
+			headRing.Visible, headEdge.Visible = false, false
 		end
 		local tip = head and project(head.Position + head.CFrame.LookVector * state.LookLength)
 		if state.LookDir and ph and tip then
-			place(lookLine, ph, tip)
+			place(lookEdge, ph, tip, 3)
+			place(lookLine, ph, tip, 1)
 			lookTip.Visible = state.LookCone
 			lookTip.Position, lookTip.Size = UDim2.fromOffset(tip.X, tip.Y), UDim2.fromOffset(6, 6)
 		else
-			lookLine.Visible, lookTip.Visible = false, false
+			lookLine.Visible, lookEdge.Visible, lookTip.Visible = false, false, false
 		end
 	end)
 	-- following flags
