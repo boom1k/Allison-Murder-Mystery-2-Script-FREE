@@ -1722,6 +1722,9 @@ function Library.AddColorpicker(owner, row, Data)
 	local S = Build.Swatch(row)
 	S.Root.LayoutOrder = 2
 	S.Root.Size = UDim2.new(0, 24, 0, 16)
+	-- the swatch's own background shows through a transparent colour: a neutral tone, not the accent
+	Library:ChangeItemTheme(S.Root, { BackgroundColor3 = "Inline" })
+	S.Root.BackgroundColor3 = Library.Theme.Inline
 	Library.fx.shadow(S.Root, { radius = 5, transparency = 0.45 })
 	local winRoot = Library.popupRoot(owner.Section)
 	local P = Build.ColorPopup(winRoot)
@@ -1760,9 +1763,11 @@ function Library.AddColorpicker(owner, row, Data)
 
 	local function update(silent)
 		cp.Color = Color3.fromHSV(cp.Hue, cp.Sat, cp.Val)
-		S.color.BackgroundColor3 = cp.Color
+		-- the design binds these to the Accent theme colour; Library.themed with a Color3 drops that binding, otherwise the next theme
+		-- change (every config load applies the theme) would paint every swatch in the accent colour
+		Library.themed(S.color, "BackgroundColor3", cp.Color)
 		S.color.BackgroundTransparency = cp.Alpha * 0.8
-		P.preview.BackgroundColor3 = cp.Color
+		Library.themed(P.preview, "BackgroundColor3", cp.Color)
 		P.sv.BackgroundColor3 = Color3.fromHSV(cp.Hue, 1, 1)
 		P.svCursor.Position = UDim2.new(cp.Sat, -5, 1 - cp.Val, -5)
 		P.hueCursor.Position = UDim2.new(cp.Hue, -3, 0, -1)
