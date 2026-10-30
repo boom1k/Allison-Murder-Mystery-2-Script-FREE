@@ -618,12 +618,19 @@ do
 			end)
 		end
 	end
+	-- Gotham, Medium for all text and Bold for titles (Regular looked too thin at 11-13 px on the dark background)
 	local face = Library.Env.FontFace
+	local bold
 	if typeof(face) ~= "Font" then
-		local ok, f = pcall(function() return Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Regular) end)
-		face = ok and f or Font.fromEnum(Enum.Font.Gotham)
+		local family = "rbxasset://fonts/families/GothamSSm.json"
+		local ok, f = pcall(function() return Font.new(family, Enum.FontWeight.Medium) end)
+		face = ok and f or Font.fromEnum(Enum.Font.GothamMedium)
+		local ok2, b = pcall(function() return Font.new(family, Enum.FontWeight.Bold) end)
+		bold = ok2 and b or Font.fromEnum(Enum.Font.GothamBold)
+	else
+		bold = face
 	end
-	Library.Font = face
+	Library.Font, Library.FontBold = face, bold
 	Build.Font = face
 end
 
@@ -706,6 +713,7 @@ function Library:Window(Data)
 	root.Position = UDim2.fromScale(0.5, 0.5)
 	if typeof(size) == "UDim2" then root.Size = size end
 	W.title.Text = tostring(name)
+	W.title.FontFace = Library.FontBold
 	W.searchText.Text = "Search..."
 	W.tabs.AutomaticSize = Enum.AutomaticSize.None
 	listLayout(W.tabs, 2)
@@ -822,6 +830,7 @@ function Library:Section(Data)
 	S.Root.Size = UDim2.new(1, 0, 0, 0)
 	listLayout(S.Root, 0)
 	S.title.Text = tostring(name)
+	S.title.FontFace = Library.FontBold
 	S.title.Size = UDim2.new(1, 0, 0, 22)
 	S.title.Position = UDim2.new()
 	S.card.AutomaticSize = Enum.AutomaticSize.Y
@@ -1876,6 +1885,7 @@ local function pageBox(page, title, height)
 	S.Root.AutomaticSize = Enum.AutomaticSize.None
 	S.Root.Size = UDim2.new(1, 0, 0, height + 22)
 	S.title.Text = title
+	S.title.FontFace = Library.FontBold
 	S.title.Size, S.title.Position = UDim2.new(1, 0, 0, 22), UDim2.new()
 	S.card.AutomaticSize = Enum.AutomaticSize.None
 	S.card.Size, S.card.Position = UDim2.new(1, 0, 0, height), UDim2.new(0, 0, 0, 22)
