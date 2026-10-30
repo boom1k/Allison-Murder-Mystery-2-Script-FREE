@@ -1510,6 +1510,7 @@ function Library:Slider(Data)
 	local slider = { Value = min, Flag = flag, Items = { Slider = Library.Wrap(T.Root) }, Section = section }
 	-- flat imgui bar: no knob; while hovered / dragged the value brightens and the bar's edge turns to the accent
 	local trackStroke = T.track:FindFirstChildOfClass("UIStroke")
+	T.fill.Position = UDim2.new()   -- the design's 1 px inset is for a fill 2 px smaller than the track; this fill is sized in scale of the whole track
 	T.knob.Visible = false
 	local knobScale = Instance.new("UIScale", T.knob)
 	local fillGlow = nil
