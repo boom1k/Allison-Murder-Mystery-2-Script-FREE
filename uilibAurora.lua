@@ -3336,6 +3336,226 @@ end
 -- ============================ SkinChanger ============================
 local RARITY_RANK = { Stock = 0, Blue = 1, Purple = 2, Pink = 3, Red = 4, Forbidden = 5, Special = 6 }
 
+-- ============================ SkinChanger 3D preview ============================
+-- Data.Preview = function(weapon, skin) -> Instance | nil (a fresh model; skin nil = the weapon's default) adds a "Preview" box under the
+-- Skin Changer box: the model turns in a ViewportFrame (drag to orbit, wheel / slider to zoom, "auto rotate" toggle). The builder runs in a
+-- thread of its own (it may yield), the result is dropped when another item was asked for meanwhile. Data.PreviewHeight (default 280).
+local function skinPreview(page, Data)
+	local builder = field(Data, "Preview", "preview")
+	if type(builder) ~= "function" then return nil end
+	local fx = Library.fx
+	local S = pageBox(page, "Preview", field(Data, "PreviewHeight", "previewheight") or 280)
+	local content = S.content
+	local MIN, MAX = 0.5, 3
+	local pv = { Zoom = 1, Spin = true, Yaw = 0, Pitch = 0.12, Dragging = false }
+	local caption = label(content, "", UDim2.new(), UDim2.new(1, 0, 0, 16), Library.Theme["Dim Text"], 13, Enum.TextXAlignment.Center)
+	Library.themed(caption, "TextColor3", "Dim Text")
+	-- the view: a dark frame with the viewport in it, a transparent button over it for the mouse
+	local frame = Instance.new("Frame")
+	frame.Name = "\0"
+	frame.BorderSizePixel = 0
+	frame.Position, frame.Size = UDim2.fromOffset(0, 20), UDim2.new(1, 0, 1, -48)
+	frame.BackgroundColor3 = Library.Theme["Dark Liner"]
+	Library.themed(frame, "BackgroundColor3", "Dark Liner")
+	frame.ClipsDescendants = true
+	frame.Parent = content
+	local stroke = Instance.new("UIStroke", frame)
+	stroke.Color, stroke.ApplyStrokeMode = Library.Theme.Outline, Enum.ApplyStrokeMode.Border
+	Library.themed(stroke, "Color", "Outline")
+	local vpf = Instance.new("ViewportFrame")
+	vpf.Name = "\0"
+	vpf.BackgroundTransparency, vpf.BorderSizePixel = 1, 0
+	vpf.Size = UDim2.fromScale(1, 1)
+	vpf.Ambient, vpf.LightColor = Color3.fromRGB(165, 165, 165), Color3.new(1, 1, 1)
+	vpf.LightDirection = Vector3.new(-0.4, -1, -0.6)
+	vpf.Parent = frame
+	local cam = Instance.new("Camera")
+	cam.FieldOfView = 30
+	cam.Parent = vpf
+	vpf.CurrentCamera = cam
+	local world = Instance.new("WorldModel")
+	world.Parent = vpf
+	local empty = label(frame, "", UDim2.new(), UDim2.fromScale(1, 1), Library.Theme["Dim Text"], 13, Enum.TextXAlignment.Center)
+	Library.themed(empty, "TextColor3", "Dim Text")
+	empty.ZIndex = 2
+
+	-- the model: scripts / sounds / animators out, parts anchored, the long axis along X, centred on the origin
+	local model, fitDist, halfLen = nil, 6, 2
+	local function setModel(m)
+		if model then model:Destroy() model = nil end
+		if typeof(m) ~= "Instance" then return end
+		if not m:IsA("Model") then
+			local wrap = Instance.new("Model")
+			m.Parent = wrap
+			m = wrap
+		end
+		for _, d in m:GetDescendants() do
+			if d:IsA("BaseScript") or d:IsA("Sound") or d:IsA("AnimationController") or d:IsA("Animator") or d:IsA("Humanoid") then d:Destroy()
+			elseif d:IsA("BasePart") then d.Anchored, d.CanCollide = true, false end
+		end
+		-- the box in WORLD axes, from the parts (Model:GetBoundingBox / GetExtentsSize follow the model's own pivot, which turning it does not change)
+		local function worldBox()
+			local lo, hi = Vector3.new(math.huge, math.huge, math.huge), Vector3.new(-math.huge, -math.huge, -math.huge)
+			for _, d in m:GetDescendants() do
+				if d:IsA("BasePart") then
+					local cf, s = d.CFrame, d.Size
+					local r, u, l = cf.RightVector, cf.UpVector, cf.LookVector
+					local half = Vector3.new(
+						(math.abs(r.X) * s.X + math.abs(u.X) * s.Y + math.abs(l.X) * s.Z) / 2,
+						(math.abs(r.Y) * s.X + math.abs(u.Y) * s.Y + math.abs(l.Y) * s.Z) / 2,
+						(math.abs(r.Z) * s.X + math.abs(u.Z) * s.Y + math.abs(l.Z) * s.Z) / 2)
+					lo, hi = lo:Min(cf.Position - half), hi:Max(cf.Position + half)
+				end
+			end
+			return lo, hi
+		end
+		local lo, hi = worldBox()
+		if hi.X < lo.X then m:Destroy() return end   -- no parts
+		if hi.Z - lo.Z > (hi.X - lo.X) * 1.1 then   -- the long axis along X: a turn from where it is
+			m:PivotTo(CFrame.Angles(0, math.rad(90), 0) * m:GetPivot())
+			lo, hi = worldBox()
+		end
+		m:PivotTo(CFrame.new(-(lo + hi) / 2) * m:GetPivot())
+		local sz = hi - lo
+		m.Parent = world
+		model = m
+		halfLen = math.max(sz.X, sz.Z) / 2
+		-- the height (not the length) fills the view: the view is wide and short
+		fitDist = math.max(sz.Y, sz.Z * 0.6, 0.4) / (2 * math.tan(math.rad(cam.FieldOfView) / 2)) * 1.7
+	end
+	local token = 0
+	function pv.Show(weapon, skin)
+		local key = tostring(weapon) .. "|" .. tostring(skin)
+		if key == pv.key then return end
+		pv.key = key
+		token += 1
+		local mine = token
+		caption.Text = weapon and (tostring(weapon) .. (skin and ("  -  " .. tostring(skin)) or "  -  default")) or ""
+		if not weapon then setModel(nil) empty.Text = "" return end
+		task.spawn(function()
+			local ok, m = pcall(builder, weapon, skin)
+			if mine ~= token or not Library.Alive then
+				if ok and typeof(m) == "Instance" then pcall(function() m:Destroy() end) end
+				return
+			end
+			if ok and typeof(m) == "Instance" then
+				setModel(m)
+				empty.Text = ""
+			else
+				setModel(nil)
+				empty.Text = "No preview for this item."
+			end
+		end)
+	end
+
+	-- the camera: orbit around the model, auto rotate, zoom
+	Library:Connect(RunService.RenderStepped, function(dt)
+		if not model then return end
+		local g = vpf
+		local holder = Library.Holder.Instance
+		while g and g ~= holder do
+			if g:IsA("GuiObject") and not g.Visible then return end   -- another tab / the menu closed
+			g = g.Parent
+		end
+		if pv.Spin and not pv.Dragging then pv.Yaw += dt * 0.7 end
+		local d = math.max(fitDist / pv.Zoom, halfLen * 0.9)
+		local dir = Vector3.new(math.sin(pv.Yaw) * math.cos(pv.Pitch), math.sin(pv.Pitch), math.cos(pv.Yaw) * math.cos(pv.Pitch))
+		cam.CFrame = CFrame.lookAt(dir * d, Vector3.zero)
+	end)
+	local hit = Instance.new("TextButton")
+	hit.Name = "\0"
+	hit.Text, hit.AutoButtonColor, hit.BackgroundTransparency = "", false, 1
+	hit.Size, hit.ZIndex = UDim2.fromScale(1, 1), 20
+	hit.Parent = frame
+	local MB1, TOUCH = Enum.UserInputType.MouseButton1, Enum.UserInputType.Touch
+	local lastPos
+	Library:Connect(hit.InputBegan, function(i)
+		if i.UserInputType == MB1 or i.UserInputType == TOUCH then pv.Dragging, lastPos = true, i.Position end
+	end)
+	Library:Connect(UserInputService.InputChanged, function(i)
+		if pv.Dragging and lastPos and (i.UserInputType == Enum.UserInputType.MouseMovement or i.UserInputType == TOUCH) then
+			local d = i.Position - lastPos
+			lastPos = i.Position
+			pv.Yaw -= d.X * 0.012
+			pv.Pitch = math.clamp(pv.Pitch + d.Y * 0.01, -1.2, 1.2)
+		end
+	end)
+	Library:Connect(UserInputService.InputEnded, function(i)
+		if i.UserInputType == MB1 or i.UserInputType == TOUCH then pv.Dragging = false end
+	end)
+
+	-- the bottom row: zoom slider (left), auto rotate toggle (right)
+	local row = fixedFrame(content, UDim2.new(0, 0, 1, -22), UDim2.new(1, 0, 0, 20))
+	local zoomRow = fixedFrame(row, UDim2.new(), UDim2.new(1, -150, 1, 0))
+	local function small(txt, x, align, width)
+		local t = label(zoomRow, txt, UDim2.fromScale(x, 0), UDim2.new(0, width, 1, 0), Library.Theme["Dim Text"], 12, align)
+		t.AnchorPoint = Vector2.new(x, 0)
+		Library.themed(t, "TextColor3", "Dim Text")
+		return t
+	end
+	small("zoom", 0, Enum.TextXAlignment.Left, 36)
+	local value = small("1x", 1, Enum.TextXAlignment.Right, 40)
+	local track = Instance.new("Frame")
+	track.Name = "\0"
+	track.BorderSizePixel = 0
+	track.BackgroundColor3 = Library.Theme.Inline
+	Library.themed(track, "BackgroundColor3", "Inline")
+	track.Position, track.Size = UDim2.new(0, 42, 0.5, -4), UDim2.new(1, -88, 0, 8)
+	track.Parent = zoomRow
+	local trackStroke = Instance.new("UIStroke", track)
+	trackStroke.Color = Library.Theme.Outline
+	Library.themed(trackStroke, "Color", "Outline")
+	local fill = Instance.new("Frame")
+	fill.Name = "\0"
+	fill.BorderSizePixel = 0
+	fill.BackgroundColor3 = Library.Theme.Accent
+	Library.themed(fill, "BackgroundColor3", "Accent")
+	fill.Parent = track
+	local zflag = tostring(field(Data, "ZoomFlag", "zoomflag") or "SkinPreviewZoom")
+	local function setZoom(v)
+		v = tonumber(v)
+		if not v then return end
+		v = math.clamp(Library:Round(v, 0.05), MIN, MAX)
+		pv.Zoom = v
+		Library.Flags[zflag] = v
+		fill.Size = UDim2.new((v - MIN) / (MAX - MIN), 0, 1, 0)
+		value.Text = string.format("%.2gx", v)
+	end
+	Library.SetFlags[zflag] = setZoom
+	setZoom(1)
+	local zhit = Library.click(track)
+	zhit.Size, zhit.Position = UDim2.new(1, 0, 1, 8), UDim2.fromOffset(0, -4)
+	local zdrag = false
+	local function at(x) setZoom(MIN + (MAX - MIN) * math.clamp((x - track.AbsolutePosition.X) / math.max(track.AbsoluteSize.X, 1), 0, 1)) end
+	Library:Connect(zhit.InputBegan, function(i) if i.UserInputType == MB1 or i.UserInputType == TOUCH then zdrag = true at(i.Position.X) end end)
+	Library:Connect(UserInputService.InputChanged, function(i) if zdrag and (i.UserInputType == Enum.UserInputType.MouseMovement or i.UserInputType == TOUCH) then at(i.Position.X) end end)
+	Library:Connect(UserInputService.InputEnded, function(i) if i.UserInputType == MB1 or i.UserInputType == TOUCH then zdrag = false end end)
+	Library:Connect(hit.InputChanged, function(i)
+		if i.UserInputType == Enum.UserInputType.MouseWheel then setZoom(pv.Zoom + i.Position.Z * 0.1) end
+	end)
+	-- auto rotate: the design sheet's Toggle
+	do
+		local T = Build.Toggle(row)
+		T.Root.AnchorPoint, T.Root.Position, T.Root.Size = Vector2.new(1, 0), UDim2.new(1, 0, 0, 0), UDim2.new(0, 140, 0, 19)
+		T.label.Text = "auto rotate"
+		T.label.Size = UDim2.new(1, -18, 0, 15)
+		T.check.AnchorPoint, T.check.Position, T.check.Size = Vector2.new(0.5, 0.5), UDim2.fromScale(0.5, 0.5), UDim2.fromScale(1, 1)
+		local sflag = tostring(field(Data, "SpinFlag", "spinflag") or "SkinPreviewSpin")
+		local function set(v)
+			v = v and true or false
+			pv.Spin = v
+			Library.Flags[sflag] = v
+			Library:ChangeItemTheme(T.box, { BackgroundColor3 = v and "Accent" or "Inline" })
+			fx.tween(T.box, { BackgroundColor3 = v and Library.Theme.Accent or Library.Theme.Inline }, 0.14)
+			fx.tween(T.check, { BackgroundTransparency = v and 0 or 1 }, 0.14)
+		end
+		Library.SetFlags[sflag] = set
+		Library.click(T.Root, function() set(not pv.Spin) end)
+		set(true)
+	end
+	return pv
+end
+
 function Library:SkinChanger(Data)
 	local page = self
 	if page.Columns ~= 1 then
@@ -3347,6 +3567,7 @@ function Library:SkinChanger(Data)
 	local callback = field(Data, "Callback", "callback") or function() end
 	local height = field(Data, "Height", "height") or 640
 	local S = pageBox(page, "Skin Changer", height)
+	local pv = skinPreview(page, Data)   -- the 3D preview box under it (when the script gives a builder)
 	local content = S.content
 	local ch = { Window = page.Window, Page = page, Flag = flag, Callback = callback, Catalog = field(Data, "Catalog", "catalog") or {}, Height = height,
 		Selected = {}, Category = 1, Weapon = nil, Query = "", Items = { SkinChanger = Library.Wrap(S.Root) } }
@@ -3557,11 +3778,20 @@ function Library:SkinChanger(Data)
 		C.badge.Visible = on and true or false
 		local stroke = C.Root:FindFirstChildOfClass("UIStroke")
 		if stroke then stroke.Color = on and Library.Theme.Accent or Library.Theme.Border stroke.Thickness = on and 2 or 1 end
-		Library.click(C.Root, function() cardClick(weapon, entry and entry.Skin or nil) end)
+		local cardBtn = Library.click(C.Root, function() cardClick(weapon, entry and entry.Skin or nil) end)
+		if pv then
+			-- hovering a card previews it; leaving shows the chosen one again
+			Library:Connect(cardBtn.MouseEnter, function() pv.Show(weapon, entry and entry.Skin or nil) end)
+			Library:Connect(cardBtn.MouseLeave, function() if ch.PreviewCurrent then ch.PreviewCurrent() end end)
+		end
 		return C
 	end
 
+	function ch.PreviewCurrent()
+		if pv then pv.Show(ch.Weapon, ch.Weapon and ch.Selected[ch.Weapon] or nil) end
+	end
 	function renderCards()
+		ch.PreviewCurrent()
 		for _, c in grid:GetChildren() do if c:IsA("Frame") then c:Destroy() end end
 		table.clear(cards)
 		relayout()
