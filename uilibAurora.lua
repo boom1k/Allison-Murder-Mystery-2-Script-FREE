@@ -3829,7 +3829,8 @@ function Library:EspPreview(Data)
 	end
 	-- (re)built when a setting that changes their shape moves; their colours are set every frame (chamsFrame)
 	local function paintChams()
-		if wall then wall.Parent = state.Wall and world or nil end
+		-- the wall is destroyed with the preview (unload / the window going away) while a script's Sync can still run: its Parent is locked then
+		if wall and not pcall(function() wall.Parent = state.Wall and world or nil end) then wall = nil end
 		local sig = table.concat({ tostring(state.Chams), tostring(state.ChamsStyle), tostring(state.ChamsWalls), tostring(state.ChamsOutline),
 			tostring(state.ChamsOutlineThickness), tostring(state.ChamsOutlineWalls), tostring(state.ChamsTransparency), tostring(model) }, "|")
 		if sig == chamSig then return end
