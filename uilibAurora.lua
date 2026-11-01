@@ -56,7 +56,7 @@ function Build.Slider(parent)
 	local n1 = N("TextLabel", { Name = "label", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 18, 0, 1), Size = UDim2.new(0, 67.38, 0, 18), BackgroundTransparency = 1, Text = "translucency", TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(200, 200, 200) }, root)
 	P["label"] = n1
 	Th(n1, { TextColor3 = "Text" })
-	local n2 = N("TextLabel", { Name = "minus", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 4, 0, 16), Size = UDim2.new(0, 10, 0, 18), BackgroundTransparency = 1, Text = "-", TextSize = 13, TextXAlignment = Enum.TextXAlignment.Center, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(138, 138, 138) }, root)
+	local n2 = N("TextLabel", { Name = "minus", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 4, 0, 14), Size = UDim2.new(0, 10, 0, 18), BackgroundTransparency = 1, Text = "\u{2212}", TextSize = 13, TextXAlignment = Enum.TextXAlignment.Center, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(138, 138, 138) }, root)
 	P["minus"] = n2
 	Th(n2, { TextColor3 = "Dim Text" })
 	local n3 = N("Frame", { Name = "track", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 18, 0, 19), Size = UDim2.new(1, -34, 0, 8), BackgroundColor3 = Color3.fromRGB(64, 64, 64), BackgroundTransparency = 0 }, root)
@@ -69,7 +69,7 @@ function Build.Slider(parent)
 	Th(n3_1, { BackgroundColor3 = "Accent" })
 	local n3_2 = N("Frame", { Name = "knob", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 78.59, 0, 1), Size = UDim2.new(0, 0, 0, 6), BackgroundTransparency = 1 }, n3)
 	P["knob"] = n3_2
-	local n4 = N("TextLabel", { Name = "plus", BorderSizePixel = 0, AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -2, 0, 16), Size = UDim2.new(0, 10, 0, 18), BackgroundTransparency = 1, Text = "+", TextSize = 13, TextXAlignment = Enum.TextXAlignment.Center, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(138, 138, 138) }, root)
+	local n4 = N("TextLabel", { Name = "plus", BorderSizePixel = 0, AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -2, 0, 14), Size = UDim2.new(0, 10, 0, 18), BackgroundTransparency = 1, Text = "+", TextSize = 13, TextXAlignment = Enum.TextXAlignment.Center, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(138, 138, 138) }, root)
 	P["plus"] = n4
 	Th(n4, { TextColor3 = "Dim Text" })
 	local n5 = N("TextLabel", { Name = "value", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 18, 0, 29), Size = UDim2.new(0, 120, 0, 16.5), BackgroundTransparency = 1, Text = "0", TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(138, 138, 138) }, root)
