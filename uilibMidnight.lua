@@ -730,15 +730,15 @@ end
 
 function Build.PartPicker(parent)
 	local P = {}
-	local root = N("Frame", { Name = "PartPicker", BorderSizePixel = 0, Size = UDim2.new(0, 230, 0, 150), BackgroundTransparency = 1 }, parent)
+	local root = N("Frame", { Name = "PartPicker", BorderSizePixel = 0, Size = UDim2.new(0, 270, 0, 152), BackgroundTransparency = 1 }, parent)
 	P.Root = root
-	local n1 = N("TextLabel", { Name = "label", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 18, 0, 1), Size = UDim2.new(0, 44.7, 0, 18), BackgroundTransparency = 1, Text = "hitboxes", TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(220, 224, 230) }, root)
+	local n1 = N("TextLabel", { Name = "label", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 0, 0, 4), Size = UDim2.new(0, 48.42, 0, 19.5), BackgroundTransparency = 1, Text = "hitboxes", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(220, 224, 230) }, root)
 	P["label"] = n1
 	Th(n1, { TextColor3 = "Text" })
-	local n2 = N("Frame", { Name = "figure", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 18, 0, 18), Size = UDim2.new(1, -20, 0, 128), BackgroundColor3 = Color3.fromRGB(37, 41, 49), BackgroundTransparency = 0 }, root)
+	local n2 = N("Frame", { Name = "figure", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 0, 0, 24), Size = UDim2.new(1, 0, 0, 128), BackgroundColor3 = Color3.fromRGB(19, 21, 25), BackgroundTransparency = 0 }, root)
 	P["figure"] = n2
-	Th(n2, { BackgroundColor3 = "Element" })
-	N("UICorner", { CornerRadius = UDim.new(0, 5) }, n2)
+	Th(n2, { BackgroundColor3 = "Dark Liner" })
+	N("UICorner", { CornerRadius = UDim.new(0, 6) }, n2)
 	local n2S = N("UIStroke", { Color = Color3.fromRGB(40, 44, 52), Thickness = 1, ApplyStrokeMode = Enum.ApplyStrokeMode.Border }, n2)
 	Th(n2S, { Color = "Border" })
 	return P
@@ -5656,11 +5656,15 @@ function Library:PartPicker(Data)
 		Library.Theme["Priority 3"] = Library.Theme["Priority 3"] or Color3.fromRGB(225, 205, 70)
 	end
 	local T = Build.PartPicker(section.Items["Content"].Instance)
-	T.Root.Size = UDim2.new(1, 0, 0, 150)
 	local name = tostring(Library.field(Data, "Name", "name") or "")
+	-- label on the shared control label line (16 tall at y 4); the box under it, full width. Without a name the box starts at the top.
 	T.label.Text = name
+	T.label.Position, T.label.Size = UDim2.fromOffset(0, 4), UDim2.new(1, 0, 0, 16)
+	T.label.Visible = name ~= ""
+	T.Root.Size = UDim2.new(1, 0, 0, name ~= "" and 152 or 128)
+	if name == "" then T.figure.Position = UDim2.new() end
 	Library.regSearch(section, T.Root, name)
-	T.figure.Size = UDim2.new(1, 0, 0, 128)
+	T.figure.Size = UDim2.new(1, 0, 0, 128)   -- (x / width come from the design: flush left and right)
 	-- the body keeps the proportions of an R6 character, centred in the box
 	local body = Instance.new("Frame")
 	body.Name = "\0"
@@ -5744,7 +5748,7 @@ function Library:PartPicker(Data)
 		local legend = Instance.new("Frame")
 		legend.Name = "\0"
 		legend.BackgroundTransparency, legend.BorderSizePixel = 1, 0
-		legend.AnchorPoint, legend.Position, legend.Size = Vector2.new(1, 1), UDim2.new(1, -8, 1, -6), UDim2.fromOffset(84, 56)
+		legend.AnchorPoint, legend.Position, legend.Size = Vector2.new(1, 1), UDim2.new(1, -8, 1, -8), UDim2.fromOffset(84, 56)
 		legend.Parent = T.figure
 		Library.listLayout(legend, 2)
 		for i, row in { { "Accent", "1st priority" }, { "Priority 2", "2nd priority" }, { "Priority 3", "3rd priority" }, { "Inline", "off" } } do
