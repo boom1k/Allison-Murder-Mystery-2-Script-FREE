@@ -3299,11 +3299,12 @@ function Library:Notification(Text, Duration, Color, Icon)
 	local root, text, bar, progress = N.Root, N.text, N.bar, N.progress
 	local duration = tonumber(Duration) or 4
 	-- a card as wide as its text: accent pill on the left, the text, a thin bar along the bottom that drains for the duration
-	root.AutomaticSize = Enum.AutomaticSize.X
-	root.Size = UDim2.new(0, 0, 0, 36)
+	-- the width follows the text (22 px before it, 14 after). Not AutomaticSize: the drop shadow sticks out 24 px and would be counted.
+	root.AutomaticSize = Enum.AutomaticSize.None
+	root.Size = UDim2.new(0, 60, 0, 36)
 	root.ZIndex = 2001
-	local pad = Instance.new("UIPadding", root)
-	pad.PaddingRight = UDim.new(0, 14)
+	local function fitWidth() root.Size = UDim2.new(0, math.ceil(text.TextBounds.X) + 22 + 14, 0, 36) end
+	text:GetPropertyChangedSignal("TextBounds"):Connect(fitWidth)
 	text.Position = UDim2.new(0, 22, 0, 0)
 	text.Size = UDim2.new(0, 0, 1, 0)
 	text.AutomaticSize = Enum.AutomaticSize.X
@@ -3313,9 +3314,10 @@ function Library:Notification(Text, Duration, Color, Icon)
 	text.ZIndex = 2003
 	bar.AnchorPoint, bar.Position, bar.Size = Vector2.new(0, 0.5), UDim2.new(0, 10, 0.5, 0), UDim2.new(0, 3, 0, 16)
 	bar.ZIndex = 2002
-	progress.Position, progress.Size, progress.ZIndex = UDim2.new(0, 10, 1, -4), UDim2.new(1, -6, 0, 2), 2002
+	progress.Position, progress.Size, progress.ZIndex = UDim2.new(0, 10, 1, -4), UDim2.new(1, -20, 0, 2), 2002
 	if typeof(Color) == "Color3" then bar.BackgroundColor3, progress.BackgroundColor3 = Color, Color end
 	local shadow = fx.shadow(root, { radius = 10, transparency = 0.3 })
+	fitWidth()
 	local sc = Instance.new("UIScale", root)
 	local stroke = root:FindFirstChildOfClass("UIStroke")
 	local function alpha(a, t)
@@ -3351,11 +3353,10 @@ function Library:Watermark(Text, Icon)
 	local root = Wm.Root
 	root.AnchorPoint = Vector2.new(1, 0)
 	root.Position = UDim2.new(1, -12, 0, cornerY())
-	root.AutomaticSize = Enum.AutomaticSize.X
-	root.Size = UDim2.new(0, 0, 0, 32)
+	-- the width follows the text (see Notification: no AutomaticSize because of the shadow)
+	root.AutomaticSize = Enum.AutomaticSize.None
+	root.Size = UDim2.new(0, 120, 0, 32)
 	root.ZIndex = 1500
-	local pad = Instance.new("UIPadding", root)
-	pad.PaddingRight = UDim.new(0, 14)
 	Library.fx.shadow(root, { radius = 10, transparency = 0.35 })
 	Wm.text.Position = UDim2.new(0, 52, 0, 0)
 	Wm.text.Size = UDim2.new(0, 0, 1, 0)
@@ -3364,6 +3365,9 @@ function Library:Watermark(Text, Icon)
 	Wm.text.RichText = true
 	Wm.text.Text = tostring(Text or "Allison")
 	Wm.text.ZIndex = 1502
+	local function fitWidth() root.Size = UDim2.new(0, math.ceil(Wm.text.TextBounds.X) + 52 + 14, 0, 32) end
+	Wm.text:GetPropertyChangedSignal("TextBounds"):Connect(fitWidth)
+	fitWidth()
 	Wm.logo.ZIndex = 1502
 	Wm.logo.ImageColor3, Wm.logo.ScaleType = Color3.new(1, 1, 1), Enum.ScaleType.Fit
 	Wm.logo.AnchorPoint, Wm.logo.Position = Vector2.new(0, 0.5), UDim2.new(0, 11, 0.5, 0)
