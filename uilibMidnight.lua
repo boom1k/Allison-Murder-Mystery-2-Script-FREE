@@ -75,12 +75,12 @@ end
 
 function Build.Slider(parent)
 	local P = {}
-	local root = N("Frame", { Name = "Slider", BorderSizePixel = 0, Size = UDim2.new(0, 270, 0, 42), BackgroundTransparency = 1 }, parent)
+	local root = N("Frame", { Name = "Slider", BorderSizePixel = 0, Size = UDim2.new(0, 270, 0, 40), BackgroundTransparency = 1 }, parent)
 	P.Root = root
-	local n1 = N("TextLabel", { Name = "label", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 0, 0, 2), Size = UDim2.new(0, 72.98, 0, 19.5), BackgroundTransparency = 1, Text = "translucency", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(220, 224, 230) }, root)
+	local n1 = N("TextLabel", { Name = "label", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 0, 0, 4), Size = UDim2.new(0, 72.98, 0, 19.5), BackgroundTransparency = 1, Text = "translucency", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(220, 224, 230) }, root)
 	P["label"] = n1
 	Th(n1, { TextColor3 = "Text" })
-	local n2 = N("TextLabel", { Name = "value", BorderSizePixel = 0, AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, 0, 0, 2), Size = UDim2.new(0, 100, 0, 19.5), BackgroundTransparency = 1, Text = "0", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Right, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(220, 224, 230) }, root)
+	local n2 = N("TextLabel", { Name = "value", BorderSizePixel = 0, AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, 0, 0, 4), Size = UDim2.new(0, 100, 0, 19.5), BackgroundTransparency = 1, Text = "0", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Right, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(220, 224, 230) }, root)
 	P["value"] = n2
 	Th(n2, { TextColor3 = "Text" })
 	local n3 = N("Frame", { Name = "track", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 0, 0, 28), Size = UDim2.new(1, 0, 0, 4), BackgroundColor3 = Color3.fromRGB(52, 58, 69), BackgroundTransparency = 0 }, root)
@@ -102,19 +102,19 @@ end
 
 function Build.Dropdown(parent)
 	local P = {}
-	local root = N("Frame", { Name = "Dropdown", BorderSizePixel = 0, Size = UDim2.new(0, 270, 0, 54), BackgroundTransparency = 1 }, parent)
+	local root = N("Frame", { Name = "Dropdown", BorderSizePixel = 0, Size = UDim2.new(0, 270, 0, 56), BackgroundTransparency = 1 }, parent)
 	P.Root = root
-	local n1 = N("TextLabel", { Name = "label", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 0, 0, 2), Size = UDim2.new(0, 49.16, 0, 19.5), BackgroundTransparency = 1, Text = "box type", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(220, 224, 230) }, root)
+	local n1 = N("TextLabel", { Name = "label", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 0, 0, 4), Size = UDim2.new(0, 49.16, 0, 19.5), BackgroundTransparency = 1, Text = "box type", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(220, 224, 230) }, root)
 	P["label"] = n1
 	Th(n1, { TextColor3 = "Text" })
-	local n2 = N("Frame", { Name = "field", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 0, 0, 22), Size = UDim2.new(1, 0, 0, 30), BackgroundColor3 = Color3.fromRGB(37, 41, 49), BackgroundTransparency = 0 }, root)
+	local n2 = N("Frame", { Name = "field", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 0, 0, 24), Size = UDim2.new(1, 0, 0, 28), BackgroundColor3 = Color3.fromRGB(37, 41, 49), BackgroundTransparency = 0 }, root)
 	P["field"] = n2
 	Th(n2, { BackgroundColor3 = "Element" })
 	N("UICorner", { CornerRadius = UDim.new(0, 6) }, n2)
-	local n2_1 = N("TextLabel", { Name = "value", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 12, 0, 7), Size = UDim2.new(1, -40, 0, 19.5), BackgroundTransparency = 1, Text = "bounding", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(130, 136, 148) }, n2)
+	local n2_1 = N("TextLabel", { Name = "value", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 12, 0, 6), Size = UDim2.new(1, -38, 0, 19.5), BackgroundTransparency = 1, Text = "bounding", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(130, 136, 148) }, n2)
 	P["value"] = n2_1
 	Th(n2_1, { TextColor3 = "Dim Text" })
-	local n2_2 = N("ImageLabel", { Name = "chevron", BorderSizePixel = 0, AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -10, 0, 8), Size = UDim2.new(0, 14, 0, 14), BackgroundTransparency = 1, Image = Build.IconAsset["chevron"] or "", ImageColor3 = Color3.fromRGB(130, 136, 148) }, n2)
+	local n2_2 = N("ImageLabel", { Name = "chevron", BorderSizePixel = 0, AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -8, 0, 7), Size = UDim2.new(0, 14, 0, 14), BackgroundTransparency = 1, Image = Build.IconAsset["chevron"] or "", ImageColor3 = Color3.fromRGB(130, 136, 148) }, n2)
 	P["chevron"] = n2_2
 	Th(n2_2, { ImageColor3 = "Dim Text" })
 	return P
@@ -122,7 +122,7 @@ end
 
 function Build.Button(parent)
 	local P = {}
-	local root = N("Frame", { Name = "Button", BorderSizePixel = 0, Size = UDim2.new(0, 270, 0, 30), BackgroundColor3 = Color3.fromRGB(37, 41, 49), BackgroundTransparency = 0 }, parent)
+	local root = N("Frame", { Name = "Button", BorderSizePixel = 0, Size = UDim2.new(0, 270, 0, 28), BackgroundColor3 = Color3.fromRGB(37, 41, 49), BackgroundTransparency = 0 }, parent)
 	P.Root = root
 	Th(root, { BackgroundColor3 = "Element" })
 	N("UICorner", { CornerRadius = UDim.new(0, 6) }, root)
@@ -136,12 +136,12 @@ end
 
 function Build.Tab(parent)
 	local P = {}
-	local root = N("Frame", { Name = "Tab", BorderSizePixel = 0, Size = UDim2.new(0, 92, 0, 46), BackgroundTransparency = 1 }, parent)
+	local root = N("Frame", { Name = "Tab", BorderSizePixel = 0, Size = UDim2.new(0, 92, 0, 48), BackgroundTransparency = 1 }, parent)
 	P.Root = root
-	local n1 = N("TextLabel", { Name = "label", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 0, 0, 0), Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1, Text = "GLOBALS", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Center, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.FontBold, TextColor3 = Color3.fromRGB(255, 255, 255) }, root)
+	local n1 = N("TextLabel", { Name = "label", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 0, 0, 0), Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1, Text = "Globals", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Center, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.FontBold, TextColor3 = Color3.fromRGB(255, 255, 255) }, root)
 	P["label"] = n1
 	Th(n1, { TextColor3 = "Bright Text" })
-	local n2 = N("Frame", { Name = "bar", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 0, 0, 44), Size = UDim2.new(1, 0, 0, 2), BackgroundColor3 = Color3.fromRGB(74, 160, 230), BackgroundTransparency = 0 }, root)
+	local n2 = N("Frame", { Name = "bar", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 0, 0, 46), Size = UDim2.new(1, 0, 0, 2), BackgroundColor3 = Color3.fromRGB(74, 160, 230), BackgroundTransparency = 0 }, root)
 	P["bar"] = n2
 	Th(n2, { BackgroundColor3 = "Accent" })
 	return P
@@ -157,14 +157,14 @@ function Build.Section(parent)
 	N("UICorner", { CornerRadius = UDim.new(0, 8) }, n1)
 	local n1S = N("UIStroke", { Color = Color3.fromRGB(40, 44, 52), Thickness = 1, ApplyStrokeMode = Enum.ApplyStrokeMode.Border }, n1)
 	Th(n1S, { Color = "Border" })
-	local n1_1 = N("Frame", { Name = "content", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 15, 0, 45), Size = UDim2.new(1, -30, 1, -56), BackgroundTransparency = 1 }, n1)
+	local n1_1 = N("Frame", { Name = "content", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 17, 0, 45), Size = UDim2.new(1, -34, 1, -54), BackgroundTransparency = 1 }, n1)
 	P["content"] = n1_1
-	local n2 = N("Frame", { Name = "titleMask", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 14, 0, 11), Size = UDim2.new(0, 60, 0, 18), BackgroundTransparency = 1 }, root)
+	local n2 = N("Frame", { Name = "titleMask", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 16, 0, 10), Size = UDim2.new(0, 60, 0, 16), BackgroundTransparency = 1 }, root)
 	P["titleMask"] = n2
-	local n2_1 = N("TextLabel", { Name = "title", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 0, 0, 0), Size = UDim2.new(1, 0, 1, 1.5), BackgroundTransparency = 1, Text = "aimbot", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.FontBold, TextColor3 = Color3.fromRGB(130, 136, 148) }, n2)
+	local n2_1 = N("TextLabel", { Name = "title", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 0, 0, 0), Size = UDim2.new(1, 0, 1, 3.5), BackgroundTransparency = 1, Text = "aimbot", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.FontBold, TextColor3 = Color3.fromRGB(220, 224, 230) }, n2)
 	P["title"] = n2_1
-	Th(n2_1, { TextColor3 = "Dim Text" })
-	local n3 = N("Frame", { Name = "divider", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 1, 0, 34), Size = UDim2.new(1, -2, 0, 1), BackgroundColor3 = Color3.fromRGB(40, 44, 52), BackgroundTransparency = 0 }, root)
+	Th(n2_1, { TextColor3 = "Text" })
+	local n3 = N("Frame", { Name = "divider", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 1, 0, 36), Size = UDim2.new(1, -2, 0, 1), BackgroundColor3 = Color3.fromRGB(40, 44, 52), BackgroundTransparency = 0 }, root)
 	P["divider"] = n3
 	Th(n3, { BackgroundColor3 = "Border" })
 	return P
@@ -172,9 +172,9 @@ end
 
 function Build.Label(parent)
 	local P = {}
-	local root = N("Frame", { Name = "Label", BorderSizePixel = 0, Size = UDim2.new(0, 270, 0, 22), BackgroundTransparency = 1 }, parent)
+	local root = N("Frame", { Name = "Label", BorderSizePixel = 0, Size = UDim2.new(0, 270, 0, 24), BackgroundTransparency = 1 }, parent)
 	P.Root = root
-	local n1 = N("TextLabel", { Name = "text", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 0, 0, 3), Size = UDim2.new(1, 0, 1, 10), BackgroundTransparency = 1, Text = "This is a text label that can also be used as a paragraph.", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(220, 224, 230) }, root)
+	local n1 = N("TextLabel", { Name = "text", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 0, 0, 4), Size = UDim2.new(1, 0, 1, 8), BackgroundTransparency = 1, Text = "This is a text label that can also be used as a paragraph.", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(220, 224, 230) }, root)
 	P["text"] = n1
 	Th(n1, { TextColor3 = "Text" })
 	return P
@@ -182,16 +182,16 @@ end
 
 function Build.Textbox(parent)
 	local P = {}
-	local root = N("Frame", { Name = "Textbox", BorderSizePixel = 0, Size = UDim2.new(0, 270, 0, 54), BackgroundTransparency = 1 }, parent)
+	local root = N("Frame", { Name = "Textbox", BorderSizePixel = 0, Size = UDim2.new(0, 270, 0, 56), BackgroundTransparency = 1 }, parent)
 	P.Root = root
-	local n1 = N("TextLabel", { Name = "label", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 0, 0, 2), Size = UDim2.new(0, 28.2, 0, 19.5), BackgroundTransparency = 1, Text = "input", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(220, 224, 230) }, root)
+	local n1 = N("TextLabel", { Name = "label", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 0, 0, 4), Size = UDim2.new(0, 28.2, 0, 19.5), BackgroundTransparency = 1, Text = "input", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(220, 224, 230) }, root)
 	P["label"] = n1
 	Th(n1, { TextColor3 = "Text" })
-	local n2 = N("Frame", { Name = "field", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 0, 0, 22), Size = UDim2.new(1, 0, 0, 30), BackgroundColor3 = Color3.fromRGB(37, 41, 49), BackgroundTransparency = 0 }, root)
+	local n2 = N("Frame", { Name = "field", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 0, 0, 24), Size = UDim2.new(1, 0, 0, 28), BackgroundColor3 = Color3.fromRGB(37, 41, 49), BackgroundTransparency = 0 }, root)
 	P["field"] = n2
 	Th(n2, { BackgroundColor3 = "Element" })
 	N("UICorner", { CornerRadius = UDim.new(0, 6) }, n2)
-	local n2_1 = N("TextLabel", { Name = "input", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 12, 0, 7), Size = UDim2.new(1, -259.16, 0, 19.5), BackgroundTransparency = 1, Text = "...", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(130, 136, 148) }, n2)
+	local n2_1 = N("TextLabel", { Name = "input", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 12, 0, 6), Size = UDim2.new(1, -259.16, 0, 19.5), BackgroundTransparency = 1, Text = "...", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(130, 136, 148) }, n2)
 	P["input"] = n2_1
 	Th(n2_1, { TextColor3 = "Dim Text" })
 	return P
@@ -256,14 +256,14 @@ function Build.SearchPanel(parent)
 	N("UICorner", { CornerRadius = UDim.new(0, 6) }, root)
 	local rootS = N("UIStroke", { Color = Color3.fromRGB(40, 44, 52), Thickness = 1, ApplyStrokeMode = Enum.ApplyStrokeMode.Border }, root)
 	Th(rootS, { Color = "Border" })
-	local n1 = N("Frame", { Name = "search", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 6, 0, 6), Size = UDim2.new(1, -12, 0, 26), BackgroundColor3 = Color3.fromRGB(37, 41, 49), BackgroundTransparency = 0 }, root)
+	local n1 = N("Frame", { Name = "search", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 5, 0, 5), Size = UDim2.new(1, -10, 0, 28), BackgroundColor3 = Color3.fromRGB(37, 41, 49), BackgroundTransparency = 0 }, root)
 	P["search"] = n1
 	Th(n1, { BackgroundColor3 = "Element" })
-	N("UICorner", { CornerRadius = UDim.new(0, 5) }, n1)
-	local n1_1 = N("ImageLabel", { Name = "searchIcon", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 8, 0, 7), Size = UDim2.new(0, 12, 0, 12), BackgroundTransparency = 1, Image = Build.IconAsset["search"] or "", ImageColor3 = Color3.fromRGB(130, 136, 148) }, n1)
+	N("UICorner", { CornerRadius = UDim.new(0, 4) }, n1)
+	local n1_1 = N("ImageLabel", { Name = "searchIcon", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 8, 0, 8), Size = UDim2.new(0, 12, 0, 12), BackgroundTransparency = 1, Image = Build.IconAsset["search"] or "", ImageColor3 = Color3.fromRGB(130, 136, 148) }, n1)
 	P["searchIcon"] = n1_1
 	Th(n1_1, { ImageColor3 = "Dim Text" })
-	local n2 = N("Frame", { Name = "rows", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 4, 0, 38), Size = UDim2.new(1, -8, 1, -46), BackgroundTransparency = 1 }, root)
+	local n2 = N("Frame", { Name = "rows", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 5, 0, 37), Size = UDim2.new(1, -10, 1, -46), BackgroundTransparency = 1 }, root)
 	P["rows"] = n2
 	return P
 end
@@ -274,7 +274,7 @@ function Build.Option(parent)
 	P.Root = root
 	Th(root, { BackgroundColor3 = "Element" })
 	N("UICorner", { CornerRadius = UDim.new(0, 4) }, root)
-	local n1 = N("TextLabel", { Name = "text", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 9, 0, 0), Size = UDim2.new(1, -22, 1, 0), BackgroundTransparency = 1, Text = "option", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(130, 136, 148) }, root)
+	local n1 = N("TextLabel", { Name = "text", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 8, 0, 0), Size = UDim2.new(1, -22, 1, 0), BackgroundTransparency = 1, Text = "option", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(130, 136, 148) }, root)
 	P["text"] = n1
 	Th(n1, { TextColor3 = "Dim Text" })
 	return P
@@ -284,10 +284,10 @@ function Build.Listbox(parent)
 	local P = {}
 	local root = N("Frame", { Name = "Listbox", BorderSizePixel = 0, Size = UDim2.new(0, 270, 0, 134), BackgroundTransparency = 1 }, parent)
 	P.Root = root
-	local n1 = N("TextLabel", { Name = "label", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 0, 0, 2), Size = UDim2.new(0, 15.89, 0, 19.5), BackgroundTransparency = 1, Text = "list", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(220, 224, 230) }, root)
+	local n1 = N("TextLabel", { Name = "label", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 0, 0, 4), Size = UDim2.new(0, 15.89, 0, 19.5), BackgroundTransparency = 1, Text = "list", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(220, 224, 230) }, root)
 	P["label"] = n1
 	Th(n1, { TextColor3 = "Text" })
-	local n2 = N("Frame", { Name = "field", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 0, 0, 22), Size = UDim2.new(1, 0, 0, 110), BackgroundColor3 = Color3.fromRGB(22, 24, 29), BackgroundTransparency = 0 }, root)
+	local n2 = N("Frame", { Name = "field", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 0, 0, 24), Size = UDim2.new(1, 0, 0, 110), BackgroundColor3 = Color3.fromRGB(22, 24, 29), BackgroundTransparency = 0 }, root)
 	P["field"] = n2
 	Th(n2, { BackgroundColor3 = "Window Background" })
 	N("UICorner", { CornerRadius = UDim.new(0, 6) }, n2)
@@ -390,11 +390,11 @@ function Build.SideTab(parent)
 	local P = {}
 	local root = N("Frame", { Name = "SideTab", BorderSizePixel = 0, Size = UDim2.new(0, 185, 0, 36), BackgroundTransparency = 1 }, parent)
 	P.Root = root
-	local n1 = N("Frame", { Name = "hl", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 10, 0, 1), Size = UDim2.new(1, -20, 0, 34), BackgroundColor3 = Color3.fromRGB(37, 41, 49), BackgroundTransparency = 0 }, root)
+	local n1 = N("Frame", { Name = "hl", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 8, 0, 2), Size = UDim2.new(1, -16, 0, 32), BackgroundColor3 = Color3.fromRGB(37, 41, 49), BackgroundTransparency = 0 }, root)
 	P["hl"] = n1
 	Th(n1, { BackgroundColor3 = "Element" })
 	N("UICorner", { CornerRadius = UDim.new(0, 6) }, n1)
-	local n2 = N("TextLabel", { Name = "label", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 48, 0, 9), Size = UDim2.new(1, -65, 0, 21), BackgroundTransparency = 1, Text = "Aimbot", TextSize = 15, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(255, 255, 255) }, root)
+	local n2 = N("TextLabel", { Name = "label", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 48, 0, 10), Size = UDim2.new(1, -65, 0, 21), BackgroundTransparency = 1, Text = "Aimbot", TextSize = 15, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(255, 255, 255) }, root)
 	P["label"] = n2
 	Th(n2, { TextColor3 = "Bright Text" })
 	return P
@@ -402,9 +402,9 @@ end
 
 function Build.Category(parent)
 	local P = {}
-	local root = N("Frame", { Name = "Category", BorderSizePixel = 0, Size = UDim2.new(0, 185, 0, 28), BackgroundTransparency = 1 }, parent)
+	local root = N("Frame", { Name = "Category", BorderSizePixel = 0, Size = UDim2.new(0, 185, 0, 36), BackgroundTransparency = 1 }, parent)
 	P.Root = root
-	local n1 = N("TextLabel", { Name = "label", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 22, 0, 10), Size = UDim2.new(1, -35, 0, 16.5), BackgroundTransparency = 1, Text = "Combat", TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(130, 136, 148) }, root)
+	local n1 = N("TextLabel", { Name = "label", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 24, 0, 16), Size = UDim2.new(1, -35, 0, 16.5), BackgroundTransparency = 1, Text = "Combat", TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(130, 136, 148) }, root)
 	P["label"] = n1
 	Th(n1, { TextColor3 = "Dim Text" })
 	return P
@@ -483,14 +483,14 @@ function Build.Notification(parent)
 	N("UICorner", { CornerRadius = UDim.new(0, 8) }, root)
 	local rootS = N("UIStroke", { Color = Color3.fromRGB(40, 44, 52), Thickness = 1, ApplyStrokeMode = Enum.ApplyStrokeMode.Border }, root)
 	Th(rootS, { Color = "Border" })
-	local n1 = N("Frame", { Name = "bar", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 11, 0, 11), Size = UDim2.new(0, 3, 0, 16), BackgroundColor3 = Color3.fromRGB(74, 160, 230), BackgroundTransparency = 0 }, root)
+	local n1 = N("Frame", { Name = "bar", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 13, 0, 11), Size = UDim2.new(0, 3, 0, 16), BackgroundColor3 = Color3.fromRGB(74, 160, 230), BackgroundTransparency = 0 }, root)
 	P["bar"] = n1
 	Th(n1, { BackgroundColor3 = "Accent" })
 	N("UICorner", { CornerRadius = UDim.new(0, 2) }, n1)
-	local n2 = N("TextLabel", { Name = "text", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 23, 0, 10), Size = UDim2.new(0, 200, 0, 19.5), BackgroundTransparency = 1, Text = "Config loaded", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(220, 224, 230) }, root)
+	local n2 = N("TextLabel", { Name = "text", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 25, 0, 11), Size = UDim2.new(0, 200, 0, 19.5), BackgroundTransparency = 1, Text = "Config loaded", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(220, 224, 230) }, root)
 	P["text"] = n2
 	Th(n2, { TextColor3 = "Text" })
-	local n3 = N("Frame", { Name = "progress", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 11, 0, 30), Size = UDim2.new(0, 218, 0, 2), BackgroundColor3 = Color3.fromRGB(74, 160, 230), BackgroundTransparency = 0 }, root)
+	local n3 = N("Frame", { Name = "progress", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 13, 0, 29), Size = UDim2.new(0, 214, 0, 2), BackgroundColor3 = Color3.fromRGB(74, 160, 230), BackgroundTransparency = 0 }, root)
 	P["progress"] = n3
 	Th(n3, { BackgroundColor3 = "Accent" })
 	N("UICorner", { CornerRadius = UDim.new(0, 1) }, n3)
@@ -499,7 +499,7 @@ end
 
 function Build.BombWindow(parent)
 	local P = {}
-	local root = N("Frame", { Name = "BombWindow", BorderSizePixel = 0, Size = UDim2.new(0, 220, 0, 318), BackgroundColor3 = Color3.fromRGB(22, 24, 29), BackgroundTransparency = 0 }, parent)
+	local root = N("Frame", { Name = "BombWindow", BorderSizePixel = 0, Size = UDim2.new(0, 220, 0, 328), BackgroundColor3 = Color3.fromRGB(22, 24, 29), BackgroundTransparency = 0 }, parent)
 	P.Root = root
 	Th(root, { BackgroundColor3 = "Window Background" })
 	N("UICorner", { CornerRadius = UDim.new(0, 8) }, root)
@@ -508,40 +508,40 @@ function Build.BombWindow(parent)
 	local n1 = N("ImageLabel", { Name = "icon", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 13, 0, 11), Size = UDim2.new(0, 16, 0, 16), BackgroundTransparency = 1, Image = Build.IconAsset["bomb"] or "", ImageColor3 = Color3.fromRGB(74, 160, 230) }, root)
 	P["icon"] = n1
 	Th(n1, { ImageColor3 = "Accent" })
-	local n2 = N("TextLabel", { Name = "title", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 37, 0, 10), Size = UDim2.new(1, -50, 0, 19.5), BackgroundTransparency = 1, Text = "Bomb", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.FontBold, TextColor3 = Color3.fromRGB(255, 255, 255) }, root)
+	local n2 = N("TextLabel", { Name = "title", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 37, 0, 11), Size = UDim2.new(1, -50, 0, 19.5), BackgroundTransparency = 1, Text = "Bomb", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.FontBold, TextColor3 = Color3.fromRGB(255, 255, 255) }, root)
 	P["title"] = n2
 	Th(n2, { TextColor3 = "Bright Text" })
 	local n3 = N("Frame", { Name = "line", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 1, 0, 37), Size = UDim2.new(1, -2, 0, 1), BackgroundColor3 = Color3.fromRGB(40, 44, 52), BackgroundTransparency = 0 }, root)
 	P["line"] = n3
 	Th(n3, { BackgroundColor3 = "Border" })
-	local n4 = N("Frame", { Name = "view", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 11, 0, 47), Size = UDim2.new(1, -22, 0, 170), BackgroundColor3 = Color3.fromRGB(19, 21, 25), BackgroundTransparency = 0 }, root)
+	local n4 = N("Frame", { Name = "view", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 13, 0, 49), Size = UDim2.new(1, -26, 0, 168), BackgroundColor3 = Color3.fromRGB(19, 21, 25), BackgroundTransparency = 0 }, root)
 	P["view"] = n4
 	Th(n4, { BackgroundColor3 = "Dark Liner" })
 	N("UICorner", { CornerRadius = UDim.new(0, 6) }, n4)
 	local n4S = N("UIStroke", { Color = Color3.fromRGB(40, 44, 52), Thickness = 1, ApplyStrokeMode = Enum.ApplyStrokeMode.Border }, n4)
 	Th(n4S, { Color = "Border" })
-	local n5 = N("TextLabel", { Name = "timeLabel", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 15, 0, 227), Size = UDim2.new(0, 49.36, 0, 19.5), BackgroundTransparency = 1, Text = "Time left", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(130, 136, 148) }, root)
+	local n5 = N("TextLabel", { Name = "timeLabel", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 13, 0, 229), Size = UDim2.new(0, 49.36, 0, 19.5), BackgroundTransparency = 1, Text = "Time left", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(130, 136, 148) }, root)
 	P["timeLabel"] = n5
 	Th(n5, { TextColor3 = "Dim Text" })
-	local n6 = N("TextLabel", { Name = "hpLabel", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 15, 0, 249), Size = UDim2.new(0, 38.78, 0, 19.5), BackgroundTransparency = 1, Text = "HP left", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(130, 136, 148) }, root)
+	local n6 = N("TextLabel", { Name = "hpLabel", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 13, 0, 253), Size = UDim2.new(0, 38.78, 0, 19.5), BackgroundTransparency = 1, Text = "HP left", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(130, 136, 148) }, root)
 	P["hpLabel"] = n6
 	Th(n6, { TextColor3 = "Dim Text" })
-	local n7 = N("TextLabel", { Name = "damageLabel", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 15, 0, 271), Size = UDim2.new(0, 49.14, 0, 19.5), BackgroundTransparency = 1, Text = "Damage", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(130, 136, 148) }, root)
+	local n7 = N("TextLabel", { Name = "damageLabel", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 13, 0, 277), Size = UDim2.new(0, 49.14, 0, 19.5), BackgroundTransparency = 1, Text = "Damage", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(130, 136, 148) }, root)
 	P["damageLabel"] = n7
 	Th(n7, { TextColor3 = "Dim Text" })
-	local n8 = N("TextLabel", { Name = "statusLabel", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 15, 0, 293), Size = UDim2.new(0, 36.86, 0, 19.5), BackgroundTransparency = 1, Text = "Status", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(130, 136, 148) }, root)
+	local n8 = N("TextLabel", { Name = "statusLabel", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 13, 0, 301), Size = UDim2.new(0, 36.86, 0, 19.5), BackgroundTransparency = 1, Text = "Status", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(130, 136, 148) }, root)
 	P["statusLabel"] = n8
 	Th(n8, { TextColor3 = "Dim Text" })
-	local n9 = N("TextLabel", { Name = "time", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 105, 0, 227), Size = UDim2.new(0, 100, 0, 19.5), BackgroundTransparency = 1, Text = "0.0s", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Right, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.FontBold, TextColor3 = Color3.fromRGB(255, 255, 255) }, root)
+	local n9 = N("TextLabel", { Name = "time", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 109, 0, 229), Size = UDim2.new(0, 100, 0, 19.5), BackgroundTransparency = 1, Text = "0.0s", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Right, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.FontBold, TextColor3 = Color3.fromRGB(255, 255, 255) }, root)
 	P["time"] = n9
 	Th(n9, { TextColor3 = "Bright Text" })
-	local n10 = N("TextLabel", { Name = "hp", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 105, 0, 249), Size = UDim2.new(0, 100, 0, 19.5), BackgroundTransparency = 1, Text = "100", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Right, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(220, 224, 230) }, root)
+	local n10 = N("TextLabel", { Name = "hp", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 109, 0, 253), Size = UDim2.new(0, 100, 0, 19.5), BackgroundTransparency = 1, Text = "100", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Right, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(220, 224, 230) }, root)
 	P["hp"] = n10
 	Th(n10, { TextColor3 = "Text" })
-	local n11 = N("TextLabel", { Name = "damage", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 105, 0, 271), Size = UDim2.new(0, 100, 0, 19.5), BackgroundTransparency = 1, Text = "0", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Right, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(220, 224, 230) }, root)
+	local n11 = N("TextLabel", { Name = "damage", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 109, 0, 277), Size = UDim2.new(0, 100, 0, 19.5), BackgroundTransparency = 1, Text = "0", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Right, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(220, 224, 230) }, root)
 	P["damage"] = n11
 	Th(n11, { TextColor3 = "Text" })
-	local n12 = N("TextLabel", { Name = "status", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 105, 0, 293), Size = UDim2.new(0, 100, 0, 19.5), BackgroundTransparency = 1, Text = "Survive", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Right, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(220, 224, 230) }, root)
+	local n12 = N("TextLabel", { Name = "status", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 109, 0, 301), Size = UDim2.new(0, 100, 0, 19.5), BackgroundTransparency = 1, Text = "Survive", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Right, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(220, 224, 230) }, root)
 	P["status"] = n12
 	Th(n12, { TextColor3 = "Text" })
 	return P
@@ -595,13 +595,13 @@ function Build.Watermark(parent)
 	N("UICorner", { CornerRadius = UDim.new(0, 8) }, root)
 	local rootS = N("UIStroke", { Color = Color3.fromRGB(40, 44, 52), Thickness = 1, ApplyStrokeMode = Enum.ApplyStrokeMode.Border }, root)
 	Th(rootS, { Color = "Border" })
-	local n1 = N("ImageLabel", { Name = "logo", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 12, 0, 11), Size = UDim2.new(0, 22, 0, 11), BackgroundTransparency = 1, Image = Build.IconAsset["allisonlogo"] or "", ImageColor3 = Color3.fromRGB(255, 255, 255) }, root)
+	local n1 = N("ImageLabel", { Name = "logo", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 13, 0, 11), Size = UDim2.new(0, 22, 0, 11), BackgroundTransparency = 1, Image = Build.IconAsset["allisonlogo"] or "", ImageColor3 = Color3.fromRGB(255, 255, 255) }, root)
 	P["logo"] = n1
 	Th(n1, { ImageColor3 = "Bright Text" })
-	local n2 = N("Frame", { Name = "sep", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 43, 0, 10), Size = UDim2.new(0, 1, 0, 14), BackgroundColor3 = Color3.fromRGB(40, 44, 52), BackgroundTransparency = 0 }, root)
+	local n2 = N("Frame", { Name = "sep", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 45, 0, 9), Size = UDim2.new(0, 1, 0, 16), BackgroundColor3 = Color3.fromRGB(40, 44, 52), BackgroundTransparency = 0 }, root)
 	P["sep"] = n2
 	Th(n2, { BackgroundColor3 = "Border" })
-	local n3 = N("TextLabel", { Name = "text", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 53, 0, 9), Size = UDim2.new(0, 170, 0, 19.5), BackgroundTransparency = 1, Text = "Allison  |  60 fps  |  24 ms", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(220, 224, 230) }, root)
+	local n3 = N("TextLabel", { Name = "text", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 57, 0, 9), Size = UDim2.new(0, 170, 0, 19.5), BackgroundTransparency = 1, Text = "Allison  |  60 fps  |  24 ms", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(220, 224, 230) }, root)
 	P["text"] = n3
 	Th(n3, { TextColor3 = "Text" })
 	return P
@@ -620,7 +620,7 @@ function Build.KeybindWindow(parent)
 	local n1_1 = N("ImageLabel", { Name = "icon", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 12, 0, 12), Size = UDim2.new(0, 16, 0, 12), BackgroundTransparency = 1, Image = Build.IconAsset["kbd"] or "", ImageColor3 = Color3.fromRGB(74, 160, 230) }, n1)
 	P["icon"] = n1_1
 	Th(n1_1, { ImageColor3 = "Accent" })
-	local n1_2 = N("TextLabel", { Name = "title", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 36, 0, 9), Size = UDim2.new(0, 160, 0, 19.5), BackgroundTransparency = 1, Text = "Keybinds", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.FontBold, TextColor3 = Color3.fromRGB(255, 255, 255) }, n1)
+	local n1_2 = N("TextLabel", { Name = "title", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 36, 0, 10), Size = UDim2.new(0, 160, 0, 19.5), BackgroundTransparency = 1, Text = "Keybinds", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.FontBold, TextColor3 = Color3.fromRGB(255, 255, 255) }, n1)
 	P["title"] = n1_2
 	Th(n1_2, { TextColor3 = "Bright Text" })
 	local n2 = N("Frame", { Name = "line", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 1, 0, 37), Size = UDim2.new(1, -2, 0, 1), BackgroundColor3 = Color3.fromRGB(40, 44, 52), BackgroundTransparency = 0 }, root)
@@ -664,7 +664,7 @@ end
 
 function Build.EspPreview(parent)
 	local P = {}
-	local root = N("Frame", { Name = "EspPreview", BorderSizePixel = 0, Size = UDim2.new(0, 320, 0, 506), BackgroundColor3 = Color3.fromRGB(22, 24, 29), BackgroundTransparency = 0 }, parent)
+	local root = N("Frame", { Name = "EspPreview", BorderSizePixel = 0, Size = UDim2.new(0, 320, 0, 508), BackgroundColor3 = Color3.fromRGB(22, 24, 29), BackgroundTransparency = 0 }, parent)
 	P.Root = root
 	Th(root, { BackgroundColor3 = "Window Background" })
 	N("UICorner", { CornerRadius = UDim.new(0, 8) }, root)
@@ -673,17 +673,17 @@ function Build.EspPreview(parent)
 	local n1 = N("ImageLabel", { Name = "icon", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 13, 0, 12), Size = UDim2.new(0, 16, 0, 14), BackgroundTransparency = 1, Image = Build.IconAsset["eye"] or "", ImageColor3 = Color3.fromRGB(74, 160, 230) }, root)
 	P["icon"] = n1
 	Th(n1, { ImageColor3 = "Accent" })
-	local n2 = N("TextLabel", { Name = "title", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 37, 0, 10), Size = UDim2.new(1, -50, 0, 19.5), BackgroundTransparency = 1, Text = "ESP Preview", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.FontBold, TextColor3 = Color3.fromRGB(255, 255, 255) }, root)
+	local n2 = N("TextLabel", { Name = "title", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 37, 0, 11), Size = UDim2.new(1, -50, 0, 19.5), BackgroundTransparency = 1, Text = "ESP Preview", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.FontBold, TextColor3 = Color3.fromRGB(255, 255, 255) }, root)
 	P["title"] = n2
 	Th(n2, { TextColor3 = "Bright Text" })
 	local n3 = N("Frame", { Name = "line", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 1, 0, 37), Size = UDim2.new(1, -2, 0, 1), BackgroundColor3 = Color3.fromRGB(40, 44, 52), BackgroundTransparency = 0 }, root)
 	P["line"] = n3
 	Th(n3, { BackgroundColor3 = "Border" })
-	local n4 = N("Frame", { Name = "tabs", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 11, 0, 47), Size = UDim2.new(1, -22, 0, 30), BackgroundColor3 = Color3.fromRGB(17, 19, 23), BackgroundTransparency = 0 }, root)
+	local n4 = N("Frame", { Name = "tabs", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 13, 0, 49), Size = UDim2.new(1, -26, 0, 28), BackgroundColor3 = Color3.fromRGB(17, 19, 23), BackgroundTransparency = 0 }, root)
 	P["tabs"] = n4
 	Th(n4, { BackgroundColor3 = "Outline" })
 	N("UICorner", { CornerRadius = UDim.new(0, 6) }, n4)
-	local n5 = N("Frame", { Name = "view", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 11, 0, 83), Size = UDim2.new(1, -22, 0, 332), BackgroundColor3 = Color3.fromRGB(19, 21, 25), BackgroundTransparency = 0 }, root)
+	local n5 = N("Frame", { Name = "view", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 13, 0, 85), Size = UDim2.new(1, -26, 0, 332), BackgroundColor3 = Color3.fromRGB(19, 21, 25), BackgroundTransparency = 0 }, root)
 	P["view"] = n5
 	Th(n5, { BackgroundColor3 = "Dark Liner" })
 	N("UICorner", { CornerRadius = UDim.new(0, 6) }, n5)
@@ -989,39 +989,39 @@ function Build.Window(parent)
 	local n3 = N("Frame", { Name = "sideLine", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 186, 0, 1), Size = UDim2.new(0, 1, 1, -2), BackgroundColor3 = Color3.fromRGB(40, 44, 52), BackgroundTransparency = 0 }, root)
 	P["sideLine"] = n3
 	Th(n3, { BackgroundColor3 = "Border" })
-	local n4 = N("ImageLabel", { Name = "logo", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 19, 0, 25), Size = UDim2.new(0, 34, 0, 17), BackgroundTransparency = 1, Image = Build.IconAsset["allisonlogo"] or "", ImageColor3 = Color3.fromRGB(255, 255, 255) }, root)
+	local n4 = N("ImageLabel", { Name = "logo", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 25, 0, 25), Size = UDim2.new(0, 34, 0, 17), BackgroundTransparency = 1, Image = Build.IconAsset["allisonlogo"] or "", ImageColor3 = Color3.fromRGB(255, 255, 255) }, root)
 	P["logo"] = n4
 	Th(n4, { ImageColor3 = "Bright Text" })
-	local n5 = N("Frame", { Name = "titleRow", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 61, 0, 21), Size = UDim2.new(0, 110, 0, 24), BackgroundTransparency = 1 }, root)
+	local n5 = N("Frame", { Name = "titleRow", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 69, 0, 21), Size = UDim2.new(0, 108, 0, 24), BackgroundTransparency = 1 }, root)
 	P["titleRow"] = n5
-	local n5_1 = N("TextLabel", { Name = "title", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 0, 0, 0), Size = UDim2.new(0, 110, 0, 27), BackgroundTransparency = 1, Text = "ALLISON", TextSize = 19, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.FontBold, TextColor3 = Color3.fromRGB(255, 255, 255) }, n5)
+	local n5_1 = N("TextLabel", { Name = "title", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 0, 0, 0), Size = UDim2.new(0, 108, 0, 27), BackgroundTransparency = 1, Text = "ALLISON", TextSize = 19, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.FontBold, TextColor3 = Color3.fromRGB(255, 255, 255) }, n5)
 	P["title"] = n5_1
 	Th(n5_1, { TextColor3 = "Bright Text" })
 	local n5_2 = N("TextLabel", { Name = "title2", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 0, 0, 0), Size = UDim2.new(0, 1, 0, 0), BackgroundTransparency = 1, Text = "", TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(255, 255, 255) }, n5)
 	P["title2"] = n5_2
 	Th(n5_2, { TextColor3 = "Bright Text" })
-	local n6 = N("Frame", { Name = "side", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 1, 0, 69), Size = UDim2.new(1, -17, 1, -80), BackgroundTransparency = 1 }, root)
+	local n6 = N("Frame", { Name = "side", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 1, 0, 53), Size = UDim2.new(1, -18, 1, -64), BackgroundTransparency = 1 }, root)
 	P["side"] = n6
 	local n7 = N("Frame", { Name = "dragBar", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 187, 0, 1), Size = UDim2.new(1, -188, 0, 64), BackgroundTransparency = 1 }, root)
 	P["dragBar"] = n7
-	local n8 = N("Frame", { Name = "tabs", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 207, 0, 19), Size = UDim2.new(1, -360, 0, 46), BackgroundTransparency = 1 }, root)
+	local n8 = N("Frame", { Name = "tabs", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 209, 0, 17), Size = UDim2.new(1, -400, 0, 48), BackgroundTransparency = 1 }, root)
 	P["tabs"] = n8
 	local n9 = N("Frame", { Name = "topLine", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 187, 0, 65), Size = UDim2.new(1, -188, 0, 1), BackgroundColor3 = Color3.fromRGB(40, 44, 52), BackgroundTransparency = 0 }, root)
 	P["topLine"] = n9
 	Th(n9, { BackgroundColor3 = "Border" })
-	local n10 = N("Frame", { Name = "search", BorderSizePixel = 0, AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -19, 0, 19), Size = UDim2.new(0, 170, 0, 28), BackgroundColor3 = Color3.fromRGB(37, 41, 49), BackgroundTransparency = 0 }, root)
+	local n10 = N("Frame", { Name = "search", BorderSizePixel = 0, AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -17, 0, 19), Size = UDim2.new(0, 170, 0, 28), BackgroundColor3 = Color3.fromRGB(37, 41, 49), BackgroundTransparency = 0 }, root)
 	P["search"] = n10
 	Th(n10, { BackgroundColor3 = "Element" })
 	N("UICorner", { CornerRadius = UDim.new(0, 6) }, n10)
-	local n10_1 = N("ImageLabel", { Name = "searchIcon", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 9, 0, 8), Size = UDim2.new(0, 12, 0, 12), BackgroundTransparency = 1, Image = Build.IconAsset["search"] or "", ImageColor3 = Color3.fromRGB(130, 136, 148) }, n10)
+	local n10_1 = N("ImageLabel", { Name = "searchIcon", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 8, 0, 8), Size = UDim2.new(0, 12, 0, 12), BackgroundTransparency = 1, Image = Build.IconAsset["search"] or "", ImageColor3 = Color3.fromRGB(130, 136, 148) }, n10)
 	P["searchIcon"] = n10_1
 	Th(n10_1, { ImageColor3 = "Dim Text" })
 	local n10_2 = N("TextLabel", { Name = "searchText", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 28, 0, 6), Size = UDim2.new(1, -40, 0, 18), BackgroundTransparency = 1, Text = "Search...", TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(130, 136, 148) }, n10)
 	P["searchText"] = n10_2
 	Th(n10_2, { TextColor3 = "Dim Text" })
-	local n11 = N("Frame", { Name = "pages", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 207, 0, 81), Size = UDim2.new(1, -224, 1, -100), BackgroundTransparency = 1 }, root)
+	local n11 = N("Frame", { Name = "pages", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 209, 0, 81), Size = UDim2.new(1, -226, 1, -100), BackgroundTransparency = 1 }, root)
 	P["pages"] = n11
-	local n12 = N("Frame", { Name = "grip", BorderSizePixel = 0, AnchorPoint = Vector2.new(1, 1), Position = UDim2.new(1, -5, 1, -5), Size = UDim2.new(0, 7, 0, 7), BackgroundColor3 = Color3.fromRGB(52, 58, 69), BackgroundTransparency = 0 }, root)
+	local n12 = N("Frame", { Name = "grip", BorderSizePixel = 0, AnchorPoint = Vector2.new(1, 1), Position = UDim2.new(1, -5, 1, -5), Size = UDim2.new(0, 8, 0, 8), BackgroundColor3 = Color3.fromRGB(52, 58, 69), BackgroundTransparency = 0 }, root)
 	P["grip"] = n12
 	Th(n12, { BackgroundColor3 = "Inline" })
 	N("UICorner", { CornerRadius = UDim.new(0, 2) }, n12)
@@ -1482,7 +1482,7 @@ function Library:Window(Data)
 	W.titleRow.Size = UDim2.new(0, 112, 0, 24)
 	W.titleRow.ZIndex = 3
 	-- tabs and pages (the sub-tab bars live in W.tabs, one per sidebar row; the sidebar rows in W.side)
-	W.side.Size = UDim2.new(0, 185, 1, -80)
+	W.side.Size = UDim2.new(0, 185, 1, -64)
 	W.side.ClipsDescendants = true
 	listLayout(W.side, 0)
 	local window = setmetatable({ Items = {}, Pages = {}, IsOpen = true, Library = self, _W = W, FadeWith = {} }, self)
@@ -1744,10 +1744,11 @@ local function newLeaf(window, group, name, columns)
 	local fx = Library.fx
 	local T = Build.Tab(group.bar)
 	T.Root.LayoutOrder = #group.Leaves + 1
-	T.label.Text = string.upper(tostring(name))
+	T.label.Text = tostring(name)
+	T.label.Position, T.label.Size = UDim2.new(), UDim2.new(1, 0, 0, 32)
 	local function fitTab()
-		local w = math.max(64, math.ceil(T.label.TextBounds.X) + 30)
-		T.Root.Size = UDim2.new(0, w, 0, 46)
+		local w = math.max(64, math.ceil(T.label.TextBounds.X) + 32)
+		T.Root.Size = UDim2.new(0, w, 0, 48)
 	end
 	fitTab()
 	T.label:GetPropertyChangedSignal("TextBounds"):Connect(fitTab)
@@ -1772,7 +1773,7 @@ local function newLeaf(window, group, name, columns)
 		col.Parent = holder
 		local cpad = Instance.new("UIPadding")
 		cpad.PaddingLeft = UDim.new(0, i == 1 and 0 or 6)
-		cpad.PaddingRight = UDim.new(0, i == columns and 4 or 6)
+		cpad.PaddingRight = UDim.new(0, i == columns and 0 or 6)
 		cpad.PaddingBottom = UDim.new(0, 6)
 		cpad.Parent = col
 		listLayout(col, 12)
@@ -1876,14 +1877,14 @@ function Library:Page(Data)
 		icon.ZIndex = S.hl.ZIndex + 1
 		icon.Parent = S.Root
 	else
-		S.label.Position = UDim2.new(0, 24, 0, 9)
+		S.label.Position = UDim2.new(0, 24, 0, 10)
 	end
 	Library.fx.bevel(S.hl, 0.2)
 	local mark = Instance.new("Frame")
 	mark.Name = "\0Mark"
 	mark.BorderSizePixel = 0
 	mark.AnchorPoint = Vector2.new(0, 0.5)
-	mark.Position, mark.Size = UDim2.new(0, 10, 0.5, 0), UDim2.new(0, 3, 0, 0)
+	mark.Position, mark.Size = UDim2.new(0, 12, 0.5, 0), UDim2.new(0, 3, 0, 0)
 	mark.ZIndex = S.hl.ZIndex + 1
 	Library:AddToTheme(mark, { BackgroundColor3 = "Accent" })
 	Instance.new("UICorner", mark).CornerRadius = UDim.new(1, 0)
@@ -1959,7 +1960,7 @@ function Library:Section(Data)
 	S.title.AutomaticSize = Enum.AutomaticSize.X
 	S.title.Position, S.title.Size = UDim2.new(), UDim2.new(0, 0, 1, 0)
 	S.titleMask.AutomaticSize = Enum.AutomaticSize.X
-	S.titleMask.Size = UDim2.new(0, 0, 0, 18)
+	S.titleMask.Size = UDim2.new(0, 0, 0, 16)
 	S.titleMask.ZIndex, S.title.ZIndex = 3, 4
 	S.titleMask.Visible = S.title.Text ~= ""
 	S.divider.Visible = S.title.Text ~= ""
@@ -1967,7 +1968,7 @@ function Library:Section(Data)
 	S.card.Size = UDim2.new(1, 0, 0, 0)
 	Library.fx.bevel(S.card, 0.16)
 	local pad = Instance.new("UIPadding")
-	pad.PaddingTop, pad.PaddingBottom, pad.PaddingLeft, pad.PaddingRight = UDim.new(0, S.title.Text ~= "" and 44 or 12), UDim.new(0, 10), UDim.new(0, 14), UDim.new(0, 14)
+	pad.PaddingTop, pad.PaddingBottom, pad.PaddingLeft, pad.PaddingRight = UDim.new(0, S.title.Text ~= "" and 44 or 8), UDim.new(0, 8), UDim.new(0, 16), UDim.new(0, 16)
 	pad.Parent = S.card
 	S.content.AutomaticSize = Enum.AutomaticSize.Y
 	S.content.Size = UDim2.new(1, 0, 0, 0)
@@ -2451,7 +2452,7 @@ function Library:Button(Data)
 	Data = Data or {}
 	local section = self
 	local B = Build.Button(section.Items["Content"].Instance)
-	B.Root.Size = UDim2.new(1, 0, 0, 30)
+	B.Root.Size = UDim2.new(1, 0, 0, 28)
 	B.label.Text = tostring(field(Data, "Name", "name") or "Button")
 	Library.attachTooltip(B.Root, field(Data, "Tooltip", "tooltip"))
 	Library.regSearch(section, B.Root, B.label.Text)
@@ -2464,11 +2465,11 @@ function Library:Button(Data)
 	function obj:SubButton(d)
 		d = d or {}
 		-- two buttons share the row: this one is halved and a new one is placed beside it
-		B.Root.Size = UDim2.new(0.5, -2, 0, 30)
+		B.Root.Size = UDim2.new(0.5, -4, 0, 28)
 		local list = Library.listLayout(B.Root.Parent, 4)
 		local sub = Build.Button(section.Items["Content"].Instance)
-		sub.Root.Size = UDim2.new(0.5, -2, 0, 30)
-		sub.Root.Position = UDim2.new(0.5, 2, 0, 0)
+		sub.Root.Size = UDim2.new(0.5, -4, 0, 28)
+		sub.Root.Position = UDim2.new(0.5, 4, 0, 0)
 		sub.label.Text = tostring(field(d, "Name", "name") or "Button")
 		local cb = field(d, "Callback", "callback")
 		Library.raiseButton(sub.Root, click(sub.Root, Library.guardedClick(section, sub.Root, sub.label.Text, field(d, "Confirm", "confirm"), cb)))
@@ -2481,7 +2482,7 @@ end
 function Library:Label(Text, Alignment)
 	local section = self
 	local L = Build.Label(section.Items["Content"].Instance)
-	L.Root.Size = UDim2.new(1, 0, 0, 22)
+	L.Root.Size = UDim2.new(1, 0, 0, 24)
 	L.Root.AutomaticSize = Enum.AutomaticSize.Y
 	L.text.Position = UDim2.new(0, 18, 0, 0)
 	L.text.Size = UDim2.new(1, -20, 0, 0)
@@ -2524,8 +2525,10 @@ function Library:Slider(Data)
 	local callback = field(Data, "Callback", "callback")
 	local fx = Library.fx
 	local T = Build.Slider(section.Items["Content"].Instance)
-	T.Root.Size = UDim2.new(1, 0, 0, 42)
+	T.Root.Size = UDim2.new(1, 0, 0, 40)
 	T.label.Text = tostring(field(Data, "Name", "name") or "Slider")
+	T.label.Position, T.label.Size = UDim2.fromOffset(0, 4), UDim2.new(1, -108, 0, 16)
+	T.value.Position, T.value.Size = UDim2.new(1, 0, 0, 4), UDim2.new(0, 100, 0, 16)
 	Library.attachTooltip(T.Root, field(Data, "Tooltip", "tooltip"))
 	Library.regSearch(section, T.Root, T.label.Text)
 	local slider = { Value = min, Flag = flag, Items = { Slider = Library.Wrap(T.Root) }, Section = section }
@@ -2609,7 +2612,7 @@ local function optionStore(opts)
 		Library:ChangeItemTheme(o.text, { TextColor3 = sel and "Accent" or "Dim Text" })
 		Library:ChangeItemTheme(o.row, { BackgroundColor3 = "Element" })
 		o.text.FontFace = sel and Library.FontBold or Library.Font
-		fx.tween(o.text, { TextColor3 = sel and Library.Theme.Accent or Library.Theme["Dim Text"], Position = UDim2.new(0, sel and 14 or 9, 0, 4) }, 0.15)
+		fx.tween(o.text, { TextColor3 = sel and Library.Theme.Accent or Library.Theme["Dim Text"], Position = UDim2.new(0, sel and 12 or 8, 0, 4) }, 0.15)
 		fx.tween(o.row, { BackgroundTransparency = sel and 0 or 1 }, 0.2)
 		if o.bar then fx.tween(o.bar, { Size = UDim2.new(0, 2, 0, sel and 12 or 0) }, 0.15) end
 	end
@@ -2714,8 +2717,9 @@ function Library:Dropdown(Data)
 	local callback = field(Data, "Callback", "callback")
 	local fx = Library.fx
 	local T = Build.Dropdown(section.Items["Content"].Instance)
-	T.Root.Size = UDim2.new(1, 0, 0, 54)
+	T.Root.Size = UDim2.new(1, 0, 0, 56)
 	T.label.Text = tostring(field(Data, "Name", "name") or "Dropdown")
+	T.label.Position, T.label.Size = UDim2.fromOffset(0, 4), UDim2.new(1, 0, 0, 16)
 	Library.attachTooltip(T.Root, field(Data, "Tooltip", "tooltip"))
 	Library.regSearch(section, T.Root, T.label.Text)
 	T.value.Text = "--"
@@ -2791,10 +2795,10 @@ function Library:Dropdown(Data)
 	local function target()
 		local s = T.field.AbsoluteSize
 		local shown = open and applyFilter() or optionCount()
-		local header = searchOn() and 37 or 4
+		local header = searchOn() and 36 or 4
 		P.search.Visible = searchOn()
-		P.rows.Position = UDim2.new(0, 3, 0, header)
-		P.rows.Size = UDim2.new(1, -6, 1, -(header + 3))
+		P.rows.Position = UDim2.new(0, 4, 0, header)
+		P.rows.Size = UDim2.new(1, -8, 1, -(header + 4))
 		return s.X, header + math.min(math.max(shown, 1) * 24, maxSize) + 4
 	end
 	local openToken = 0
@@ -2895,6 +2899,7 @@ function Library:Listbox(Data)
 	T.field.Size = UDim2.new(1, 0, 0, size)
 	Library.insetField(T.field)
 	T.label.Text = tostring(field(Data, "Name", "name") or "Listbox")
+	T.label.Position, T.label.Size = UDim2.fromOffset(0, 4), UDim2.new(1, 0, 0, 16)
 	Library.attachTooltip(T.Root, field(Data, "Tooltip", "tooltip"))
 	Library.regSearch(section, T.Root, T.label.Text)
 	local scroll = Instance.new("ScrollingFrame")
@@ -2924,11 +2929,12 @@ function Library:Textbox(Data)
 	local flag = field(Data, "Flag", "flag") or Library:NextFlag()
 	local callback = field(Data, "Callback", "callback")
 	local T = Build.Textbox(section.Items["Content"].Instance)
-	T.Root.Size = UDim2.new(1, 0, 0, 54)
+	T.Root.Size = UDim2.new(1, 0, 0, 56)
 	local glow = Library.insetField(T.field)
 	Library.fx.inset(T.field)
 	local fieldStroke = T.field:FindFirstChildOfClass("UIStroke")
 	T.label.Text = tostring(field(Data, "Name", "name") or "Textbox")
+	T.label.Position, T.label.Size = UDim2.fromOffset(0, 4), UDim2.new(1, 0, 0, 16)
 	Library.attachTooltip(T.Root, field(Data, "Tooltip", "tooltip"))
 	Library.regSearch(section, T.Root, T.label.Text)
 	T.input.Visible = false
@@ -3367,18 +3373,18 @@ function Library:Notification(Text, Duration, Color, Icon)
 	root.AutomaticSize = Enum.AutomaticSize.None
 	root.Size = UDim2.new(0, 60, 0, 36)
 	root.ZIndex = 2001
-	local function fitWidth() root.Size = UDim2.new(0, math.ceil(text.TextBounds.X) + 22 + 14, 0, 36) end
+	local function fitWidth() root.Size = UDim2.new(0, math.ceil(text.TextBounds.X) + 24 + 16, 0, 36) end
 	text:GetPropertyChangedSignal("TextBounds"):Connect(fitWidth)
-	text.Position = UDim2.new(0, 22, 0, 0)
+	text.Position = UDim2.new(0, 24, 0, 0)
 	text.Size = UDim2.new(0, 0, 1, 0)
 	text.AutomaticSize = Enum.AutomaticSize.X
 	text.TextWrapped = false
 	text.RichText = true
 	text.Text = tostring(Text or "")
 	text.ZIndex = 2003
-	bar.AnchorPoint, bar.Position, bar.Size = Vector2.new(0, 0.5), UDim2.new(0, 10, 0.5, 0), UDim2.new(0, 3, 0, 16)
+	bar.AnchorPoint, bar.Position, bar.Size = Vector2.new(0, 0.5), UDim2.new(0, 12, 0.5, 0), UDim2.new(0, 3, 0, 16)
 	bar.ZIndex = 2002
-	progress.Position, progress.Size, progress.ZIndex = UDim2.new(0, 10, 1, -4), UDim2.new(1, -20, 0, 2), 2002
+	progress.Position, progress.Size, progress.ZIndex = UDim2.new(0, 12, 1, -4), UDim2.new(1, -24, 0, 2), 2002
 	if typeof(Color) == "Color3" then bar.BackgroundColor3, progress.BackgroundColor3 = Color, Color end
 	local shadow = fx.shadow(root, { radius = 10, transparency = 0.3 })
 	fitWidth()
@@ -3422,20 +3428,20 @@ function Library:Watermark(Text, Icon)
 	root.Size = UDim2.new(0, 120, 0, 32)
 	root.ZIndex = 1500
 	Library.fx.shadow(root, { radius = 10, transparency = 0.35 })
-	Wm.text.Position = UDim2.new(0, 52, 0, 0)
+	Wm.text.Position = UDim2.new(0, 56, 0, 0)
 	Wm.text.Size = UDim2.new(0, 0, 1, 0)
 	Wm.text.AutomaticSize = Enum.AutomaticSize.X
 	Wm.text.TextWrapped = false
 	Wm.text.RichText = true
 	Wm.text.Text = tostring(Text or "Allison")
 	Wm.text.ZIndex = 1502
-	local function fitWidth() root.Size = UDim2.new(0, math.ceil(Wm.text.TextBounds.X) + 52 + 14, 0, 32) end
+	local function fitWidth() root.Size = UDim2.new(0, math.ceil(Wm.text.TextBounds.X) + 56 + 16, 0, 32) end
 	Wm.text:GetPropertyChangedSignal("TextBounds"):Connect(fitWidth)
 	fitWidth()
 	Wm.logo.ZIndex = 1502
 	Wm.logo.ImageColor3, Wm.logo.ScaleType = Color3.new(1, 1, 1), Enum.ScaleType.Fit
-	Wm.logo.AnchorPoint, Wm.logo.Position = Vector2.new(0, 0.5), UDim2.new(0, 11, 0.5, 0)
-	if Wm.sep then Wm.sep.AnchorPoint, Wm.sep.Position, Wm.sep.ZIndex = Vector2.new(0, 0.5), UDim2.new(0, 42, 0.5, 0), 1502 end
+	Wm.logo.AnchorPoint, Wm.logo.Position = Vector2.new(0, 0.5), UDim2.new(0, 12, 0.5, 0)
+	if Wm.sep then Wm.sep.AnchorPoint, Wm.sep.Position, Wm.sep.ZIndex = Vector2.new(0, 0.5), UDim2.new(0, 44, 0.5, 0), 1502 end
 	if Icon and Icon ~= "" then pcall(function() Wm.logo.Image = tostring(Icon) end) end
 	Library.MakeDraggable(root, root)
 	local wm = { Instance = root }
@@ -3460,7 +3466,7 @@ function Library:KeybindList()
 	Kw.rows.AutomaticSize = Enum.AutomaticSize.Y
 	Kw.rows.Position = UDim2.new(0, 12, 0, 44)
 	Kw.rows.Size = UDim2.new(1, -24, 0, 0)
-	local rowsLayout = Library.listLayout(Kw.rows, 2)
+	local rowsLayout = Library.listLayout(Kw.rows, 4)
 	local function fitHeight()
 		local h = rowsLayout.AbsoluteContentSize.Y
 		root.Size = UDim2.new(0, 220, 0, h > 0 and (44 + h + 8) or 37)
@@ -3702,7 +3708,7 @@ local function pageBox(page, title, height)
 	S.card.AutomaticSize = Enum.AutomaticSize.None
 	S.card.Size, S.card.Position = UDim2.new(1, 0, 0, height), UDim2.new()
 	S.content.AutomaticSize = Enum.AutomaticSize.None
-	S.content.Position, S.content.Size = UDim2.new(0, 12, 0, 44), UDim2.new(1, -24, 1, -52)
+	S.content.Position, S.content.Size = UDim2.new(0, 16, 0, 48), UDim2.new(1, -32, 1, -60)
 	for _, c in S.content:GetChildren() do if c:IsA("UIListLayout") then c:Destroy() end end
 	return S
 end
@@ -4112,11 +4118,11 @@ function Library:SkinChanger(Data)
 	chipRow.BackgroundTransparency, chipRow.BorderSizePixel = 1, 0
 	chipRow.ScrollBarThickness = 0
 	chipRow.CanvasSize, chipRow.AutomaticCanvasSize, chipRow.ScrollingDirection = UDim2.new(), Enum.AutomaticSize.X, Enum.ScrollingDirection.X
-	chipRow.Position, chipRow.Size = UDim2.new(0, 0, 0, 34), UDim2.new(1, -186, 0, 28)
+	chipRow.Position, chipRow.Size = UDim2.new(0, 0, 0, 36), UDim2.new(1, -188, 0, 28)
 	chipRow.Parent = content
 	Library.listLayout(chipRow, 6, Enum.FillDirection.Horizontal)
 	local searchHost = Build.Textbox(content)
-	searchHost.Root.Position, searchHost.Root.Size = UDim2.new(1, -178, 0, 34), UDim2.new(0, 178, 0, 28)
+	searchHost.Root.Position, searchHost.Root.Size = UDim2.new(1, -180, 0, 36), UDim2.new(0, 180, 0, 28)
 	searchHost.label.Visible = false
 	searchHost.field.Position, searchHost.field.Size = UDim2.new(), UDim2.new(1, 0, 1, 0)
 	searchHost.input.Visible = false
@@ -4480,8 +4486,10 @@ function Library:EspPreview(Data)
 	local root = P.Root
 	root.Name = "\0"
 	root.ZIndex = 1400
-	root.Size = UDim2.fromOffset(320, 506)   -- room for the flags right of the box, the target tabs, the two toggles and the zoom
-	P.view.Size = UDim2.new(1, -20, 1, -(82 + 92))
+	root.Size = UDim2.fromOffset(320, 508)   -- room for the flags right of the box, the target tabs, the two toggles and the zoom
+	-- (the generated positions count the card's 1 px border; the runtime parts are placed from the inner edge, so these are set exactly)
+	P.view.Position, P.view.Size = UDim2.fromOffset(12, 84), UDim2.new(1, -24, 1, -(84 + 92))
+	if P.tabs then P.tabs.Position, P.tabs.Size = UDim2.fromOffset(12, 48), UDim2.new(1, -24, 0, 28) end
 	P.title.Text = tostring(Library.field(Data, "Name", "name") or "esp preview")
 	P.view.ClipsDescendants = true
 	fx.shadow(root, { radius = 12, transparency = 0.35 })
@@ -5236,9 +5244,9 @@ function Library:EspPreview(Data)
 	local useList = EDIT and Library.field(Data, "FlagPicker", "flagpicker") ~= false and mapOf("Enemy").FlagLines == nil
 	local SHOW_TARGETS = EDIT and Library.field(Data, "Targets", "targets") ~= false
 	if not SHOW_TARGETS then
-		root.Size = UDim2.fromOffset(320, 470)
-		P.view.Position = UDim2.new(P.view.Position.X.Scale, P.view.Position.X.Offset, 0, 46)
-		P.view.Size = UDim2.new(1, -20, 1, -(46 + 92))
+		root.Size = UDim2.fromOffset(320, 472)
+		P.view.Position = UDim2.fromOffset(12, 48)
+		P.view.Size = UDim2.new(1, -24, 1, -(48 + 92))
 	end
 	local function listOf(t)
 		local v = Library.Flags[flagFor(t, "FlagList")]
@@ -5292,8 +5300,8 @@ function Library:EspPreview(Data)
 	if P.tabs then
 		P.tabs.Visible = SHOW_TARGETS
 		local pad = Instance.new("UIPadding", P.tabs)
-		pad.PaddingLeft, pad.PaddingRight, pad.PaddingTop, pad.PaddingBottom = UDim.new(0, 3), UDim.new(0, 3), UDim.new(0, 3), UDim.new(0, 3)
-		Library.listLayout(P.tabs, 3, Enum.FillDirection.Horizontal)
+		pad.PaddingLeft, pad.PaddingRight, pad.PaddingTop, pad.PaddingBottom = UDim.new(0, 2), UDim.new(0, 2), UDim.new(0, 2), UDim.new(0, 2)
+		Library.listLayout(P.tabs, 2, Enum.FillDirection.Horizontal)
 		local items = {}
 		local function paintTabs()
 			for t, S in items do
@@ -5306,7 +5314,7 @@ function Library:EspPreview(Data)
 		for i, t in TARGETS do
 			local S = Build.SegItem(P.tabs)
 			S.Root.LayoutOrder = i
-			S.Root.Size = UDim2.new(1 / 3, -2, 1, 0)
+			S.Root.Size = UDim2.new(1 / 3, -1, 1, 0)
 			S.label.Text = t
 			S.pill.Size, S.pill.Position = UDim2.fromScale(1, 1), UDim2.new()
 			items[t] = S
@@ -5462,25 +5470,34 @@ function Library:EspPreview(Data)
 			local head = Instance.new("TextLabel")
 			head.Name = "\0"
 			head.BackgroundTransparency = 1
-			head.FontFace, head.TextSize, head.Text = Library.FontBold, 12, "Flags"
+			head.FontFace, head.TextSize, head.Text = Library.FontBold, 13, "Flags"
 			head.TextXAlignment = Enum.TextXAlignment.Left
-			head.TextColor3 = Library.Theme["Dim Text"]
-			Library:AddToTheme(head, { TextColor3 = "Dim Text" })
+			head.TextColor3 = Library.Theme.Text
+			Library:AddToTheme(head, { TextColor3 = "Text" })
 			head.Size = UDim2.new(1, 0, 0, 16)
 			head.Parent = block
+			local countT = Instance.new("TextLabel")
+			countT.Name = "\0"
+			countT.BackgroundTransparency = 1
+			countT.FontFace, countT.TextSize, countT.Text = Library.Font, 12, ""
+			countT.TextXAlignment = Enum.TextXAlignment.Right
+			countT.TextColor3 = Library.Theme["Dim Text"]
+			Library:AddToTheme(countT, { TextColor3 = "Dim Text" })
+			countT.Size = UDim2.new(1, 0, 0, 16)
+			countT.Parent = block
 			local wrap = Instance.new("Frame")
 			wrap.Name = "\0"
 			wrap.BackgroundTransparency = 1
-			wrap.Position, wrap.Size = UDim2.fromOffset(0, 22), UDim2.new(1, 0, 0, 24)
+			wrap.Position, wrap.Size = UDim2.fromOffset(0, 24), UDim2.new(1, 0, 0, 24)
 			wrap.Parent = block
-			local wl = Library.listLayout(wrap, 6, Enum.FillDirection.Horizontal)
+			local wl = Library.listLayout(wrap, 8, Enum.FillDirection.Horizontal)
 			pcall(function() wl.Wraps = true end)
 			local base = root.Size.Y.Offset
 			local viewSize = P.view.Size
 			local function relayout()
 				local h = math.max(wl.AbsoluteContentSize.Y, 24)
 				wrap.Size = UDim2.new(1, 0, 0, h)
-				local extra = 22 + h + 12
+				local extra = 24 + h + 12
 				block.Position, block.Size = UDim2.new(0, 12, 1, -92), UDim2.new(1, -24, 0, extra - 12)
 				root.Size = UDim2.fromOffset(root.Size.X.Offset, base + extra)
 				-- the view keeps its height: it is sized from the bottom of the window, which just moved down by `extra`
@@ -5537,7 +5554,11 @@ function Library:EspPreview(Data)
 			-- follow flag changes made elsewhere (the menu's toggles, a config load, another target)
 			task.spawn(function()
 				while Library.Alive and root.Parent do
-					if root.Visible then for _, p in pills do paintPill(p) end end
+					if root.Visible then
+						local on = 0
+						for _, p in pills do paintPill(p) if p.on then on += 1 end end
+						countT.Text = on .. " / " .. #pills
+					end
 					task.wait(0.2)
 				end
 			end)
@@ -6104,7 +6125,7 @@ function Library.AddSettings(owner, row, Data)
 	P.rows.Size = UDim2.new(1, 0, 0, 0)
 	Library.listLayout(P.rows, 4)
 	local pad = Instance.new("UIPadding", P.rows)
-	pad.PaddingTop, pad.PaddingBottom, pad.PaddingLeft, pad.PaddingRight = UDim.new(0, 8), UDim.new(0, 8), UDim.new(0, 10), UDim.new(0, 10)
+	pad.PaddingTop, pad.PaddingBottom, pad.PaddingLeft, pad.PaddingRight = UDim.new(0, 8), UDim.new(0, 8), UDim.new(0, 12), UDim.new(0, 12)
 	local sub = setmetatable({
 		Items = { Content = Library.Wrap(P.rows), Section = Library.Wrap(P.Root) }, Page = owner.Section.Page, Window = owner.Section.Window,
 		Library = Library, Name = field(Data, "Name", "name") or "Settings", IsSettings = true,
