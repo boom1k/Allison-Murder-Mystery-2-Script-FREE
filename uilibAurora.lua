@@ -4153,6 +4153,7 @@ function Library:EspPreview(Data)
 	local model, parts, body, wall = nil, {}, {}, nil
 	local chamSig, chamFills, chamLines, shells = nil, {}, {}, {}
 	local glows, neonParts = {}, {}   -- the Test style: glow hint shells, the body parts turned Neon
+	local shellOf = setmetatable({}, { __mode = "k" })   -- shell / glow copy -> the body part it covers
 	local testSaved = { sas = {}, tex = {}, decals = {} }   -- what the Test style set aside on the clone (put back by restoreBody)
 	local function buildModel()
 		if model then model:Destroy() model, parts, body = nil, {}, {} end
@@ -4264,6 +4265,7 @@ function Library:EspPreview(Data)
 					sh.Material, sh.CastShadow = material or Enum.Material.SmoothPlastic, false
 					sh.Size, sh.CFrame = p.Size * scale, p.CFrame
 					sh.Parent = parent
+					shellOf[sh] = p
 					list[#list + 1] = sh
 				end
 			end
@@ -4277,8 +4279,9 @@ function Library:EspPreview(Data)
 		end
 		if state.ChamsStyle == "Test" then
 			-- like the in-game Test chams: every visible part of the body is Neon (what hides the material, the SurfaceAppearance, the mesh
-			-- texture and decals, is set aside until the next rebuild; weapons are left alone); the smooth shell is on only while part of the
-			-- body is behind something, here: while the half wall is; a faint bigger Neon copy hints at the bloom (a viewport has none)
+			-- texture and decals, is set aside until the next rebuild; weapons are left alone). Per body part, every frame (chamsFrame): a part
+			-- that is behind something (a ray from the camera) shows the smooth liquid shell, a part you can see stays clean neon with a faint
+			-- bigger Neon copy that hints at the bloom (a viewport has none)
 			for _, p in parts do
 				local part = p.part
 				if part.Transparency < 0.95 and part.Name ~= "HumanoidRootPart" and not part:FindFirstAncestor("WeaponModel") and not part:FindFirstAncestor("WeaponAttachments") then
@@ -4300,7 +4303,7 @@ function Library:EspPreview(Data)
 				end
 			end
 			if (tonumber(state.TestGlow) or 0) > 0 then makeShells(glows, chamsBase, 1.1, Enum.Material.Neon) end
-			if state.ChamsWalls and state.Wall then makeShells(shells, chamsTop, 1.05) end
+			if state.ChamsWalls then makeShells(shells, chamsTop, 1.05) end
 			return
 		end
 		for _, p in body do chamFills[#chamFills + 1] = boxPart(p.Size, p.CFrame, fillTo) end
@@ -4654,12 +4657,34 @@ function Library:EspPreview(Data)
 			local ts = t * (tonumber(state.LiquidSpeed) or 1)
 			local neonCol = col:Lerp(white, 0.3)
 			for _, part in neonParts do if part.Color ~= neonCol then part.Color = neonCol end end
+			-- which body parts are behind something right now (only the wall can be: the model's own parts and the chams are filtered out)
+			rayParams.FilterDescendantsInstances = { model, chamsBase }
+			local from = cam.CFrame.Position
+			local hidden = {}
+			if state.ChamsWalls then
+				for _, p in body do
+					if world:Raycast(from, p.Position - from, rayParams) then hidden[p] = true end
+				end
+			end
 			local glowTr = math.clamp(0.9 - 0.18 * (tonumber(state.TestGlow) or 0), 0.45, 0.95)
 			local glowCol = col:Lerp(white, 0.4)
-			for _, g in glows do g.Color, g.Transparency = glowCol, glowTr end
+			for _, g in glows do
+				g.Color = glowCol
+				g.Transparency = hidden[shellOf[g]] and 1 or glowTr   -- no glow where the part is hidden
+			end
+			-- the liquid shell on the hidden parts: it breathes, and a wave runs up the body (brighter band = lower transparency)
 			local fillC = col:Lerp(white, 0.2 + 0.12 * math.sin(ts * 1.6))
-			local ft = math.clamp(0.45 + (tonumber(state.ChamsTransparency) or 0) * 0.4 + 0.1 * math.sin(ts * 1.3), 0, 1)
-			for _, sh in shells do sh.Color, sh.Transparency = fillC, ft end
+			local base = 0.4 + (tonumber(state.ChamsTransparency) or 0) * 0.4 + 0.08 * math.sin(ts * 1.3)
+			for _, sh in shells do
+				local p = shellOf[sh]
+				if hidden[p] then
+					local wave = 0.5 + 0.5 * math.sin(ts * 3 - p.Position.Y * 2.4)
+					sh.Color = fillC:Lerp(white, 0.25 * wave * wave)
+					sh.Transparency = math.clamp(base - 0.2 * wave * wave, 0.05, 0.95)
+				else
+					sh.Transparency = 1
+				end
+			end
 			return
 		end
 		local col, lineCol = state.ChamsColor, state.ChamsOutlineColor
