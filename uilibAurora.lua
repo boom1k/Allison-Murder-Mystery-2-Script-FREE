@@ -1407,8 +1407,8 @@ function Library:Window(Data)
 	end
 	local function fadeDone()
 		if not anim.group then return end
-		root.Parent = anim.home
-		for _, f in window.FadeWith do if f.Parent then f.Parent = anim.home end end
+		if root.Parent ~= anim.home then root.Parent = anim.home end
+		for _, f in window.FadeWith do if f.Parent and f.Parent ~= anim.home then f.Parent = anim.home end end
 		anim.group.Visible = false
 	end
 	function window:SetOpen(bool)
@@ -1419,7 +1419,18 @@ function Library:Window(Data)
 		if Library.UpdateBlur then Library.UpdateBlur() end
 		if self.OnOpen then self.OnOpen(bool) end
 		if Library.MobileToggle then Library.MobileToggle.Refresh() end
-		if not Library.Animations then root.Visible = bool return end
+		if not (Library.Animations and Library.SmoothOpen) then
+			-- the cheap path: show / hide at once. (An animation that was still running is finished first, so nothing stays in the CanvasGroup.)
+			if anim.base then
+				local sc0 = anim.temp or root:FindFirstChildOfClass("UIScale")
+				if sc0 then sc0.Scale = anim.base end
+				anim.base = nil
+				if anim.temp then anim.temp:Destroy() anim.temp = nil end
+			end
+			fadeDone()
+			root.Visible = bool
+			return
+		end
 		local sc = anim.temp or root:FindFirstChildOfClass("UIScale")
 		if not anim.base then
 			if not sc then
@@ -1679,6 +1690,9 @@ end
 local fx = {}
 Library.fx = fx
 Library.Animations = true
+-- The open / close fade + scale (window.SetOpen) puts the whole window, the ESP preview and the chat into one full-screen CanvasGroup and scales
+-- it, which redraws hundreds of elements every frame for 0.2 s: a frame drop in heavy games. Off by default; a script can offer it as a setting.
+Library.SmoothOpen = false
 -- Aurora Hex is flat (imgui): no bevels, glows or ripples unless an element forces one (opt.force / fx.bevel(..., true)). Drop shadows
 -- ARE drawn, square like the boxes: two layers of fx_shadowsq (a 3 px dropped, square-holed 9-slice), a wide soft ambient one and a
 -- tight key one just under the box, so floating panels sit above the window. Library.Shadows = false turns them off.
@@ -4651,7 +4665,7 @@ function Library:EspPreview(Data)
 			if prev then prev(b) end
 			if b then root.Visible = preview.Shown ~= false return end
 			-- closing: it fades out with the window, then hides
-			if not Library.Animations then root.Visible = false return end
+			if not (Library.Animations and Library.SmoothOpen) then root.Visible = false return end
 			task.delay(0.16, function() if not main.IsOpen then root.Visible = false end end)
 		end
 	end
