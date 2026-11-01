@@ -107,10 +107,12 @@ function Build.Dropdown(parent)
 	local n1 = N("TextLabel", { Name = "label", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 0, 0, 4), Size = UDim2.new(0, 49.16, 0, 19.5), BackgroundTransparency = 1, Text = "box type", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(220, 224, 230) }, root)
 	P["label"] = n1
 	Th(n1, { TextColor3 = "Text" })
-	local n2 = N("Frame", { Name = "field", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 0, 0, 24), Size = UDim2.new(1, 0, 0, 28), BackgroundColor3 = Color3.fromRGB(37, 41, 49), BackgroundTransparency = 0 }, root)
+	local n2 = N("Frame", { Name = "field", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 0, 0, 24), Size = UDim2.new(1, 0, 0, 28), BackgroundColor3 = Color3.fromRGB(19, 21, 25), BackgroundTransparency = 0 }, root)
 	P["field"] = n2
-	Th(n2, { BackgroundColor3 = "Element" })
+	Th(n2, { BackgroundColor3 = "Dark Liner" })
 	N("UICorner", { CornerRadius = UDim.new(0, 6) }, n2)
+	local n2S = N("UIStroke", { Color = Color3.fromRGB(40, 44, 52), Thickness = 1, ApplyStrokeMode = Enum.ApplyStrokeMode.Border }, n2)
+	Th(n2S, { Color = "Border" })
 	local n2_1 = N("TextLabel", { Name = "value", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 12, 0, 6), Size = UDim2.new(1, -38, 0, 19.5), BackgroundTransparency = 1, Text = "bounding", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(130, 136, 148) }, n2)
 	P["value"] = n2_1
 	Th(n2_1, { TextColor3 = "Dim Text" })
@@ -187,10 +189,12 @@ function Build.Textbox(parent)
 	local n1 = N("TextLabel", { Name = "label", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 0, 0, 4), Size = UDim2.new(0, 28.2, 0, 19.5), BackgroundTransparency = 1, Text = "input", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(220, 224, 230) }, root)
 	P["label"] = n1
 	Th(n1, { TextColor3 = "Text" })
-	local n2 = N("Frame", { Name = "field", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 0, 0, 24), Size = UDim2.new(1, 0, 0, 28), BackgroundColor3 = Color3.fromRGB(37, 41, 49), BackgroundTransparency = 0 }, root)
+	local n2 = N("Frame", { Name = "field", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 0, 0, 24), Size = UDim2.new(1, 0, 0, 28), BackgroundColor3 = Color3.fromRGB(19, 21, 25), BackgroundTransparency = 0 }, root)
 	P["field"] = n2
-	Th(n2, { BackgroundColor3 = "Element" })
+	Th(n2, { BackgroundColor3 = "Dark Liner" })
 	N("UICorner", { CornerRadius = UDim.new(0, 6) }, n2)
+	local n2S = N("UIStroke", { Color = Color3.fromRGB(40, 44, 52), Thickness = 1, ApplyStrokeMode = Enum.ApplyStrokeMode.Border }, n2)
+	Th(n2S, { Color = "Border" })
 	local n2_1 = N("TextLabel", { Name = "input", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 12, 0, 6), Size = UDim2.new(1, -259.16, 0, 19.5), BackgroundTransparency = 1, Text = "...", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(130, 136, 148) }, n2)
 	P["input"] = n2_1
 	Th(n2_1, { TextColor3 = "Dim Text" })
@@ -256,10 +260,12 @@ function Build.SearchPanel(parent)
 	N("UICorner", { CornerRadius = UDim.new(0, 6) }, root)
 	local rootS = N("UIStroke", { Color = Color3.fromRGB(40, 44, 52), Thickness = 1, ApplyStrokeMode = Enum.ApplyStrokeMode.Border }, root)
 	Th(rootS, { Color = "Border" })
-	local n1 = N("Frame", { Name = "search", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 5, 0, 5), Size = UDim2.new(1, -10, 0, 28), BackgroundColor3 = Color3.fromRGB(37, 41, 49), BackgroundTransparency = 0 }, root)
+	local n1 = N("Frame", { Name = "search", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 5, 0, 5), Size = UDim2.new(1, -10, 0, 28), BackgroundColor3 = Color3.fromRGB(19, 21, 25), BackgroundTransparency = 0 }, root)
 	P["search"] = n1
-	Th(n1, { BackgroundColor3 = "Element" })
+	Th(n1, { BackgroundColor3 = "Dark Liner" })
 	N("UICorner", { CornerRadius = UDim.new(0, 4) }, n1)
+	local n1S = N("UIStroke", { Color = Color3.fromRGB(40, 44, 52), Thickness = 1, ApplyStrokeMode = Enum.ApplyStrokeMode.Border }, n1)
+	Th(n1S, { Color = "Border" })
 	local n1_1 = N("ImageLabel", { Name = "searchIcon", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 8, 0, 8), Size = UDim2.new(0, 12, 0, 12), BackgroundTransparency = 1, Image = Build.IconAsset["search"] or "", ImageColor3 = Color3.fromRGB(130, 136, 148) }, n1)
 	P["searchIcon"] = n1_1
 	Th(n1_1, { ImageColor3 = "Dim Text" })
@@ -1009,17 +1015,19 @@ function Build.Window(parent)
 	local n9 = N("Frame", { Name = "topLine", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 187, 0, 65), Size = UDim2.new(1, -188, 0, 1), BackgroundColor3 = Color3.fromRGB(40, 44, 52), BackgroundTransparency = 0 }, root)
 	P["topLine"] = n9
 	Th(n9, { BackgroundColor3 = "Border" })
-	local n10 = N("Frame", { Name = "search", BorderSizePixel = 0, AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -17, 0, 19), Size = UDim2.new(0, 170, 0, 28), BackgroundColor3 = Color3.fromRGB(37, 41, 49), BackgroundTransparency = 0 }, root)
+	local n10 = N("Frame", { Name = "search", BorderSizePixel = 0, AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -17, 0, 19), Size = UDim2.new(0, 170, 0, 28), BackgroundColor3 = Color3.fromRGB(19, 21, 25), BackgroundTransparency = 0 }, root)
 	P["search"] = n10
-	Th(n10, { BackgroundColor3 = "Element" })
+	Th(n10, { BackgroundColor3 = "Dark Liner" })
 	N("UICorner", { CornerRadius = UDim.new(0, 6) }, n10)
+	local n10S = N("UIStroke", { Color = Color3.fromRGB(40, 44, 52), Thickness = 1, ApplyStrokeMode = Enum.ApplyStrokeMode.Border }, n10)
+	Th(n10S, { Color = "Border" })
 	local n10_1 = N("ImageLabel", { Name = "searchIcon", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 8, 0, 8), Size = UDim2.new(0, 12, 0, 12), BackgroundTransparency = 1, Image = Build.IconAsset["search"] or "", ImageColor3 = Color3.fromRGB(130, 136, 148) }, n10)
 	P["searchIcon"] = n10_1
 	Th(n10_1, { ImageColor3 = "Dim Text" })
-	local n10_2 = N("TextLabel", { Name = "searchText", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 28, 0, 6), Size = UDim2.new(1, -40, 0, 18), BackgroundTransparency = 1, Text = "Search...", TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(130, 136, 148) }, n10)
+	local n10_2 = N("TextLabel", { Name = "searchText", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 29, 0, 7), Size = UDim2.new(1, -40, 0, 18), BackgroundTransparency = 1, Text = "Search...", TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(130, 136, 148) }, n10)
 	P["searchText"] = n10_2
 	Th(n10_2, { TextColor3 = "Dim Text" })
-	local n11 = N("Frame", { Name = "pages", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 209, 0, 81), Size = UDim2.new(1, -226, 1, -100), BackgroundTransparency = 1 }, root)
+	local n11 = N("Frame", { Name = "pages", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 201, 0, 73), Size = UDim2.new(1, -210, 1, -84), BackgroundTransparency = 1 }, root)
 	P["pages"] = n11
 	local n12 = N("Frame", { Name = "grip", BorderSizePixel = 0, AnchorPoint = Vector2.new(1, 1), Position = UDim2.new(1, -5, 1, -5), Size = UDim2.new(0, 8, 0, 8), BackgroundColor3 = Color3.fromRGB(52, 58, 69), BackgroundTransparency = 0 }, root)
 	P["grip"] = n12
@@ -1772,9 +1780,10 @@ local function newLeaf(window, group, name, columns)
 		col.Size = UDim2.new(1 / columns, 0, 1, 0)
 		col.Parent = holder
 		local cpad = Instance.new("UIPadding")
-		cpad.PaddingLeft = UDim.new(0, i == 1 and 0 or 6)
-		cpad.PaddingRight = UDim.new(0, i == columns and 0 or 6)
-		cpad.PaddingBottom = UDim.new(0, 6)
+		cpad.PaddingLeft = UDim.new(0, i == 1 and 8 or 6)
+		cpad.PaddingRight = UDim.new(0, i == columns and 8 or 6)
+		cpad.PaddingTop = UDim.new(0, 8)
+		cpad.PaddingBottom = UDim.new(0, 8)
 		cpad.Parent = col
 		listLayout(col, 12)
 		page.ColumnsData[i] = wrapInst(col)
@@ -1879,7 +1888,7 @@ function Library:Page(Data)
 	else
 		S.label.Position = UDim2.new(0, 24, 0, 10)
 	end
-	Library.fx.bevel(S.hl, 0.2)
+	local rowShadow = Library.fx.shadow(S.hl, { radius = 6, transparency = 1 })
 	local mark = Instance.new("Frame")
 	mark.Name = "\0Mark"
 	mark.BorderSizePixel = 0
@@ -1910,6 +1919,7 @@ function Library:Page(Data)
 		fx.tween(S.label, { TextColor3 = on and Library.Theme["Bright Text"] or Library.Theme["Dim Text"] }, 0.16)
 		Library:ChangeItemTheme(S.hl, { BackgroundColor3 = "Element" })
 		fx.tween(S.hl, { BackgroundTransparency = on and 0 or 1 }, 0.16)
+		fx.tween(rowShadow, { ImageTransparency = on and 0.6 or 1 }, 0.16)
 		fx.tween(mark, { Size = UDim2.new(0, 3, 0, on and 18 or 0) }, 0.2, Enum.EasingStyle.Back)
 		if icon then
 			Library:ChangeItemTheme(icon, { ImageColor3 = on and "Accent" or "Dim Text" })
@@ -1953,8 +1963,7 @@ function Library:Section(Data)
 	local side = field(Data, "Side", "side") or 1
 	local colWrap = page.ColumnsData[math.clamp(side, 1, page.Columns)]
 	local S = Build.Section(colWrap.Instance)
-	S.Root.AutomaticSize = Enum.AutomaticSize.Y
-	S.Root.Size = UDim2.new(1, 0, 0, 0)
+	S.Root.Size = UDim2.new(1, 0, 0, 40)   -- (the height follows the content: set from the list layout below, not AutomaticSize, because of the shadow)
 	-- the title sits top left over a divider
 	S.title.Text = tostring(name)
 	S.title.AutomaticSize = Enum.AutomaticSize.X
@@ -1964,16 +1973,30 @@ function Library:Section(Data)
 	S.titleMask.ZIndex, S.title.ZIndex = 3, 4
 	S.titleMask.Visible = S.title.Text ~= ""
 	S.divider.Visible = S.title.Text ~= ""
-	S.card.AutomaticSize = Enum.AutomaticSize.Y
-	S.card.Size = UDim2.new(1, 0, 0, 0)
-	Library.fx.bevel(S.card, 0.16)
+	S.card.Size = UDim2.new(1, 0, 1, 0)
+	do
+		local host = Instance.new("Frame")
+		host.Name = "\0Shadow"
+		host.BackgroundTransparency, host.BorderSizePixel = 1, 0
+		host.Size = UDim2.fromScale(1, 1)
+		host.ZIndex = 0
+		host.Parent = S.Root
+		Library.fx.shadow(host, { radius = 8, transparency = 0.55 })
+	end
 	local pad = Instance.new("UIPadding")
-	pad.PaddingTop, pad.PaddingBottom, pad.PaddingLeft, pad.PaddingRight = UDim.new(0, S.title.Text ~= "" and 44 or 8), UDim.new(0, 8), UDim.new(0, 16), UDim.new(0, 16)
+	local padTop, padBottom = S.title.Text ~= "" and 44 or 8, 8
+	pad.PaddingTop, pad.PaddingBottom, pad.PaddingLeft, pad.PaddingRight = UDim.new(0, padTop), UDim.new(0, padBottom), UDim.new(0, 16), UDim.new(0, 16)
 	pad.Parent = S.card
 	S.content.AutomaticSize = Enum.AutomaticSize.Y
 	S.content.Size = UDim2.new(1, 0, 0, 0)
 	S.content.Position = UDim2.new()
-	listLayout(S.content, 4)
+	local contentLayout = listLayout(S.content, 4)
+	local function fit()
+		local h = math.ceil(contentLayout.AbsoluteContentSize.Y) + padTop + padBottom
+		if S.Root.Size.Y.Offset ~= h then S.Root.Size = UDim2.new(1, 0, 0, h) end
+	end
+	contentLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(fit)
+	fit()
 	local section = setmetatable({ Items = {}, Page = page, Window = page.Window, Library = Library, Name = name }, Library)
 	table.insert(page.Window.SectionList, { section = section, root = S.Root, page = page, name = tostring(name) })
 	section.Items["Section"] = wrapInst(S.Root)
@@ -2267,14 +2290,14 @@ end
 function Library.raiseButton(root, btn)
 	local fx = Library.fx
 	fx.bevel(root, 0.16)
-	local sh = Instance.new("ImageLabel")   -- Midnight buttons are flat: no shadow (a detached label keeps the tweens below valid)
+	local sh = fx.shadow(root, { radius = 6, transparency = 0.6 })
 	fx.press(root, btn)
 	fx.hover(btn, function()
 		fx.tween(root, { BackgroundColor3 = Library.Theme["Element Hover"] }, 0.15)
-		fx.tween(sh, { ImageTransparency = 0.25 }, 0.15)
+		fx.tween(sh, { ImageTransparency = 0.4 }, 0.15)
 	end, function()
 		fx.tween(root, { BackgroundColor3 = Library.Theme.Element }, 0.25)
-		fx.tween(sh, { ImageTransparency = 0.5 }, 0.25)
+		fx.tween(sh, { ImageTransparency = 0.6 }, 0.25)
 	end)
 	local st = root:FindFirstChildOfClass("UIStroke")
 	if st then
@@ -2484,8 +2507,8 @@ function Library:Label(Text, Alignment)
 	local L = Build.Label(section.Items["Content"].Instance)
 	L.Root.Size = UDim2.new(1, 0, 0, 24)
 	L.Root.AutomaticSize = Enum.AutomaticSize.Y
-	L.text.Position = UDim2.new(0, 18, 0, 0)
-	L.text.Size = UDim2.new(1, -20, 0, 0)
+	L.text.Position = UDim2.new(0, 0, 0, 0)
+	L.text.Size = UDim2.new(1, 0, 0, 0)
 	L.text.AutomaticSize = Enum.AutomaticSize.Y
 	L.text.TextWrapped = true
 	L.text.RichText = true
@@ -2724,7 +2747,7 @@ function Library:Dropdown(Data)
 	Library.regSearch(section, T.Root, T.label.Text)
 	T.value.Text = "--"
 	T.value.TextTruncate = Enum.TextTruncate.AtEnd
-	T.value.Size = UDim2.new(1, -26, 0, 14)
+	T.value.Size = UDim2.new(1, -26, 0, 16)
 	local winRoot = Library.popupRoot(section)
 	local P = Build.SearchPanel(winRoot)
 	P.Root.Visible = false
@@ -2940,8 +2963,8 @@ function Library:Textbox(Data)
 	T.input.Visible = false
 	local box = Instance.new("TextBox")
 	box.BackgroundTransparency, box.BorderSizePixel = 1, 0
-	box.Size, box.Position = UDim2.new(1, -14, 1, 0), UDim2.new(0, 7, 0, 0)
-	box.FontFace, box.TextSize = Library.Font, 12
+	box.Size, box.Position = UDim2.new(1, -24, 1, 0), UDim2.new(0, 12, 0, 0)
+	box.FontFace, box.TextSize = Library.Font, 13
 	box.TextColor3, box.PlaceholderColor3 = Library.Theme.Text, Library.Theme["Dim Text"]
 	box.PlaceholderText = tostring(field(Data, "Placeholder", "placeholder") or "...")
 	box.TextXAlignment, box.ClearTextOnFocus, box.Text = Enum.TextXAlignment.Left, false, ""
@@ -3707,6 +3730,15 @@ local function pageBox(page, title, height)
 	S.titleMask.ZIndex, S.title.ZIndex = 3, 4
 	S.card.AutomaticSize = Enum.AutomaticSize.None
 	S.card.Size, S.card.Position = UDim2.new(1, 0, 0, height), UDim2.new()
+	do
+		local host = Instance.new("Frame")
+		host.Name = "\0Shadow"
+		host.BackgroundTransparency, host.BorderSizePixel = 1, 0
+		host.Size = UDim2.fromScale(1, 1)
+		host.ZIndex = 0
+		host.Parent = S.Root
+		Library.fx.shadow(host, { radius = 8, transparency = 0.55 })
+	end
 	S.content.AutomaticSize = Enum.AutomaticSize.None
 	S.content.Position, S.content.Size = UDim2.new(0, 16, 0, 48), UDim2.new(1, -32, 1, -60)
 	for _, c in S.content:GetChildren() do if c:IsA("UIListLayout") then c:Destroy() end end
@@ -4064,7 +4096,7 @@ local function skinPreview(page, Data)
 		local T = Build.Toggle(row)
 		T.Root.AnchorPoint, T.Root.Position, T.Root.Size = Vector2.new(1, 0), UDim2.new(1, 0, 0, 0), UDim2.new(0, 140, 0, 19)
 		T.label.Text = "auto rotate"
-		T.label.Size = UDim2.new(1, -18, 0, 15)
+		T.label.Size = UDim2.new(1, -26, 0, 16)
 		T.check.AnchorPoint, T.check.Position, T.check.Size = Vector2.new(0.5, 0.5), UDim2.fromScale(0.5, 0.5), UDim2.fromScale(1, 1)
 		local sflag = tostring(field(Data, "SpinFlag", "spinflag") or "SkinPreviewSpin")
 		local function set(v)
@@ -5628,7 +5660,7 @@ function Library:PartPicker(Data)
 	local name = tostring(Library.field(Data, "Name", "name") or "")
 	T.label.Text = name
 	Library.regSearch(section, T.Root, name)
-	T.figure.Size = UDim2.new(1, -20, 0, 128)
+	T.figure.Size = UDim2.new(1, 0, 0, 128)
 	-- the body keeps the proportions of an R6 character, centred in the box
 	local body = Instance.new("Frame")
 	body.Name = "\0"
