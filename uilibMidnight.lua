@@ -1312,15 +1312,57 @@ function Library.keepOnScreen(target)
 end
 
 -- ---- dragging ----
+-- A smoothed drag: the window eases towards the mouse (exponential, about 40 ms) instead of snapping to it, and settles when the button is
+-- released. Library.SmoothDrag = false (or Library.Animations = false) makes it follow the mouse exactly. Returns the two callbacks of Library.beginDrag.
+function Library.dragSmooth(target, startMouse, startPos)
+	local gx, gy = startPos.X.Offset, startPos.Y.Offset   -- where the mouse wants the window
+	local cx, cy = gx, gy                                    -- where the window is
+	local conn, released, releasedAt, step = nil, false, 0, nil
+	local function apply()
+		-- UDim offsets are whole pixels: the float position (cx, cy) is kept apart, or a step under half a pixel would be rounded away and the
+		-- window would stop a few pixels short of the mouse
+		local ix, iy = math.floor(cx + 0.5), math.floor(cy + 0.5)
+		target.Position = UDim2.new(startPos.X.Scale, ix, startPos.Y.Scale, iy)
+		Library.keepOnScreen(target)
+		local p = target.Position   -- keepOnScreen may have moved it back onto the screen: then that is the new position
+		if p.X.Offset ~= ix then cx = p.X.Offset end
+		if p.Y.Offset ~= iy then cy = p.Y.Offset end
+	end
+	local function stop() if conn then conn:Disconnect() conn = nil end end
+	step = function(dt)
+		local a = 1 - math.exp(-dt * 26)
+		cx += (gx - cx) * a
+		cy += (gy - cy) * a
+		if released and ((math.abs(gx - cx) < 0.4 and math.abs(gy - cy) < 0.4) or os.clock() - releasedAt > 0.5) then
+			cx, cy = gx, gy
+			apply()
+			stop()
+			return
+		end
+		apply()
+	end
+	local function onMove(m)
+		local d = m.Position - startMouse
+		gx, gy = startPos.X.Offset + d.X, startPos.Y.Offset + d.Y
+		if Library.SmoothDrag == false or not Library.Animations then
+			cx, cy = gx, gy
+			apply()
+		elseif not conn then
+			conn = RunService.RenderStepped:Connect(step)
+		end
+	end
+	local function onEnd()
+		released, releasedAt = true, os.clock()
+		if not conn then stop() end
+	end
+	return onMove, onEnd
+end
+
 local function makeDraggable(handle, target)
 	Library:Connect(handle.InputBegan, function(i)
 		if i.UserInputType ~= MB1 and i.UserInputType ~= TOUCH then return end
-		local start, startPos = i.Position, target.Position
-		Library.beginDrag(function(m)
-			local d = m.Position - start
-			target.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + d.X, startPos.Y.Scale, startPos.Y.Offset + d.Y)
-			Library.keepOnScreen(target)
-		end)
+		local onMove, onEnd = Library.dragSmooth(target, i.Position, target.Position)
+		Library.beginDrag(onMove, onEnd)
 	end)
 end
 Library.MakeDraggable = makeDraggable
@@ -1548,12 +1590,8 @@ function Library:Window(Data)
 				if pos.X >= ha.X and pos.X <= ha.X + hz.X and pos.Y >= ha.Y and pos.Y <= ha.Y + hz.Y then return end
 			end
 			if blocked(pos) then return end
-			local start, startPos = i.Position, root.Position
-			Library.beginDrag(function(m)
-				local d = m.Position - start
-				root.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + d.X, startPos.Y.Scale, startPos.Y.Offset + d.Y)
-				Library.keepOnScreen(root)
-			end)
+			local onMove, onEnd = Library.dragSmooth(root, i.Position, root.Position)
+			Library.beginDrag(onMove, onEnd)
 		end)
 	end
 	window.SearchItems, window.SectionList = {}, {}
@@ -3325,7 +3363,22 @@ function Library.AddKeybind(owner, row, Data, ownerToggle)
 		kb.Picking = true
 		K.text.Text = "..."
 		K.icon.Visible, K.text.Visible = false, true
-		Library.fx.tween(K.text, { TextColor3 = Library.Theme.Accent }, 0.15)
+		K.Root.Size = UDim2.new(0, 36, 0, 18)
+		-- it blinks while it waits for a key (the pill pulses between its own colour and the accent), flashes when a key is taken, then settles
+		task.spawn(function()
+			local fx = Library.fx
+			local lit = false
+			while kb.Picking and K.Root.Parent do
+				lit = not lit
+				fx.tween(K.Root, { BackgroundColor3 = lit and Library.Theme.Accent or Library.Theme.Element }, 0.3, Enum.EasingStyle.Sine)
+				fx.tween(K.text, { TextColor3 = lit and Library.Theme["Bright Text"] or Library.Theme.Accent }, 0.3, Enum.EasingStyle.Sine)
+				task.wait(0.4)
+			end
+			if not K.Root.Parent then return end
+			fx.tween(K.Root, { BackgroundColor3 = Library.Theme.Accent }, 0.08)
+			task.wait(0.14)
+			fx.tween(K.Root, { BackgroundColor3 = Library.Theme.Element }, 0.3)
+		end)
 		local c
 		c = UserInputService.InputBegan:Connect(function(i)
 			if i.UserInputType == Enum.UserInputType.Keyboard then kb:Set(i.KeyCode) else kb:Set(i.UserInputType) end
