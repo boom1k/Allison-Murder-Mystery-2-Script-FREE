@@ -4069,7 +4069,7 @@ end
 --   Name, NameText, NameColor, NameSize, NameOutline, NameOutlineColor | Distance | Weapon, WeaponText, FlagSize, FlagColor, FlagLines ({ { text, col } ... })
 --   Health, HealthPos (Left / Right / Top / Bottom), HealthGap, HealthWidth, HealthOutline (Full / Fit / None), HealthOutlineColor, HealthGradient, HealthColor1 / 2 / 3,
 --   HealthText, HealthTextFollow, HealthTextHideFull, HealthTextGradient, HealthTextSize
---   Chams, ChamsColor, ChamsStyle (Flat / Liquid), ChamsTransparency, LiquidSpeed, ChamsWalls, ChamsOutline, ChamsOutlineColor, ChamsOutlineThickness,
+--   Chams, ChamsColor, ChamsStyle (Flat / Liquid / Test), ChamsTransparency, LiquidSpeed, TestGlow, ChamsWalls, ChamsOutline, ChamsOutlineColor, ChamsOutlineThickness,
 --   ChamsOutlineWalls, ChamsVisCheck, ChamsVisibleColor | Skeleton, HeadCircle, LookDir, LookCone, LookLength, LineColor | Wall, AutoRotate
 -- The view is 3D: drag in it to turn the camera around the model, scroll to zoom. Two toggles under it: "half body behind wall" (a waist-high wall
 -- in front of the model, flag Data.WallFlag or "EspPreviewWall") and "auto rotate" (flag Data.SpinFlag or "EspPreviewSpin").
@@ -4113,7 +4113,7 @@ function Library:EspPreview(Data)
 		Health = true, HealthPos = "Left", HealthGap = 2, HealthWidth = 2, HealthOutline = "Full", HealthOutlineColor = black, HealthGradient = false,
 		HealthColor1 = Color3.fromRGB(0, 255, 0), HealthColor2 = Color3.fromRGB(255, 255, 0), HealthColor3 = Color3.fromRGB(255, 0, 0),
 		HealthText = false, HealthTextFollow = false, HealthTextHideFull = false, HealthTextGradient = false, HealthTextSize = 9,
-		Chams = false, ChamsColor = Library.Theme.Accent, ChamsStyle = "Flat", ChamsTransparency = 0, LiquidSpeed = 1,
+		Chams = false, ChamsColor = Library.Theme.Accent, ChamsStyle = "Flat", ChamsTransparency = 0, LiquidSpeed = 1, TestGlow = 1,
 		ChamsWalls = true, ChamsOutline = false, ChamsOutlineColor = white, ChamsOutlineThickness = 0.12, ChamsOutlineWalls = true,
 		ChamsVisCheck = false, ChamsVisibleColor = Color3.fromRGB(60, 255, 60), Wall = false, AutoRotate = true,
 		Skeleton = false, HeadCircle = false, LookDir = false, LookCone = true, LookLength = 8, LineColor = white, Zoom = 1,
@@ -4152,6 +4152,8 @@ function Library:EspPreview(Data)
 	chamsBase.Parent, chamsTop.Parent = world, worldTop
 	local model, parts, body, wall = nil, {}, {}, nil
 	local chamSig, chamFills, chamLines, shells = nil, {}, {}, {}
+	local glows, neonParts = {}, {}   -- the Test style: glow hint shells, the body parts turned Neon
+	local testSaved = { sas = {}, tex = {}, decals = {} }   -- what the Test style set aside on the clone (put back by restoreBody)
 	local function buildModel()
 		if model then model:Destroy() model, parts, body = nil, {}, {} end
 		if wall then wall:Destroy() wall = nil end
@@ -4196,7 +4198,7 @@ function Library:EspPreview(Data)
 	local function clearChams()
 		chamsBase:ClearAllChildren()
 		chamsTop:ClearAllChildren()
-		chamFills, chamLines, shells = {}, {}, {}
+		chamFills, chamLines, shells, glows, neonParts = {}, {}, {}, {}, {}
 	end
 	local function boxPart(size, cf, parent)
 		local b = Instance.new("Part")
@@ -4233,35 +4235,72 @@ function Library:EspPreview(Data)
 		for _, p in parts do
 			p.part.Material, p.part.Color, p.part.Transparency, p.part.Reflectance = p.mat, p.color, p.trans, p.refl
 		end
+		for _, e in testSaved.sas do pcall(function() e[1].Parent = e[2] end) end
+		for mp, tex in testSaved.tex do pcall(function() mp.TextureID = tex end) end
+		for d, tr in testSaved.decals do pcall(function() d.Transparency = tr end) end
+		testSaved = { sas = {}, tex = {}, decals = {} }
 	end
 	-- (re)built when a setting that changes their shape moves; their colours are set every frame (chamsFrame)
 	local function paintChams()
 		-- the wall is destroyed with the preview (unload / the window going away) while a script's Sync can still run: its Parent is locked then
 		if wall and not pcall(function() wall.Parent = state.Wall and world or nil end) then wall = nil end
 		local sig = table.concat({ tostring(state.Chams), tostring(state.ChamsStyle), tostring(state.ChamsWalls), tostring(state.ChamsOutline),
-			tostring(state.ChamsOutlineThickness), tostring(state.ChamsOutlineWalls), tostring(state.ChamsTransparency), tostring(model) }, "|")
+			tostring(state.ChamsOutlineThickness), tostring(state.ChamsOutlineWalls), tostring(state.ChamsTransparency), tostring(model),
+			tostring(state.ChamsStyle == "Test" and state.Wall), tostring((tonumber(state.TestGlow) or 0) > 0) }, "|")
 		if sig == chamSig then return end
 		chamSig = sig
 		clearChams()
 		restoreBody()
 		if not (state.Chams and model) then return end
 		local fillTo = state.ChamsWalls and chamsTop or chamsBase
-		if state.ChamsStyle == "Liquid" then
-			-- the body turns to tinted glass (the wave runs up it) and a shell around it stands for the Highlight
-			local transp = math.clamp((tonumber(state.ChamsTransparency) or 0) * 0.7, 0, 0.9)
+		-- a tinted copy of every body part, a little bigger (the shell the in-game Highlight stands for)
+		local function makeShells(list, parent, scale, material)
 			for _, p in body do
-				p.Material, p.Transparency = Enum.Material.Glass, transp
 				local okS, sh = pcall(function() return p:Clone() end)
 				if okS and sh then
 					sh:ClearAllChildren()
 					if sh:IsA("MeshPart") then pcall(function() sh.TextureID = "" end) end
 					sh.Name = "ChamShell"
-					sh.Material, sh.CastShadow = Enum.Material.SmoothPlastic, false
-					sh.Size, sh.CFrame = p.Size * 1.05, p.CFrame
-					sh.Parent = fillTo
-					shells[#shells + 1] = sh
+					sh.Material, sh.CastShadow = material or Enum.Material.SmoothPlastic, false
+					sh.Size, sh.CFrame = p.Size * scale, p.CFrame
+					sh.Parent = parent
+					list[#list + 1] = sh
 				end
 			end
+		end
+		if state.ChamsStyle == "Liquid" then
+			-- the body turns to tinted glass (the wave runs up it) and a shell around it stands for the Highlight
+			local transp = math.clamp((tonumber(state.ChamsTransparency) or 0) * 0.7, 0, 0.9)
+			for _, p in body do p.Material, p.Transparency = Enum.Material.Glass, transp end
+			makeShells(shells, fillTo, 1.05)
+			return
+		end
+		if state.ChamsStyle == "Test" then
+			-- like the in-game Test chams: every visible part of the body is Neon (what hides the material, the SurfaceAppearance, the mesh
+			-- texture and decals, is set aside until the next rebuild; weapons are left alone); the smooth shell is on only while part of the
+			-- body is behind something, here: while the half wall is; a faint bigger Neon copy hints at the bloom (a viewport has none)
+			for _, p in parts do
+				local part = p.part
+				if part.Transparency < 0.95 and part.Name ~= "HumanoidRootPart" and not part:FindFirstAncestor("WeaponModel") and not part:FindFirstAncestor("WeaponAttachments") then
+					for _, k in part:GetChildren() do
+						if k:IsA("SurfaceAppearance") then
+							testSaved.sas[#testSaved.sas + 1] = { k, part }
+							k.Parent = nil
+						elseif (k:IsA("Decal") or k:IsA("Texture")) and k.Transparency < 1 then
+							testSaved.decals[k] = k.Transparency
+							k.Transparency = 1
+						end
+					end
+					if part:IsA("MeshPart") and part.TextureID ~= "" then
+						testSaved.tex[part] = part.TextureID
+						part.TextureID = ""
+					end
+					part.Material = Enum.Material.Neon
+					neonParts[#neonParts + 1] = part
+				end
+			end
+			if (tonumber(state.TestGlow) or 0) > 0 then makeShells(glows, chamsBase, 1.1, Enum.Material.Neon) end
+			if state.ChamsWalls and state.Wall then makeShells(shells, chamsTop, 1.05) end
 			return
 		end
 		for _, p in body do chamFills[#chamFills + 1] = boxPart(p.Size, p.CFrame, fillTo) end
@@ -4610,6 +4649,19 @@ function Library:EspPreview(Data)
 	end
 	local function chamsFrame(t)
 		if not (state.Chams and model) then return end
+		if state.ChamsStyle == "Test" then
+			local col = state.ChamsColor
+			local ts = t * (tonumber(state.LiquidSpeed) or 1)
+			local neonCol = col:Lerp(white, 0.3)
+			for _, part in neonParts do if part.Color ~= neonCol then part.Color = neonCol end end
+			local glowTr = math.clamp(0.9 - 0.18 * (tonumber(state.TestGlow) or 0), 0.45, 0.95)
+			local glowCol = col:Lerp(white, 0.4)
+			for _, g in glows do g.Color, g.Transparency = glowCol, glowTr end
+			local fillC = col:Lerp(white, 0.2 + 0.12 * math.sin(ts * 1.6))
+			local ft = math.clamp(0.45 + (tonumber(state.ChamsTransparency) or 0) * 0.4 + 0.1 * math.sin(ts * 1.3), 0, 1)
+			for _, sh in shells do sh.Color, sh.Transparency = fillC, ft end
+			return
+		end
 		local col, lineCol = state.ChamsColor, state.ChamsOutlineColor
 		if state.ChamsVisCheck and seenNow() then
 			if state.ChamsOutline and state.ChamsStyle ~= "Liquid" then lineCol = state.ChamsVisibleColor else col = state.ChamsVisibleColor end
