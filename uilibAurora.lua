@@ -3089,10 +3089,9 @@ function Library:KeybindList()
 	local root = Kw.Root
 	root.Position = UDim2.new(1, -196, 0, 220)
 	root.ZIndex = 1500
-	root.AutomaticSize = Enum.AutomaticSize.Y
-	root.Size = UDim2.new(0, 210, 0, 0)
-	local pad = Instance.new("UIPadding", root)
-	pad.PaddingBottom = UDim.new(0, 8)
+	-- The height follows the rows (set below), not AutomaticSize: an auto-sized window also counts every child that sticks out below it, and a
+	-- drop shadow (a script's depth pass adds one) sticks out 24 px, so the window grew an empty band under the last row.
+	root.Size = UDim2.new(0, 210, 0, 40)
 	Library.fx.shadow(root, { radius = 12, transparency = 0.3 })
 	Library.fx.bevel(root, 0.1)
 	Library:ChangeItemTheme(root, { BackgroundColor3 = "Section Background" })
@@ -3107,7 +3106,11 @@ function Library:KeybindList()
 	Kw.rows.AutomaticSize = Enum.AutomaticSize.Y
 	Kw.rows.Position = UDim2.new(0, 6, 0, 32)
 	Kw.rows.Size = UDim2.new(1, -12, 0, 0)
-	Library.listLayout(Kw.rows, 3)
+	local rowsLayout = Library.listLayout(Kw.rows, 3)
+	-- header (32) + the rows + 8 below the last one
+	local function fitHeight() root.Size = UDim2.new(0, 210, 0, 32 + rowsLayout.AbsoluteContentSize.Y + 8) end
+	rowsLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(fitHeight)
+	fitHeight()
 	Library.MakeDraggable(Kw.header, root)
 	-- an empty keybind list keeps a minimum height so the frame does not collapse
 	local minH = Instance.new("UISizeConstraint", root)
