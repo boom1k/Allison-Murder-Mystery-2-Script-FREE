@@ -4279,9 +4279,9 @@ function Library:EspPreview(Data)
 		end
 		if state.ChamsStyle == "Test" then
 			-- like the in-game Test chams: every visible part of the body is Neon (what hides the material, the SurfaceAppearance, the mesh
-			-- texture and decals, is set aside until the next rebuild; weapons are left alone). Per body part, every frame (chamsFrame): a part
-			-- that is behind something (a ray from the camera) shows the smooth liquid shell, a part you can see stays clean neon with a faint
-			-- bigger Neon copy that hints at the bloom (a viewport has none)
+			-- texture and decals, is set aside until the next rebuild; weapons are left alone). Every frame (chamsFrame): while any body part is
+			-- behind something (a ray from the camera) the smooth liquid shell covers the body (like the in-game Highlight); the Neon parts carry
+			-- a bigger Neon copy that hints at the bloom (a viewport has none)
 			for _, p in parts do
 				local part = p.part
 				if part.Transparency < 0.95 and part.Name ~= "HumanoidRootPart" and not part:FindFirstAncestor("WeaponModel") and not part:FindFirstAncestor("WeaponAttachments") then
@@ -4655,35 +4655,27 @@ function Library:EspPreview(Data)
 		if state.ChamsStyle == "Test" then
 			local col = state.ChamsColor
 			local ts = t * (tonumber(state.LiquidSpeed) or 1)
-			local neonCol = col:Lerp(white, 0.3)
+			-- (the in-game neon is lightened to clear the bloom threshold; a viewport has no bloom, so here it is barely lightened)
+			local neonCol = col:Lerp(white, 0.12)
 			for _, part in neonParts do if part.Color ~= neonCol then part.Color = neonCol end end
-			-- which body parts are behind something right now (only the wall can be: the model's own parts and the chams are filtered out)
+			-- is any body part behind something right now? (only the wall can be: the model's own parts and the chams are filtered out)
 			rayParams.FilterDescendantsInstances = { model, chamsBase }
 			local from = cam.CFrame.Position
-			local hidden = {}
+			local anyHidden = false
 			if state.ChamsWalls then
 				for _, p in body do
-					if world:Raycast(from, p.Position - from, rayParams) then hidden[p] = true end
+					if world:Raycast(from, p.Position - from, rayParams) then anyHidden = true break end
 				end
 			end
-			local glowTr = math.clamp(0.9 - 0.18 * (tonumber(state.TestGlow) or 0), 0.45, 0.95)
-			local glowCol = col:Lerp(white, 0.4)
-			for _, g in glows do
-				g.Color = glowCol
-				g.Transparency = hidden[shellOf[g]] and 1 or glowTr   -- no glow where the part is hidden
-			end
-			-- the liquid shell on the hidden parts: it breathes, and a wave runs up the body (brighter band = lower transparency)
-			local fillC = col:Lerp(white, 0.2 + 0.12 * math.sin(ts * 1.6))
-			local base = 0.4 + (tonumber(state.ChamsTransparency) or 0) * 0.4 + 0.08 * math.sin(ts * 1.3)
+			-- the glow hint: a bigger Neon copy around every part, as strong as the Test Glow slider says (0 = none, like in game)
+			local glowTr = math.clamp(0.85 - 0.2 * (tonumber(state.TestGlow) or 0), 0.3, 0.95)
+			local glowCol = col:Lerp(white, 0.35)
+			for _, g in glows do g.Color, g.Transparency = glowCol, glowTr end
+			-- like in game the smooth shell covers the whole body while any part is hidden; its fill is light, the neon stays bright under it
+			local fillC = col:Lerp(white, 0.25 + 0.12 * math.sin(ts * 1.6))
+			local ft = math.clamp(0.62 + (tonumber(state.ChamsTransparency) or 0) * 0.35 + 0.08 * math.sin(ts * 1.3), 0, 1)
 			for _, sh in shells do
-				local p = shellOf[sh]
-				if hidden[p] then
-					local wave = 0.5 + 0.5 * math.sin(ts * 3 - p.Position.Y * 2.4)
-					sh.Color = fillC:Lerp(white, 0.25 * wave * wave)
-					sh.Transparency = math.clamp(base - 0.2 * wave * wave, 0.05, 0.95)
-				else
-					sh.Transparency = 1
-				end
+				if anyHidden then sh.Color, sh.Transparency = fillC, ft else sh.Transparency = 1 end
 			end
 			return
 		end
