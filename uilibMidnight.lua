@@ -4245,25 +4245,46 @@ function Library:SkinChanger(Data)
 	end
 
 	-- layout: categories / weapon chips + search / cards / info / buttons
-	local catRow = fixedFrame(content, UDim2.new(), UDim2.new(1, 0, 0, 28))
-	Library.listLayout(catRow, 6, Enum.FillDirection.Horizontal)
+	-- row 1 (y 0..32): the categories as text tabs over a divider, like the menu's sub-tabs; row 2 (y 44..72): the weapons as pills + the search;
+	-- the cards start at y 84
+	local catRow = fixedFrame(content, UDim2.new(), UDim2.new(1, 0, 0, 32))
+	Library.listLayout(catRow, 4, Enum.FillDirection.Horizontal)
+	do
+		local line = Instance.new("Frame")
+		line.Name = "\0"
+		line.BorderSizePixel = 0
+		line.BackgroundColor3 = Library.Theme.Border
+		Library:AddToTheme(line, { BackgroundColor3 = "Border" })
+		line.Position, line.Size = UDim2.fromOffset(0, 32), UDim2.new(1, 0, 0, 1)
+		line.Parent = content
+	end
 	local chipRow = Instance.new("ScrollingFrame")
 	chipRow.Name = "\0"
 	chipRow.BackgroundTransparency, chipRow.BorderSizePixel = 1, 0
 	chipRow.ScrollBarThickness = 0
 	chipRow.CanvasSize, chipRow.AutomaticCanvasSize, chipRow.ScrollingDirection = UDim2.new(), Enum.AutomaticSize.X, Enum.ScrollingDirection.X
-	chipRow.Position, chipRow.Size = UDim2.new(0, 0, 0, 36), UDim2.new(1, -188, 0, 28)
+	chipRow.Position, chipRow.Size = UDim2.new(0, 0, 0, 44), UDim2.new(1, -212, 0, 28)
 	chipRow.Parent = content
-	Library.listLayout(chipRow, 6, Enum.FillDirection.Horizontal)
+	Library.listLayout(chipRow, 8, Enum.FillDirection.Horizontal)
 	local searchHost = Build.Textbox(content)
-	searchHost.Root.Position, searchHost.Root.Size = UDim2.new(1, -180, 0, 36), UDim2.new(0, 180, 0, 28)
+	searchHost.Root.Position, searchHost.Root.Size = UDim2.new(1, -200, 0, 44), UDim2.new(0, 200, 0, 28)
 	searchHost.label.Visible = false
 	searchHost.field.Position, searchHost.field.Size = UDim2.new(), UDim2.new(1, 0, 1, 0)
 	searchHost.input.Visible = false
 	local sbox = Instance.new("TextBox")
 	sbox.BackgroundTransparency, sbox.BorderSizePixel = 1, 0
-	sbox.Size, sbox.Position = UDim2.new(1, -20, 1, 0), UDim2.new(0, 10, 0, 0)
-	sbox.FontFace, sbox.TextSize, sbox.TextXAlignment = Library.Font, 14, Enum.TextXAlignment.Left
+	sbox.Size, sbox.Position = UDim2.new(1, -40, 1, 0), UDim2.new(0, 30, 0, 0)
+	sbox.FontFace, sbox.TextSize, sbox.TextXAlignment = Library.Font, 13, Enum.TextXAlignment.Left
+	do
+		local icon = Instance.new("ImageLabel")
+		icon.Name = "\0"
+		icon.BackgroundTransparency, icon.BorderSizePixel = 1, 0
+		icon.Image = Build.IconAsset.search or ""
+		icon.ImageColor3 = Library.Theme["Dim Text"]
+		Library:AddToTheme(icon, { ImageColor3 = "Dim Text" })
+		icon.AnchorPoint, icon.Position, icon.Size = Vector2.new(0, 0.5), UDim2.new(0, 10, 0.5, 0), UDim2.fromOffset(12, 12)
+		icon.Parent = searchHost.field
+	end
 	sbox.TextColor3, sbox.PlaceholderColor3 = Library.Theme.Text, Library.Theme["Dim Text"]
 	sbox.PlaceholderText, sbox.Text, sbox.ClearTextOnFocus = "Search skins...", "", false
 	sbox.Parent = searchHost.field
@@ -4272,38 +4293,71 @@ function Library:SkinChanger(Data)
 	grid.BackgroundTransparency, grid.BorderSizePixel = 1, 0
 	grid.ScrollBarThickness, grid.ScrollBarImageColor3 = 3, Library.Theme.Inline
 	grid.CanvasSize, grid.AutomaticCanvasSize = UDim2.new(), Enum.AutomaticSize.Y
-	grid.Position, grid.Size = UDim2.new(0, 0, 0, 72), UDim2.new(1, 0, 1, -72 - 62)
+	-- 8 px wider than the content: the scroll bar sits in the card's own padding, so the cards end exactly on the search box's edge
+	grid.Position, grid.Size = UDim2.new(0, 0, 0, 84), UDim2.new(1, 8, 1, -84 - 62)
 	grid.Parent = content
+	-- soft fades where the cards are scrolled out of view (only shown while there is more above / below)
+	local fadeTop, fadeBottom
+	do
+		local function fadeFrame(top)
+			local f = Instance.new("Frame")
+			f.Name = "\0"
+			f.BorderSizePixel = 0
+			f.BackgroundColor3 = Library.Theme["Section Background"]
+			Library:AddToTheme(f, { BackgroundColor3 = "Section Background" })
+			f.AnchorPoint = Vector2.new(0, top and 0 or 1)
+			f.Position = top and UDim2.fromOffset(0, 84) or UDim2.new(0, 0, 1, -62)
+			f.Size = UDim2.new(1, 0, 0, 16)
+			f.ZIndex = 6
+			f.Visible = false
+			local g = Instance.new("UIGradient", f)
+			g.Rotation = 90
+			g.Transparency = top and NumberSequence.new(0, 1) or NumberSequence.new(1, 0)
+			f.Parent = content
+			return f
+		end
+		fadeTop, fadeBottom = fadeFrame(true), fadeFrame(false)
+		local function fades()
+			fadeTop.Visible = grid.CanvasPosition.Y > 2
+			fadeBottom.Visible = grid.CanvasPosition.Y + grid.AbsoluteWindowSize.Y < grid.AbsoluteCanvasSize.Y - 2
+		end
+		grid:GetPropertyChangedSignal("CanvasPosition"):Connect(fades)
+		grid:GetPropertyChangedSignal("AbsoluteCanvasSize"):Connect(fades)
+		grid:GetPropertyChangedSignal("AbsoluteWindowSize"):Connect(fades)
+	end
 	local gl = Instance.new("UIGridLayout")
 	local GAP, MIN_CARD = 8, 150
 	gl.CellSize, gl.CellPadding, gl.SortOrder = UDim2.new(0, 150, 0, 188), UDim2.new(0, GAP, 0, GAP), Enum.SortOrder.LayoutOrder
 	gl.Parent = grid
-	local emptyLabel = label(content, "", UDim2.new(0, 0, 0, 110), UDim2.new(1, 0, 0, 20), Library.Theme["Dim Text"], 14, Enum.TextXAlignment.Center)
-	local info = label(content, "", UDim2.new(0, 0, 1, -54), UDim2.new(1, 0, 0, 18), Library.Theme["Dim Text"], 12)
-	local btnRow = fixedFrame(content, UDim2.new(0, 0, 1, -30), UDim2.new(1, 0, 0, 30))
+	local emptyLabel = label(content, "", UDim2.new(0, 0, 0, 132), UDim2.new(1, 0, 0, 20), Library.Theme["Dim Text"], 14, Enum.TextXAlignment.Center)
+	local info = label(content, "", UDim2.new(0, 0, 1, -56), UDim2.new(1, 0, 0, 18), Library.Theme["Dim Text"], 12)
+	local btnRow = fixedFrame(content, UDim2.new(0, 0, 1, -28), UDim2.new(1, 0, 0, 28))
 	local resetWeapon = Build.Button(btnRow)
-	resetWeapon.Root.Size, resetWeapon.Root.Position = UDim2.new(0.5, -4, 0, 30), UDim2.new()
+	resetWeapon.Root.Size, resetWeapon.Root.Position = UDim2.new(0.5, -4, 0, 28), UDim2.new()
 	resetWeapon.label.Text = "Reset Weapon"
 	local resetAll = Build.Button(btnRow)
-	resetAll.Root.Size, resetAll.Root.Position = UDim2.new(0.5, -4, 0, 30), UDim2.new(0.5, 4, 0, 0)
+	resetAll.Root.Size, resetAll.Root.Position = UDim2.new(0.5, -4, 0, 28), UDim2.new(0.5, 4, 0, 0)
 	resetAll.label.Text = "Reset All"
 
 	local chipRefs, catRefs = {}, {}
 	-- a chip: 28 px high, the label centred in it, the underline on its bottom edge (the template is 22 px high)
 	local function styleChip(C, width, text)
 		C.Root.Size = UDim2.new(0, width, 0, 28)
+		local cr = C.Root:FindFirstChildOfClass("UICorner")
+		if cr then cr.CornerRadius = UDim.new(0, 14) end   -- a pill
 		C.text.Text = text
 		C.text.Position, C.text.Size = UDim2.new(0, 0, 0, 0), UDim2.new(1, 0, 1, 0)
 		C.text.TextSize = 13
-		-- the small accent dash under a weapon that has a skin chosen
-		C.dot.AnchorPoint, C.dot.Position, C.dot.Size = Vector2.new(0.5, 1), UDim2.new(0.5, 0, 1, -3), UDim2.new(0, 10, 0, 2)
+		-- a weapon that has a skin chosen carries a small round badge on its top right corner, ringed in the card's colour
+		C.dot.AnchorPoint, C.dot.Position, C.dot.Size = Vector2.new(0.5, 0.5), UDim2.new(1, -5, 0, 5), UDim2.fromOffset(9, 9)
+		local dc = Instance.new("UICorner", C.dot)
+		dc.CornerRadius = UDim.new(1, 0)
+		local ds = Instance.new("UIStroke", C.dot)
+		ds.Thickness, ds.Color = 2, Library.Theme["Section Background"]
+		Library:AddToTheme(ds, { Color = "Section Background" })
 	end
-	-- every chip of a row is as wide as the longest label (min 64), so the row reads as columns
-	local function chipWidth(names)
-		local longest = 0
-		for _, n in names do longest = math.max(longest, #tostring(n)) end
-		return math.max(64, longest * 7 + 28)
-	end
+	-- a pill is as wide as its own label plus 14 px each side (min 52)
+	local function pillWidth(C) return math.max(52, math.ceil(C.text.TextBounds.X) + 28) end
 	local function weaponsOf(cat) return cat and cat.Weapons or {} end
 	local function currentCat() return ch.Catalog[ch.Category] end
 	local function currentWeapon()
@@ -4314,6 +4368,12 @@ function Library:SkinChanger(Data)
 		local n = count()
 		local sel = ch.Weapon and ch.Selected[ch.Weapon]
 		info.Text = (ch.Weapon and (ch.Weapon .. ":  " .. (sel or "default") .. "     |     ") or "") .. n .. (n == 1 and " skin" or " skins") .. " chosen"
+	end
+	local function paintCat(ref, active)
+		Library:ChangeItemTheme(ref.label, { TextColor3 = active and "Bright Text" or "Dim Text" })
+		Library.fx.tween(ref.label, { TextColor3 = active and Library.Theme["Bright Text"] or Library.Theme["Dim Text"] }, 0.15)
+		Library:ChangeItemTheme(ref.bar, { BackgroundColor3 = "Accent" })
+		Library.fx.tween(ref.bar, { BackgroundTransparency = active and 0 or 1 }, 0.15)
 	end
 	local function paintChip(ref, active)
 		Library.themed(ref.Root, "BackgroundColor3", active and "Accent" or "Element")
@@ -4329,13 +4389,11 @@ function Library:SkinChanger(Data)
 	local function buildChips()
 		for _, r in chipRefs do pcall(function() r.Root:Destroy() end) end
 		table.clear(chipRefs)
-		local names = {}
-		for _, w in weaponsOf(currentCat()) do names[#names + 1] = w.Name end
-		local width = chipWidth(names)
 		for i, w in weaponsOf(currentCat()) do
 			local C = Build.Chip(chipRow)
 			C.Root.LayoutOrder = i
-			styleChip(C, width, w.Name)
+			styleChip(C, 60, w.Name)
+			C.Root.Size = UDim2.new(0, pillWidth(C), 0, 28)
 			C.dot.ZIndex = C.Root.ZIndex + 3
 			chipRefs[w.Name] = C
 			paintChip(C, w.Name == ch.Weapon)
@@ -4395,7 +4453,7 @@ function Library:SkinChanger(Data)
 		C.sub.Position, C.sub.Size = UDim2.new(0, 12, 0, 10 + imgH + 28), UDim2.new(1, -24, 0, 16)
 		C.sub.TextSize, C.sub.TextXAlignment = 12, Enum.TextXAlignment.Left
 		C.sub.TextTruncate = Enum.TextTruncate.AtEnd
-		C.stripe.AnchorPoint, C.stripe.Position, C.stripe.Size = Vector2.new(0, 1), UDim2.new(0, 12, 1, -9), UDim2.new(1, -24, 0, 3)
+		C.stripe.AnchorPoint, C.stripe.Position, C.stripe.Size = Vector2.new(0, 1), UDim2.new(0, 12, 1, -12), UDim2.new(1, -24, 0, 3)
 		C.badge.AnchorPoint, C.badge.Position, C.badge.Size = Vector2.new(1, 0), UDim2.new(1, -8, 0, 8), UDim2.fromOffset(20, 20)
 	end
 	-- the rarity light: a soft round glow behind the weapon and a faint wash rising from the bottom edge, both in the rarity colour
@@ -4430,9 +4488,9 @@ function Library:SkinChanger(Data)
 	-- window's UIScale is divided out; the card box's own height gives the scale)
 	local cardW, cardH = MIN_CARD, math.floor(MIN_CARD * 1.25)
 	local function relayout()
-		local k = S.card.AbsoluteSize.Y / math.max(height, 1)
+		local k = S.Root.AbsoluteSize.Y / math.max(S.Root.Size.Y.Offset, 1)
 		if k <= 0 then k = 1 end
-		local W = grid.AbsoluteSize.X / k - 6
+		local W = grid.AbsoluteSize.X / k - 8   -- (the grid is 8 px wider than the content, for the scroll bar)
 		if W < MIN_CARD then return end
 		local cols = math.max(1, math.floor((W + GAP) / (MIN_CARD + GAP)))
 		local cw = math.floor((W - GAP * (cols - 1)) / cols)
@@ -4526,7 +4584,7 @@ function Library:SkinChanger(Data)
 
 	function setCategory(i)
 		ch.Category = i
-		for idx, ref in catRefs do paintChip(ref, idx == i) end
+		for idx, ref in catRefs do paintCat(ref, idx == i) end
 		local keep = false
 		for _, w in weaponsOf(currentCat()) do if w.Name == ch.Weapon then keep = true end end
 		if not keep then local first = weaponsOf(currentCat())[1] ch.Weapon = first and first.Name or nil end
@@ -4536,16 +4594,19 @@ function Library:SkinChanger(Data)
 	local function buildCategories()
 		for _, r in catRefs do pcall(function() r.Root:Destroy() end) end
 		table.clear(catRefs)
-		local names = {}
-		for _, cat in ch.Catalog do names[#names + 1] = cat.Name end
-		local width = chipWidth(names)
 		for i, cat in ch.Catalog do
-			local C = Build.Chip(catRow)
+			local C = Build.Tab(catRow)
 			C.Root.LayoutOrder = i
-			styleChip(C, width, cat.Name)
-			C.dot.Visible = false
+			C.label.Text = cat.Name
+			C.label.TextSize = 13
+			C.label.Position, C.label.Size = UDim2.new(), UDim2.new(1, 0, 1, -2)
+			C.bar.AnchorPoint, C.bar.Position, C.bar.Size = Vector2.new(0, 1), UDim2.new(0, 0, 1, 0), UDim2.new(1, 0, 0, 2)
+			C.Root.Size = UDim2.new(0, math.max(56, math.ceil(C.label.TextBounds.X) + 28), 0, 32)
 			catRefs[i] = C
-			Library.click(C.Root, function() setCategory(i) end)
+			local btn = Library.click(C.Root, function() setCategory(i) end)
+			Library.fx.hover(btn, function() if ch.Category ~= i then Library.fx.tween(C.label, { TextColor3 = Library.Theme.Text }, 0.12) end end,
+				function() if ch.Category ~= i then Library.fx.tween(C.label, { TextColor3 = Library.Theme["Dim Text"] }, 0.15) end end)
+			paintCat(C, i == ch.Category)
 		end
 	end
 	function ch:SetCatalog(c)
