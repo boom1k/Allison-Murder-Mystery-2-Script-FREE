@@ -1411,22 +1411,31 @@ do
 		Library.IsMobile = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
 	end
 end
-function Library:FitScaleFor(w, h)
+function Library:FitScaleFor(w, h, view)
 	local cam = workspace.CurrentCamera
-	local v = cam and cam.ViewportSize or Vector2.new(1280, 720)
+	local v = view or (cam and cam.ViewportSize) or Vector2.new(1280, 720)
 	return math.clamp(math.min(v.X * 0.96 / math.max(w, 1), v.Y * 0.92 / math.max(h, 1)), 0.35, 1)
+end
+-- On a phone / tablet the menu is drawn at Library.MobileScale (1 = the PC size; text stays readable at 0.85) and its size is chosen so that it fills
+-- the screen at that scale: a phone gets about 950 x 400 menu pixels, a tablet 1100 x 720. The pages scroll where they need more room.
+Library.MobileScale = 0.85
+function Library:MobileWindowSize(view)
+	local cam = workspace.CurrentCamera
+	view = view or (cam and cam.ViewportSize) or Vector2.new(1280, 720)
+	local s = self.MobileScale
+	return math.clamp(math.floor(view.X * 0.96 / s), 560, 1100), math.clamp(math.floor(view.Y * 0.88 / s), 320, 720)
 end
 -- the circle that opens / closes every window instead of the keybind; drag it to move it (a tap that moves less than 8 px toggles)
 function Library:MobileButton(title)
 	if self.MobileToggle or not self.Alive then return self.MobileToggle end
-	local SIZE = 52
+	local SIZE = 56
 	local cam = workspace.CurrentCamera
 	local function viewport() return cam and cam.ViewportSize or Vector2.new(1280, 720) end
 	local btn = Instance.new("TextButton")
 	btn.Name = "\0"
 	btn.AutoButtonColor, btn.Text, btn.BorderSizePixel = false, "", 0
 	btn.Size = UDim2.fromOffset(SIZE, SIZE)
-	btn.Position = UDim2.new(1, -SIZE - 14, 0.5, -SIZE / 2)
+	btn.Position = UDim2.new(1, -SIZE - 16, 0.5, -SIZE / 2)
 	btn.ZIndex = 9000
 	btn.BackgroundColor3 = self.Theme["Window Background"]
 	Library.themed(btn, "BackgroundColor3", "Window Background")
@@ -1434,6 +1443,15 @@ function Library:MobileButton(title)
 	local stroke = Instance.new("UIStroke", btn)
 	stroke.Thickness, stroke.ApplyStrokeMode, stroke.Color = 2, Enum.ApplyStrokeMode.Border, self.Theme.Accent
 	Library.themed(stroke, "Color", "Accent")
+	-- a soft dark halo under the circle (the round shadow image is only for rounded rectangles)
+	do
+		local halo = Instance.new("Frame")
+		halo.Name = "\0"
+		halo.AnchorPoint, halo.Position, halo.Size = Vector2.new(0.5, 0.5), UDim2.new(0.5, 0, 0.5, 2), UDim2.fromOffset(SIZE + 10, SIZE + 10)
+		halo.BackgroundColor3, halo.BackgroundTransparency, halo.BorderSizePixel, halo.ZIndex = Color3.new(0, 0, 0), 0.78, 0, 8999
+		Instance.new("UICorner", halo).CornerRadius = UDim.new(0.5, 0)
+		halo.Parent = btn
+	end
 	local scale = Instance.new("UIScale", btn)
 	local glyph = Instance.new("TextLabel")
 	glyph.Name = "\0"
@@ -1443,15 +1461,14 @@ function Library:MobileButton(title)
 	glyph.TextColor3 = self.Theme.Accent
 	Library.themed(glyph, "TextColor3", "Accent")
 	glyph.Parent = btn
-	-- the Allison logo over the letter when its image could be loaded
-	local logoId = Build.IconAsset.fx_allisonlogo
+	-- the Allison logo (white) over the letter when its image could be loaded
+	local logoId = Build.IconAsset.allisonlogo
 	if logoId and logoId ~= "" then
 		local logo = Instance.new("ImageLabel")
 		logo.Name = "\0"
 		logo.BackgroundTransparency, logo.ZIndex, logo.ScaleType = 1, 9002, Enum.ScaleType.Fit
-		logo.AnchorPoint, logo.Position, logo.Size = Vector2.new(0.5, 0.5), UDim2.fromScale(0.5, 0.5), UDim2.fromOffset(36, 18)
-		logo.Image, logo.ImageColor3 = logoId, self.Theme.Accent
-		Library.themed(logo, "ImageColor3", "Accent")
+		logo.AnchorPoint, logo.Position, logo.Size = Vector2.new(0.5, 0.5), UDim2.fromScale(0.5, 0.5), UDim2.fromOffset(34, 17)
+		logo.Image, logo.ImageColor3 = logoId, Color3.new(1, 1, 1)
 		logo.Parent = btn
 		glyph.Visible = false
 	end
@@ -1459,10 +1476,13 @@ function Library:MobileButton(title)
 	local function anyOpen() for _, w in self.Windows do if w.IsOpen then return true end end return false end
 	local function refresh()
 		local open = anyOpen()
-		Library.fx.tween(btn, { BackgroundTransparency = open and 0 or 0.25 }, 0.15)
+		-- open: the ring is the accent and the circle solid; closed: a quiet outline and a little see-through
+		Library.fx.tween(btn, { BackgroundTransparency = open and 0 or 0.2 }, 0.15)
+		Library.fx.tween(stroke, { Color = open and Library.Theme.Accent or Library.Theme.Border }, 0.15)
+		Library.themed(stroke, "Color", open and "Accent" or "Border")
 		Library.fx.tween(glyph, { TextTransparency = open and 0 or 0.2 }, 0.15)
 		local logo = btn:FindFirstChildOfClass("ImageLabel")
-		if logo then Library.fx.tween(logo, { ImageTransparency = open and 0 or 0.2 }, 0.15) end
+		if logo then Library.fx.tween(logo, { ImageTransparency = open and 0 or 0.25 }, 0.15) end
 	end
 	local drag, moved, startAt, startPos
 	self:Connect(btn.InputBegan, function(i)
@@ -1512,6 +1532,10 @@ function Library:Window(Data)
 	local nth = #self.Windows
 	root.Position = UDim2.new(0.5, nth * 28, 0.5, nth * 28)
 	if typeof(size) == "UDim2" then root.Size = size end
+	if Library.IsMobile then
+		local mw, mh = Library:MobileWindowSize()
+		root.Size = UDim2.fromOffset(mw, mh)   -- (whatever size the script asked for: it was made for a PC screen)
+	end
 	-- depth: a wide drop shadow, a faint top-lit gradient on the window, a darker sidebar that casts a soft shadow onto the page, and a
 	-- soft shadow under the top bar
 	fx.shadow(root, { radius = 16, transparency = 0.35 })
@@ -1598,6 +1622,11 @@ function Library:Window(Data)
 			for _, h in { W.dragBar, W.titleRow, W.logo, W.sidebar } do
 				local ha, hz = h.AbsolutePosition, h.AbsoluteSize
 				if pos.X >= ha.X and pos.X <= ha.X + hz.X and pos.Y >= ha.Y and pos.Y <= ha.Y + hz.Y then return end
+			end
+			local mt = Library.MobileToggle
+			if mt and mt.Button.Visible then
+				local ma, mz = mt.Button.AbsolutePosition, mt.Button.AbsoluteSize
+				if pos.X >= ma.X and pos.X <= ma.X + mz.X and pos.Y >= ma.Y and pos.Y <= ma.Y + mz.Y then return end
 			end
 			if blocked(pos) then return end
 			local onMove, onEnd = Library.dragSmooth(root, i.Position, root.Position)
@@ -1739,14 +1768,20 @@ function Library:Window(Data)
 			sc.Name = "\0Fit"
 			sc.Parent = root
 		end
-		Library.FitScale = Library:FitScaleFor(root.Size.X.Offset, root.Size.Y.Offset)
+		Library.FitScale = math.min(Library.MobileScale, Library:FitScaleFor(root.Size.X.Offset, root.Size.Y.Offset))
 		sc.Scale = Library.FitScale * self.UserScale
 	end
 	if Library.IsMobile then
 		-- not on every Size change: the resize grip would fight the fit. A script that sets the size after creating the window calls window:Refit().
 		task.delay(0.5, function() if Library.Alive then window:Refit() end end)
 		local cam = workspace.CurrentCamera
-		if cam then Library:Connect(cam:GetPropertyChangedSignal("ViewportSize"), function() window:Refit() end) end
+		-- turning the phone: the menu is sized to the new screen
+		if cam then Library:Connect(cam:GetPropertyChangedSignal("ViewportSize"), function()
+			local mw, mh = Library:MobileWindowSize()
+			root.Size = UDim2.fromOffset(mw, mh)
+			window:Refit()
+			Library.keepOnScreen(root)
+		end) end
 		root.Position = UDim2.fromScale(0.5, 0.5)
 		window:Refit()
 		Library:MobileButton(name)
@@ -4192,7 +4227,7 @@ function Library:SkinChanger(Data)
 	local callback = field(Data, "Callback", "callback") or function() end
 	local height = field(Data, "Height", "height") or 640
 	local S = pageBox(page, "Skin Changer", height)
-	local pv = skinPreview(page, Data)   -- the 3D preview box under it (when the script gives a builder)
+	local pv = (not Library.IsMobile) and skinPreview(page, Data) or nil   -- the 3D preview box under it (when the script gives a builder; never on a phone / tablet)
 	local content = S.content
 	local ch = { Window = page.Window, Page = page, Flag = flag, Callback = callback, Catalog = field(Data, "Catalog", "catalog") or {}, Height = height,
 		Selected = {}, Category = 1, Weapon = nil, Query = "", Items = { SkinChanger = Library.Wrap(S.Root) } }
@@ -4580,6 +4615,17 @@ local PREVIEW_BONES = {
 }
 function Library:EspPreview(Data)
 	Data = Data or {}
+	-- Phones and tablets: no 3D preview (a ViewportFrame with a cloned character is too heavy there, and there is no room for a second window).
+	-- The same object comes back with every method doing nothing, so a script needs no check of its own. Library.NoPreview = true does the same on a PC.
+	if Library.IsMobile or Library.NoPreview then
+		local stub = Instance.new("Frame")
+		stub.Name = "\0"
+		stub.BackgroundTransparency, stub.BorderSizePixel, stub.Size, stub.Visible = 1, 0, UDim2.new(), false
+		stub.Parent = Library.Holder.Instance
+		local function noop() end
+		return { Instance = stub, State = {}, Disabled = true, Set = noop, Sync = noop, SetVisibility = noop, SetShown = noop, Refresh = noop,
+			ToggleFlag = noop, Target = function() return "Enemy" end, Camera = function() return 0, 0, false end }
+	end
 	local fx = Library.fx
 	local P = Build.EspPreview(Library.Holder.Instance)
 	local root = P.Root
