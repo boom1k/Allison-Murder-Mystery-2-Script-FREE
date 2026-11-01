@@ -412,45 +412,47 @@ end
 
 function Build.Chip(parent)
 	local P = {}
-	local root = N("Frame", { Name = "Chip", BorderSizePixel = 0, Size = UDim2.new(0, 72, 0, 22), BackgroundColor3 = Color3.fromRGB(37, 41, 49), BackgroundTransparency = 0 }, parent)
+	local root = N("Frame", { Name = "Chip", BorderSizePixel = 0, Size = UDim2.new(0, 80, 0, 28), BackgroundColor3 = Color3.fromRGB(37, 41, 49), BackgroundTransparency = 0 }, parent)
 	P.Root = root
 	Th(root, { BackgroundColor3 = "Element" })
-	N("UICorner", { CornerRadius = UDim.new(0, 5) }, root)
-	local rootS = N("UIStroke", { Color = Color3.fromRGB(40, 44, 52), Thickness = 1, ApplyStrokeMode = Enum.ApplyStrokeMode.Border }, root)
-	Th(rootS, { Color = "Border" })
-	local n1 = N("TextLabel", { Name = "text", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 1, 0, 0), Size = UDim2.new(1, -2, 1, 0), BackgroundTransparency = 1, Text = "rifles", TextSize = 12, TextXAlignment = Enum.TextXAlignment.Center, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(130, 136, 148) }, root)
+	N("UICorner", { CornerRadius = UDim.new(0, 6) }, root)
+	local n1 = N("TextLabel", { Name = "text", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 0, 0, 0), Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1, Text = "AK-47", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Center, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(130, 136, 148) }, root)
 	P["text"] = n1
 	Th(n1, { TextColor3 = "Dim Text" })
-	local n2 = N("Frame", { Name = "dot", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 1, 0, 19), Size = UDim2.new(0, 70, 0, 2), BackgroundColor3 = Color3.fromRGB(74, 160, 230), BackgroundTransparency = 0 }, root)
+	local n2 = N("Frame", { Name = "dot", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 36, 0, 23), Size = UDim2.new(0, 8, 0, 2), BackgroundColor3 = Color3.fromRGB(74, 160, 230), BackgroundTransparency = 0 }, root)
 	P["dot"] = n2
 	Th(n2, { BackgroundColor3 = "Accent" })
+	N("UICorner", { CornerRadius = UDim.new(0, 1) }, n2)
 	return P
 end
 
 function Build.SkinCard(parent)
 	local P = {}
-	local root = N("Frame", { Name = "SkinCard", BorderSizePixel = 0, Size = UDim2.new(0, 104, 0, 132), BackgroundColor3 = Color3.fromRGB(37, 41, 49), BackgroundTransparency = 0 }, parent)
+	local root = N("Frame", { Name = "SkinCard", BorderSizePixel = 0, Size = UDim2.new(0, 160, 0, 200), BackgroundColor3 = Color3.fromRGB(19, 21, 25), BackgroundTransparency = 0 }, parent)
 	P.Root = root
-	Th(root, { BackgroundColor3 = "Element" })
-	N("UICorner", { CornerRadius = UDim.new(0, 5) }, root)
+	Th(root, { BackgroundColor3 = "Dark Liner" })
+	N("UICorner", { CornerRadius = UDim.new(0, 8) }, root)
 	local rootS = N("UIStroke", { Color = Color3.fromRGB(40, 44, 52), Thickness = 1, ApplyStrokeMode = Enum.ApplyStrokeMode.Border }, root)
 	Th(rootS, { Color = "Border" })
-	local n1 = N("Frame", { Name = "stripe", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 1, 0, 1), Size = UDim2.new(0, 102, 0, 2), BackgroundColor3 = Color3.fromRGB(136, 71, 255), BackgroundTransparency = 0 }, root)
-	P["stripe"] = n1
-	local n2 = N("Frame", { Name = "image", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 12, 0, 9), Size = UDim2.new(0, 80, 0, 80), BackgroundTransparency = 1 }, root)
+	local n1 = N("Frame", { Name = "glow", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 11, 0, 11), Size = UDim2.new(0, 140, 0, 120), BackgroundTransparency = 1 }, root)
+	P["glow"] = n1
+	local n2 = N("Frame", { Name = "image", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 11, 0, 11), Size = UDim2.new(0, 140, 0, 116), BackgroundTransparency = 1 }, root)
 	P["image"] = n2
-	local n3 = N("TextLabel", { Name = "name", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 5, 0, 93), Size = UDim2.new(0, 94, 0, 16.5), BackgroundTransparency = 1, Text = "skin name", TextSize = 12, TextXAlignment = Enum.TextXAlignment.Center, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(220, 224, 230) }, root)
+	local n3 = N("TextLabel", { Name = "name", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 13, 0, 139), Size = UDim2.new(0, 136, 0, 19.5), BackgroundTransparency = 1, Text = "Redline", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.FontBold, TextColor3 = Color3.fromRGB(255, 255, 255) }, root)
 	P["name"] = n3
-	Th(n3, { TextColor3 = "Text" })
-	local n4 = N("TextLabel", { Name = "sub", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 5, 0, 111), Size = UDim2.new(0, 94, 0, 15), BackgroundTransparency = 1, Text = "collection", TextSize = 11, TextXAlignment = Enum.TextXAlignment.Center, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(130, 136, 148) }, root)
+	Th(n3, { TextColor3 = "Bright Text" })
+	local n4 = N("TextLabel", { Name = "sub", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 13, 0, 159), Size = UDim2.new(0, 136, 0, 18), BackgroundTransparency = 1, Text = "Classified", TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(211, 44, 230) }, root)
 	P["sub"] = n4
-	Th(n4, { TextColor3 = "Dim Text" })
-	local n5 = N("Frame", { Name = "badge", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 77, 0, 7), Size = UDim2.new(0, 22, 0, 12), BackgroundColor3 = Color3.fromRGB(74, 160, 230), BackgroundTransparency = 0 }, root)
-	P["badge"] = n5
-	Th(n5, { BackgroundColor3 = "Accent" })
-	local n5_1 = N("TextLabel", { Name = "badgeText", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 0, 0, 0), Size = UDim2.new(1, 0, 1, 1.5), BackgroundTransparency = 1, Text = "on", TextSize = 10, TextXAlignment = Enum.TextXAlignment.Center, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(255, 255, 255) }, n5)
-	P["badgeText"] = n5_1
-	Th(n5_1, { TextColor3 = "Bright Text" })
+	local n5 = N("Frame", { Name = "stripe", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 13, 0, 188), Size = UDim2.new(0, 136, 0, 3), BackgroundColor3 = Color3.fromRGB(211, 44, 230), BackgroundTransparency = 0 }, root)
+	P["stripe"] = n5
+	N("UICorner", { CornerRadius = UDim.new(0, 1.5) }, n5)
+	local n6 = N("Frame", { Name = "badge", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 131, 0, 9), Size = UDim2.new(0, 20, 0, 20), BackgroundColor3 = Color3.fromRGB(74, 160, 230), BackgroundTransparency = 0 }, root)
+	P["badge"] = n6
+	Th(n6, { BackgroundColor3 = "Accent" })
+	N("UICorner", { CornerRadius = UDim.new(0, 10) }, n6)
+	local n6_1 = N("ImageLabel", { Name = "badgeTick", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 4, 0, 4), Size = UDim2.new(0, 12, 0, 12), BackgroundTransparency = 1, Image = Build.IconAsset["tick"] or "", ImageColor3 = Color3.fromRGB(255, 255, 255) }, n6)
+	P["badgeTick"] = n6_1
+	Th(n6_1, { ImageColor3 = "Bright Text" })
 	return P
 end
 
@@ -4083,9 +4085,10 @@ function Library:SkinChanger(Data)
 	local function styleChip(C, width, text)
 		C.Root.Size = UDim2.new(0, width, 0, 28)
 		C.text.Text = text
-		C.text.Position, C.text.Size = UDim2.new(0, 0, 0, 0), UDim2.new(1, 0, 1, -2)
+		C.text.Position, C.text.Size = UDim2.new(0, 0, 0, 0), UDim2.new(1, 0, 1, 0)
 		C.text.TextSize = 13
-		C.dot.Position, C.dot.Size = UDim2.new(0, 1, 1, -3), UDim2.new(1, -2, 0, 2)
+		-- the small accent dash under a weapon that has a skin chosen
+		C.dot.AnchorPoint, C.dot.Position, C.dot.Size = Vector2.new(0.5, 1), UDim2.new(0.5, 0, 1, -3), UDim2.new(0, 10, 0, 2)
 	end
 	-- every chip of a row is as wide as the longest label (min 64), so the row reads as columns
 	local function chipWidth(names)
@@ -4106,7 +4109,8 @@ function Library:SkinChanger(Data)
 	end
 	local function paintChip(ref, active)
 		Library.themed(ref.Root, "BackgroundColor3", active and "Accent" or "Element")
-		Library.themed(ref.text, "TextColor3", active and Color3.fromRGB(15, 15, 15) or Color3.fromRGB(169, 169, 178))
+		Library.themed(ref.text, "TextColor3", active and "Bright Text" or "Dim Text")
+		ref.dot.BackgroundColor3 = active and Color3.new(1, 1, 1) or Library.Theme.Accent
 	end
 	local renderCards, setCategory
 
@@ -4174,14 +4178,45 @@ function Library:SkinChanger(Data)
 	-- the parts of a card follow the card's size (cw x chh): the image takes the upper ~58 %, the name and the collection sit under it
 	local cards = {}
 	local function layoutCard(C, cw, chh)
-		local imgH = math.floor(chh * 0.58)
-		C.stripe.Position, C.stripe.Size = UDim2.new(0, 1, 0, 1), UDim2.new(1, -2, 0, 3)
-		C.image.Position, C.image.Size = UDim2.new(0, 10, 0, 12), UDim2.new(1, -20, 0, imgH)
-		C.name.Position, C.name.Size = UDim2.new(0, 6, 0, 12 + imgH + 8), UDim2.new(1, -12, 0, 18)
-		C.name.TextSize = 13
-		C.sub.Position, C.sub.Size = UDim2.new(0, 6, 0, 12 + imgH + 28), UDim2.new(1, -12, 0, 16)
-		C.sub.TextSize = 11
-		C.badge.Position, C.badge.Size = UDim2.new(1, -32, 0, 9), UDim2.new(0, 26, 0, 14)
+		local imgH = math.floor(chh * 0.6)
+		C.image.Position, C.image.Size = UDim2.new(0, 10, 0, 10), UDim2.new(1, -20, 0, imgH)
+		C.glow.AnchorPoint, C.glow.Position = Vector2.new(0.5, 0.5), UDim2.new(0.5, 0, 0, 10 + imgH * 0.55)
+		C.glow.Size = UDim2.fromOffset(math.floor(cw * 1.15), math.floor(cw * 1.15))
+		C.name.Position, C.name.Size = UDim2.new(0, 12, 0, 10 + imgH + 8), UDim2.new(1, -24, 0, 18)
+		C.name.TextSize, C.name.TextXAlignment = 14, Enum.TextXAlignment.Left
+		C.sub.Position, C.sub.Size = UDim2.new(0, 12, 0, 10 + imgH + 28), UDim2.new(1, -24, 0, 16)
+		C.sub.TextSize, C.sub.TextXAlignment = 12, Enum.TextXAlignment.Left
+		C.sub.TextTruncate = Enum.TextTruncate.AtEnd
+		C.stripe.AnchorPoint, C.stripe.Position, C.stripe.Size = Vector2.new(0, 1), UDim2.new(0, 12, 1, -9), UDim2.new(1, -24, 0, 3)
+		C.badge.AnchorPoint, C.badge.Position, C.badge.Size = Vector2.new(1, 0), UDim2.new(1, -8, 0, 8), UDim2.fromOffset(20, 20)
+	end
+	-- the rarity light: a soft round glow behind the weapon and a faint wash rising from the bottom edge, both in the rarity colour
+	local function lightCard(C, col)
+		local g = Instance.new("ImageLabel")
+		g.Name = "\0"
+		g.BackgroundTransparency, g.BorderSizePixel = 1, 0
+		g.Image = Build.IconAsset.fx_ripple or ""
+		g.ImageColor3, g.ImageTransparency = col, 0.72
+		g.Size = UDim2.fromScale(1, 1)
+		g.ZIndex = C.glow.ZIndex
+		g.Parent = C.glow
+		C.glow.BackgroundTransparency = 1
+		local wash = Instance.new("Frame")
+		wash.Name = "\0"
+		wash.BorderSizePixel = 0
+		wash.BackgroundColor3 = col
+		wash.AnchorPoint, wash.Position, wash.Size = Vector2.new(0, 1), UDim2.fromScale(0, 1), UDim2.fromScale(1, 0.55)
+		wash.ZIndex = C.Root.ZIndex
+		local wg = Instance.new("UIGradient", wash)
+		wg.Rotation = 90
+		wg.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 1), NumberSequenceKeypoint.new(1, 0.86) })
+		Instance.new("UICorner", wash).CornerRadius = UDim.new(0, 8)
+		wash.Parent = C.Root
+		C.image.ZIndex = C.glow.ZIndex + 1
+		for _, part in { C.name, C.sub, C.stripe, C.badge } do part.ZIndex = C.Root.ZIndex + 3 end
+		for _, d in C.badge:GetDescendants() do if d:IsA("GuiObject") then d.ZIndex = C.Root.ZIndex + 4 end end
+		C.Root.ClipsDescendants = true
+		return g
 	end
 	-- cards fill the row edge to edge: as many columns as fit MIN_CARD, the rest of the width shared out (sizes are offsets, so the
 	-- window's UIScale is divided out; the card box's own height gives the scale)
@@ -4208,9 +4243,13 @@ function Library:SkinChanger(Data)
 		layoutCard(C, cardW, cardH)
 		cards[C] = true
 		local on
+		local light
 		if entry then
 			on = ch.Selected[weapon] == entry.Skin
-			C.stripe.BackgroundColor3 = entry.Color or Library.Theme.Border
+			local col = entry.Color or Library.Theme["Dim Text"]
+			C.stripe.BackgroundColor3 = col
+			C.sub.TextColor3 = col
+			light = lightCard(C, col)
 			local img = Instance.new("ImageLabel")
 			img.BackgroundTransparency, img.Size, img.ScaleType = 1, UDim2.fromScale(1, 1), Enum.ScaleType.Fit
 			img.Image = tostring(entry.Image or "")
@@ -4220,6 +4259,7 @@ function Library:SkinChanger(Data)
 		else
 			on = ch.Selected[weapon] == nil
 			C.stripe.BackgroundColor3 = Library.Theme.Border
+			light = lightCard(C, Library.Theme["Dim Text"])
 			label(C.image, "DEFAULT", UDim2.new(), UDim2.fromScale(1, 1), Library.Theme["Dim Text"], 13, Enum.TextXAlignment.Center)
 			C.name.Text = "Default " .. weapon
 			C.sub.Text = ""
@@ -4229,6 +4269,15 @@ function Library:SkinChanger(Data)
 		local stroke = C.Root:FindFirstChildOfClass("UIStroke")
 		if stroke then stroke.Color = on and Library.Theme.Accent or Library.Theme.Border stroke.Thickness = on and 2 or 1 end
 		local cardBtn = Library.click(C.Root, function() cardClick(weapon, entry and entry.Skin or nil) end)
+		cardBtn.ZIndex = C.Root.ZIndex + 10
+		-- hover: the light grows brighter and the edge lifts
+		Library.fx.hover(cardBtn, function()
+			Library.fx.tween(light, { ImageTransparency = 0.5 }, 0.15)
+			if stroke and not on then Library.fx.tween(stroke, { Color = Library.Theme.Highlight }, 0.15) end
+		end, function()
+			Library.fx.tween(light, { ImageTransparency = 0.72 }, 0.2)
+			if stroke and not on then Library.fx.tween(stroke, { Color = Library.Theme.Border }, 0.2) end
+		end)
 		if pv then
 			-- hovering a card previews it; leaving shows the chosen one again
 			Library:Connect(cardBtn.MouseEnter, function() pv.Show(weapon, entry and entry.Skin or nil) end)
