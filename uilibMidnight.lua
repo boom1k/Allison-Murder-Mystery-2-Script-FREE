@@ -1204,8 +1204,8 @@ do
 	end
 	local face, bold = Library.Env.FontFace, nil
 	if typeof(face) ~= "Font" then
-		face = face_(Enum.FontWeight.Medium, Enum.Font.Ubuntu)
-		bold = face_(Enum.FontWeight.SemiBold, Enum.Font.Ubuntu)
+		face = face_(Enum.FontWeight.SemiBold, Enum.Font.Ubuntu)
+		bold = face_(Enum.FontWeight.Bold, Enum.Font.Ubuntu)
 	else
 		bold = face
 	end
@@ -1484,6 +1484,54 @@ function Library:Window(Data)
 	makeDraggable(W.dragBar, root)
 	makeDraggable(W.sidebar, root)
 	makeDraggable(W.logo, root)
+	-- The whole window drags from any empty spot (page background, section cards, labels, the sidebar), not only the header. A press does
+	-- not start a drag when it lands on something that takes input itself: a button, a text box, a 3D view, an Active frame, or an open popup
+	-- (dropdown list, colour picker). Library.DragAnywhere = false turns it off.
+	do
+		local function blocked(pos)
+			for _, f in Library.PopupFrames do
+				if f.Parent and f.Visible and f:IsDescendantOf(root) then
+					local a, z = f.AbsolutePosition, f.AbsoluteSize
+					if pos.X >= a.X and pos.X <= a.X + z.X and pos.Y >= a.Y and pos.Y <= a.Y + z.Y then return true end
+				end
+			end
+			for _, d in root:GetDescendants() do
+				if d:IsA("GuiButton") or d:IsA("TextBox") or d:IsA("ViewportFrame") or (d:IsA("GuiObject") and d.Active and d ~= root and not d:IsA("ScrollingFrame")) then
+					local a, z = d.AbsolutePosition, d.AbsoluteSize
+					if pos.X >= a.X and pos.X <= a.X + z.X and pos.Y >= a.Y and pos.Y <= a.Y + z.Y then
+						-- only if it is really on screen (its page / popup is shown)
+						local o, shown = d, true
+						while o and o ~= root do
+							if o:IsA("GuiObject") and not o.Visible then shown = false break end
+							o = o.Parent
+						end
+						if shown then return true end
+					end
+				end
+			end
+			return false
+		end
+		Library:Connect(UserInputService.InputBegan, function(i)
+			if Library.DragAnywhere == false or not root.Visible then return end
+			if i.UserInputType ~= MB1 and i.UserInputType ~= TOUCH then return end
+			if UserInputService:GetFocusedTextBox() then return end
+			local pos = Vector2.new(i.Position.X, i.Position.Y)
+			local a, z = root.AbsolutePosition, root.AbsoluteSize
+			if pos.X < a.X or pos.X > a.X + z.X or pos.Y < a.Y or pos.Y > a.Y + z.Y then return end
+			-- the header, sidebar and logo already drag through makeDraggable
+			for _, h in { W.dragBar, W.titleRow, W.logo, W.sidebar } do
+				local ha, hz = h.AbsolutePosition, h.AbsoluteSize
+				if pos.X >= ha.X and pos.X <= ha.X + hz.X and pos.Y >= ha.Y and pos.Y <= ha.Y + hz.Y then return end
+			end
+			if blocked(pos) then return end
+			local start, startPos = i.Position, root.Position
+			Library.beginDrag(function(m)
+				local d = m.Position - start
+				root.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + d.X, startPos.Y.Scale, startPos.Y.Offset + d.Y)
+				Library.keepOnScreen(root)
+			end)
+		end)
+	end
 	window.SearchItems, window.SectionList = {}, {}
 	-- the search field: a real TextBox over the design's text
 	W.searchText.Visible = false
