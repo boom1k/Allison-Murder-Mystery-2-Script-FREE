@@ -1564,17 +1564,49 @@ function Library:Page(Data)
 		icon.ImageColor3 = Library.Theme["Dim Text"]
 		icon.Parent = T.Root
 		local function place()
-			-- icon (14 px) + 7 px gap + the text, the whole pair centred in the tab
 			local b = T.label.TextBounds.X
-			local left = -(21 + b) / 2
-			icon.Position = UDim2.new(0.5, left, 0.5, -1)
-			T.label.TextXAlignment = Enum.TextXAlignment.Left
-			T.label.AnchorPoint = Vector2.new(0, 0)
-			T.label.Position, T.label.Size = UDim2.new(0.5, left + 21, 0, 0), UDim2.new(0, b + 6, 1, -3)
+			if icon.Visible then
+				-- icon (14 px) + 7 px gap + the text, the whole pair centred in the tab
+				local left = -(21 + b) / 2
+				icon.Position = UDim2.new(0.5, left, 0.5, -1)
+				T.label.TextXAlignment = Enum.TextXAlignment.Left
+				T.label.AnchorPoint = Vector2.new(0, 0)
+				T.label.Position, T.label.Size = UDim2.new(0.5, left + 21, 0, 0), UDim2.new(0, b + 6, 1, -3)
+			else
+				-- a narrow tab: the name alone, centred
+				T.label.TextXAlignment = Enum.TextXAlignment.Center
+				T.label.AnchorPoint = Vector2.new(0, 0)
+				T.label.Position, T.label.Size = UDim2.new(), UDim2.new(1, 0, 1, -3)
+			end
 		end
 		place()
 		T.label:GetPropertyChangedSignal("TextBounds"):Connect(place)
+		T.placeIcon = place
+		T.iconInst = icon
 	end
+	-- Tabs share the bar: 96 px each while they fit, narrower when there are many (they used to run past the window's edge), and the
+	-- icons give way to the bare names when a tab gets too narrow for icon + name.
+	window.TabList = window.TabList or {}
+	table.insert(window.TabList, T)
+	if not window.FitTabs then
+		function window:FitTabs()
+			local n = #self.TabList
+			local avail = W.tabs.AbsoluteSize.X
+			if n == 0 or avail <= 0 then return end
+			local sc = W.Root:FindFirstChildOfClass("UIScale")
+			avail = avail / ((sc and sc.Scale > 0) and sc.Scale or 1)
+			local w = math.clamp(math.floor((avail - 6 * (n - 1)) / n), 52, 96)
+			for _, t in self.TabList do
+				if t.Root.Size.X.Offset ~= w then t.Root.Size = UDim2.new(0, w, 0, 24) end
+				if t.iconInst then
+					local show = w >= 84
+					if t.iconInst.Visible ~= show then t.iconInst.Visible = show t.placeIcon() end
+				end
+			end
+		end
+		Library:Connect(W.tabs:GetPropertyChangedSignal("AbsoluteSize"), function() window:FitTabs() end)
+	end
+	window:FitTabs()
 	local holder = Instance.new("Frame")
 	holder.Name = "\0"
 	holder.BackgroundTransparency = 1
