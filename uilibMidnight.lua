@@ -1358,6 +1358,16 @@ function Library.dragSmooth(target, startMouse, startPos)
 	return onMove, onEnd
 end
 
+-- the header of a floating card (keybind list, ESP preview, bomb window): the icon and the title share one centre line, 18 px from the
+-- top (the header is 36 tall), both starting on the card's 12 px inner edge
+function Library.alignHeader(icon, title)
+	if icon then
+		icon.AnchorPoint, icon.Position = Vector2.new(0, 0.5), UDim2.fromOffset(12, 18)
+	end
+	title.AnchorPoint, title.Position, title.Size = Vector2.zero, UDim2.fromOffset(icon and 36 or 12, 0), UDim2.new(1, -(icon and 48 or 24), 0, 36)
+	title.TextYAlignment = Enum.TextYAlignment.Center
+end
+
 local function makeDraggable(handle, target)
 	Library:Connect(handle.InputBegan, function(i)
 		if i.UserInputType ~= MB1 and i.UserInputType ~= TOUCH then return end
@@ -3550,6 +3560,10 @@ function Library:KeybindList()
 	end
 	rowsLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(fitHeight)
 	fitHeight()
+	-- (the generated header / divider positions count the card's 1 px border: set exactly so the icon and title sit on the card's own 12 px edge)
+	Kw.header.Position, Kw.header.Size = UDim2.new(), UDim2.new(1, 0, 0, 36)
+	Kw.line.Position, Kw.line.Size = UDim2.fromOffset(0, 36), UDim2.new(1, 0, 0, 1)
+	Library.alignHeader(Kw.icon, Kw.title)
 	Library.MakeDraggable(Kw.header, root)
 	local list = { Instance = root, Rows = {} }
 	function list:SetVisibility(b) root.Visible = b end
@@ -4576,6 +4590,7 @@ function Library:EspPreview(Data)
 	P.view.Position, P.view.Size = UDim2.fromOffset(12, 84), UDim2.new(1, -24, 1, -(84 + 92))
 	if P.tabs then P.tabs.Position, P.tabs.Size = UDim2.fromOffset(12, 48), UDim2.new(1, -24, 0, 28) end
 	P.title.Text = tostring(Library.field(Data, "Name", "name") or "esp preview")
+	Library.alignHeader(P.icon, P.title)
 	P.view.ClipsDescendants = true
 	fx.shadow(root, { radius = 12, transparency = 0.35 })
 	-- pinned to the first window: its top edge level with the window's, 12 px right of it, following every move / resize (on the left
@@ -5941,6 +5956,7 @@ function Library:BombWindow(Data)
 	root.Visible = false
 	root.Position = UDim2.fromOffset(24, 300)
 	P.title.Text = tostring(Library.field(Data, "Name", "name") or "bomb")
+	Library.alignHeader(P.icon, P.title)
 	Library.MakeDraggable(P.title, root)
 	Library.fx.shadow(root, { radius = 12, transparency = 0.35 })
 	for _, k in { "time", "hp", "damage", "status" } do P[k].TextXAlignment = Enum.TextXAlignment.Right end
