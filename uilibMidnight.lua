@@ -706,6 +706,22 @@ function Build.SegItem(parent)
 	return P
 end
 
+function Build.FlagPill(parent)
+	local P = {}
+	local root = N("Frame", { Name = "FlagPill", BorderSizePixel = 0, Size = UDim2.new(0, 84, 0, 24), BackgroundTransparency = 1 }, parent)
+	P.Root = root
+	N("UICorner", { CornerRadius = UDim.new(0, 9999) }, root)
+	local rootS = N("UIStroke", { Color = Color3.fromRGB(40, 44, 52), Thickness = 1, ApplyStrokeMode = Enum.ApplyStrokeMode.Border }, root)
+	Th(rootS, { Color = "Border" })
+	local n1 = N("TextLabel", { Name = "plus", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 10, 0, 4), Size = UDim2.new(0, 10, 0, 21), BackgroundTransparency = 1, Text = "+", TextSize = 15, TextXAlignment = Enum.TextXAlignment.Center, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.FontBold, TextColor3 = Color3.fromRGB(130, 136, 148) }, root)
+	P["plus"] = n1
+	Th(n1, { TextColor3 = "Dim Text" })
+	local n2 = N("TextLabel", { Name = "text", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 23, 0, 5), Size = UDim2.new(0, 56, 0, 18), BackgroundTransparency = 1, Text = "Scoped", TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.FontBold, TextColor3 = Color3.fromRGB(130, 136, 148) }, root)
+	P["text"] = n2
+	Th(n2, { TextColor3 = "Dim Text" })
+	return P
+end
+
 function Build.PartPicker(parent)
 	local P = {}
 	local root = N("Frame", { Name = "PartPicker", BorderSizePixel = 0, Size = UDim2.new(0, 230, 0, 150), BackgroundTransparency = 1 }, parent)
@@ -5420,6 +5436,114 @@ function Library:EspPreview(Data)
 		preview.FlagPicker = Pk.Root
 	end
 	loadTarget()
+	-- ---- flag pills under the view ----
+	-- Data.FlagPills = { { Name, Flag }, ... }: one pill per ESP flag toggle of the script ("+ Name" while off, filled while on; a click
+	-- flips the flag through its own toggle). Without it, in picker mode, the pills are the equipped-flag list of the current target.
+	-- The window grows by the height of the pills; the view keeps its size.
+	do
+		local list = Library.field(Data, "FlagPills", "flagpills")
+		local bound = type(list) == "table" and #list > 0
+		if EDIT and (bound or useList) then
+			local entries = {}
+			if bound then
+				for _, it in list do
+					local n, f = it.Name or it[1], it.Flag or it[2]
+					if n and f then entries[#entries + 1] = { name = tostring(n), flag = tostring(f) } end
+				end
+			else
+				for _, o in options do entries[#entries + 1] = { name = o.name } end
+				if editHooks.add then editHooks.add.Visible = false editHooks.add = nil end   -- the pills replace "+ Flag"
+			end
+			local block = Instance.new("Frame")
+			block.Name = "\0Pills"
+			block.BackgroundTransparency, block.BorderSizePixel = 1, 0
+			block.AnchorPoint = Vector2.new(0, 1)
+			block.Parent = root
+			local head = Instance.new("TextLabel")
+			head.Name = "\0"
+			head.BackgroundTransparency = 1
+			head.FontFace, head.TextSize, head.Text = Library.FontBold, 12, "Flags"
+			head.TextXAlignment = Enum.TextXAlignment.Left
+			head.TextColor3 = Library.Theme["Dim Text"]
+			Library:AddToTheme(head, { TextColor3 = "Dim Text" })
+			head.Size = UDim2.new(1, 0, 0, 16)
+			head.Parent = block
+			local wrap = Instance.new("Frame")
+			wrap.Name = "\0"
+			wrap.BackgroundTransparency = 1
+			wrap.Position, wrap.Size = UDim2.fromOffset(0, 22), UDim2.new(1, 0, 0, 24)
+			wrap.Parent = block
+			local wl = Library.listLayout(wrap, 6, Enum.FillDirection.Horizontal)
+			pcall(function() wl.Wraps = true end)
+			local base = root.Size.Y.Offset
+			local viewSize = P.view.Size
+			local function relayout()
+				local h = math.max(wl.AbsoluteContentSize.Y, 24)
+				wrap.Size = UDim2.new(1, 0, 0, h)
+				local extra = 22 + h + 12
+				block.Position, block.Size = UDim2.new(0, 12, 1, -92), UDim2.new(1, -24, 0, extra - 12)
+				root.Size = UDim2.fromOffset(root.Size.X.Offset, base + extra)
+				-- the view keeps its height: it is sized from the bottom of the window, which just moved down by `extra`
+				P.view.Size = UDim2.new(viewSize.X.Scale, viewSize.X.Offset, viewSize.Y.Scale, viewSize.Y.Offset - extra)
+			end
+			wl:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(relayout)
+			local pills = {}
+			local function isOn(e)
+				if e.flag then return Library.Flags[e.flag] == true end
+				for _, n in listOf(current) do if n == e.name then return true end end
+				return false
+			end
+			local function paintPill(p, instant)
+				local on = isOn(p.e)
+				if p.on == on and not instant then return end
+				p.on = on
+				local t = instant and 0 or 0.15
+				local tb = math.ceil(p.P.text.TextBounds.X)
+				local w = on and (tb + 24) or (tb + 34)
+				fx.tween(p.P.Root, { Size = UDim2.fromOffset(w, 24), BackgroundTransparency = on and 0 or 1 }, t)
+				Library:ChangeItemTheme(p.P.Root, { BackgroundColor3 = "Accent" })
+				p.P.Root.BackgroundColor3 = Library.Theme.Accent
+				local st = p.P.Root:FindFirstChildOfClass("UIStroke")
+				if st then Library:ChangeItemTheme(st, { Color = on and "Accent" or "Border" }) fx.tween(st, { Color = on and Library.Theme.Accent or Library.Theme.Border }, t) end
+				fx.tween(p.P.plus, { TextTransparency = on and 1 or 0 }, t)
+				fx.tween(p.P.text, { Position = UDim2.fromOffset(on and 12 or 22, 0), TextColor3 = on and Library.Theme["Bright Text"] or Library.Theme["Dim Text"] }, t)
+				Library:ChangeItemTheme(p.P.text, { TextColor3 = on and "Bright Text" or "Dim Text" })
+			end
+			for i, en in entries do
+				local P2 = Build.FlagPill(wrap)
+				P2.Root.LayoutOrder = i
+				P2.text.Text = en.name
+				P2.text.Position, P2.text.Size = UDim2.fromOffset(22, 0), UDim2.new(0, 200, 1, 0)
+				P2.text.TextXAlignment = Enum.TextXAlignment.Left
+				P2.plus.Position, P2.plus.Size = UDim2.fromOffset(8, 0), UDim2.new(0, 12, 1, -1)
+				local p = { P = P2, e = en }
+				pills[#pills + 1] = p
+				local b = Library.click(P2.Root, function()
+					if en.flag then
+						local v = not (Library.Flags[en.flag] == true)
+						if Library.SetFlags[en.flag] then Library.SetFlags[en.flag](v) else Library.Flags[en.flag] = v end
+					elseif editHooks.toggleFlag then
+						editHooks.toggleFlag(en.name)
+					end
+					paintPill(p)
+				end)
+				fx.hover(b, function() if not p.on then fx.tween(P2.text, { TextColor3 = Library.Theme.Text }, 0.12) end end,
+					function() if not p.on then fx.tween(P2.text, { TextColor3 = Library.Theme["Dim Text"] }, 0.15) end end)
+				P2.text:GetPropertyChangedSignal("TextBounds"):Connect(function() paintPill(p, true) end)
+				paintPill(p, true)
+			end
+			relayout()
+			task.defer(relayout)
+			-- follow flag changes made elsewhere (the menu's toggles, a config load, another target)
+			task.spawn(function()
+				while Library.Alive and root.Parent do
+					if root.Visible then for _, p in pills do paintPill(p) end end
+					task.wait(0.2)
+				end
+			end)
+			preview.FlagPills = pills
+		end
+	end
 	if type(map) == "table" then
 		task.spawn(function()
 			while Library.Alive and root.Parent do
