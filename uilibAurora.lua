@@ -1515,6 +1515,28 @@ function Library.popupAt(popup, root, anchor, dy)
 	popup.Position = UDim2.new(0, a.X - ra.X, 0, a.Y - ra.Y + s.Y + (dy or 4))
 end
 
+-- A popup (dropdown list, colour picker, keybind mode list) is placed once, in window coordinates. When its anchor then moves inside
+-- the window (the page was scrolled) the popup would stay behind, floating over something else, so it is closed instead.
+-- Moving the whole window does not count (the popup is a child of the window and moves with it); neither does the window's own
+-- open / scale animation (the offset is compared unscaled). Returns a function that stops watching.
+function Library.watchAnchor(anchor, root, close)
+	local function rel()
+		local sc = root:FindFirstChildOfClass("UIScale")
+		local k = (sc and sc.Scale > 0) and sc.Scale or 1
+		return (anchor.AbsolutePosition - root.AbsolutePosition) / k
+	end
+	local r0 = rel()
+	local conn
+	conn = anchor:GetPropertyChangedSignal("AbsolutePosition"):Connect(function()
+		local r = rel()
+		if math.abs(r.X - r0.X) > 2 or math.abs(r.Y - r0.Y) > 2 then
+			conn:Disconnect()
+			close()
+		end
+	end)
+	return function() if conn.Connected then conn:Disconnect() end end
+end
+
 -- ---- Page (a tab across the top + a set of columns) ----
 function Library:Page(Data)
 	Data = Data or {}
@@ -2428,7 +2450,10 @@ function Library:Dropdown(Data)
 		return s.X, math.min(count * 18 + 4, maxSize + 4)
 	end
 	local openToken = 0
-	local function setOpen(b)
+	local unwatch
+	local setOpen
+	setOpen = function(b)
+		if unwatch then unwatch() unwatch = nil end
 		open = b
 		openToken += 1
 		local my = openToken
@@ -2453,6 +2478,7 @@ function Library:Dropdown(Data)
 			if not P.Root.Visible then P.Root.Size = UDim2.new(0, w, 0, 0) end
 			P.Root.Visible = true
 			fx.tween(P.Root, { Size = UDim2.new(0, w, 0, h) }, 0.18)
+			unwatch = Library.watchAnchor(T.field, winRoot, function() unwatch = nil setOpen(false) end)   -- the page scrolled: close
 			debounce = true
 			task.delay(0.1, function() debounce = false end)
 		else
@@ -2663,13 +2689,17 @@ function Library.AddColorpicker(owner, row, Data)
 
 	-- popup
 	local open, debounce = false, false
-	local function setOpen(v)
+	local unwatch
+	local setOpen
+	setOpen = function(v)
 		if v and openPicker and openPicker ~= setOpen then openPicker(false) end
+		if unwatch then unwatch() unwatch = nil end
 		open = v
 		P.Root.Visible = v
 		openPicker = v and setOpen or nil
 		if v then
 			Library.popupAt(P.Root, winRoot, S.Root, 6)
+			unwatch = Library.watchAnchor(S.Root, winRoot, function() unwatch = nil setOpen(false) end)   -- the page scrolled: close
 			local x = math.min(P.Root.Position.X.Offset, winRoot.AbsoluteSize.X - 206)
 			P.Root.Position = UDim2.new(0, x, 0, math.min(P.Root.Position.Y.Offset, winRoot.AbsoluteSize.Y - 326))
 			-- pops in from slightly smaller
@@ -2870,9 +2900,12 @@ function Library.AddKeybind(owner, row, Data, ownerToggle)
 		click(O.Root, function() kb:SetMode(mode) P.Root.Visible = false end)
 	end
 	local rb = click(K.Root)
+	local unwatchKb
 	Library:Connect(rb.MouseButton2Click, function()
+		if unwatchKb then unwatchKb() unwatchKb = nil end
 		P.Root.Visible = not P.Root.Visible
 		Library.popupAt(P.Root, winRoot, K.Root, 4)
+		if P.Root.Visible then unwatchKb = Library.watchAnchor(K.Root, winRoot, function() unwatchKb = nil P.Root.Visible = false end) end
 	end)
 	Library:Connect(rb.MouseButton1Click, function()
 		if kb.Picking then return end
