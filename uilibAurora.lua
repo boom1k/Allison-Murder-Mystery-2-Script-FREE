@@ -1564,28 +1564,25 @@ function Library:Page(Data)
 		icon.ImageColor3 = Library.Theme["Dim Text"]
 		icon.Parent = T.Root
 		local function place()
+			-- The NAME is centred on the tab (so on the line under it); the icon (14 px + 7 px gap) hangs to its left. (It used to centre
+			-- icon + name as a pair, which put every name 10 px right of its line's middle.) A tab whose icon would stick out more than
+			-- 12 px past the tab's left edge shows the name alone.
 			local b = T.label.TextBounds.X
-			if icon.Visible then
-				-- icon (14 px) + 7 px gap + the text, the whole pair centred in the tab
-				local left = -(21 + b) / 2
-				icon.Position = UDim2.new(0.5, left, 0.5, -1)
-				T.label.TextXAlignment = Enum.TextXAlignment.Left
-				T.label.AnchorPoint = Vector2.new(0, 0)
-				T.label.Position, T.label.Size = UDim2.new(0.5, left + 21, 0, 0), UDim2.new(0, b + 6, 1, -3)
-			else
-				-- a narrow tab: the name alone, centred
-				T.label.TextXAlignment = Enum.TextXAlignment.Center
-				T.label.AnchorPoint = Vector2.new(0, 0)
-				T.label.Position, T.label.Size = UDim2.new(), UDim2.new(1, 0, 1, -3)
-			end
+			local w = T.Root.Size.X.Offset
+			local show = (w - b) / 2 + 12 >= 21
+			if icon.Visible ~= show then icon.Visible = show end
+			T.label.TextXAlignment = Enum.TextXAlignment.Center
+			T.label.AnchorPoint = Vector2.new(0, 0)
+			T.label.Position, T.label.Size = UDim2.new(), UDim2.new(1, 0, 1, -3)
+			if show then icon.Position = UDim2.new(0.5, -(b / 2) - 21, 0.5, -1) end
 		end
 		place()
 		T.label:GetPropertyChangedSignal("TextBounds"):Connect(place)
 		T.placeIcon = place
 		T.iconInst = icon
 	end
-	-- Tabs share the bar: 96 px each while they fit, narrower when there are many (they used to run past the window's edge), and the
-	-- icons give way to the bare names when a tab gets too narrow for icon + name.
+	-- Tabs share the bar: 96 px each while they fit, narrower when there are many (they used to run past the window's edge). A tab too
+	-- narrow for its icon shows the bare name (see place() above).
 	window.TabList = window.TabList or {}
 	table.insert(window.TabList, T)
 	if not window.FitTabs then
@@ -1598,10 +1595,7 @@ function Library:Page(Data)
 			local w = math.clamp(math.floor((avail - 6 * (n - 1)) / n), 52, 96)
 			for _, t in self.TabList do
 				if t.Root.Size.X.Offset ~= w then t.Root.Size = UDim2.new(0, w, 0, 24) end
-				if t.iconInst then
-					local show = w >= 84
-					if t.iconInst.Visible ~= show then t.iconInst.Visible = show t.placeIcon() end
-				end
+				if t.placeIcon then t.placeIcon() end
 			end
 		end
 		Library:Connect(W.tabs:GetPropertyChangedSignal("AbsoluteSize"), function() window:FitTabs() end)
