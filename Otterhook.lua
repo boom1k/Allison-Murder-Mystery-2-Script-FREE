@@ -1617,7 +1617,7 @@ function Library:Page(Data)
 		g.T = Build.Tab(W.tabs)
 		g.T.Root.LayoutOrder = #window.Groups + 1
 		g.T.label.Text = tostring(name)
-		g.T.label.Position, g.T.label.Size = UDim2.new(), UDim2.new(1, 0, 1, 0)
+		g.T.label.Position, g.T.label.Size = UDim2.fromOffset(0, -1), UDim2.new(1, 0, 1, 0)   -- (-1: optical centre, measured)
 		g.T.bar.ZIndex, g.T.label.ZIndex = 1, 2
 		fx.shade(g.T.bar, 0.3)
 		-- the icon (Font Awesome Free, assets/tab_icons.json) left of the name: Data.Icon, else the category / page name ("Anti-Aim" -> antiaim). The name stays
@@ -1641,7 +1641,7 @@ function Library:Page(Data)
 				icon.Visible = (w - b) / 2 >= 24
 				-- icon (14) + gap (7) + name are centred as one group: the name moves right by half the icon's share
 				local shift = icon.Visible and math.floor(21 / 2 + 0.5) or 0
-				g.T.label.Position = UDim2.fromOffset(shift, 0)
+				g.T.label.Position = UDim2.fromOffset(shift, -1)   -- (-1: Ubuntu sits ~1 px low in its line box, measured)
 				icon.Position = UDim2.new(0.5, -(b / 2) - 21 + shift, 0.5, 0)
 			end
 			g.T.label:GetPropertyChangedSignal("TextBounds"):Connect(place)
@@ -1710,7 +1710,7 @@ function Library:Page(Data)
 		local w = math.clamp(math.floor(#label * 7 + 22), SUBW_MIN, 150)
 		S.Root.Size = UDim2.new(0, w, 1, -1)
 		S.label.Text = label
-		S.label.Position, S.label.Size = UDim2.new(), UDim2.new(1, 0, 1, 0)
+		S.label.Position, S.label.Size = UDim2.fromOffset(0, -1), UDim2.new(1, 0, 1, 0)   -- (-1: optical centre, measured)
 		S.bar.ZIndex, S.label.ZIndex = 6, 7
 		fx.shade(S.bar, 0.3)
 		local line = Instance.new("Frame")
@@ -1780,6 +1780,8 @@ function Library:Section(Data)
 	local colWrap = page.ColumnsData[math.clamp(side, 1, page.Columns)]
 	local S = Build.Section(colWrap.Instance)
 	S.title.Text = tostring(name)
+	S.title.Position += UDim2.fromOffset(0, -2)   -- Otterhook: centred in the 20 px header (was 2 px low)
+	S.fold.Position += UDim2.fromOffset(0, -2)
 	S.card.Position = UDim2.new()
 	S.content.AutomaticSize = Enum.AutomaticSize.Y
 	S.content.Position, S.content.Size = UDim2.new(0, 5, 0, 24), UDim2.new(1, -10, 0, 0)
@@ -2040,7 +2042,7 @@ function Library:Toggle(Data)
 	T.label.Text = tostring(field(Data, "Name", "name") or "Toggle")
 	Library.attachTooltip(T.Root, field(Data, "Tooltip", "tooltip"))
 	Library.regSearch(section, T.Root, T.label.Text)
-	T.label.Position, T.label.Size = UDim2.new(0, 19, 0, 0), UDim2.new(1, -19, 1, 0)
+	T.label.Position, T.label.Size = UDim2.new(0, 19, 0, -1), UDim2.new(1, -19, 1, 0)   -- Otterhook: level with the box (was 1 px low)
 	fx.shade(T.check, 0.3)
 	local risky = field(Data, "Risky", "risky")
 	local callback = field(Data, "Callback", "callback")
@@ -3139,6 +3141,7 @@ function Library.AddKeybind(owner, row, Data, ownerToggle)
 	local kb = { Toggled = false, Key = nil, Mode = "Toggle", Flag = flag, Picking = false, Items = {}, ShowInList = field(Data, "ShowInList", "showinlist") ~= false }
 	K.text.FontFace = Library.FontBold
 	K.text.TextXAlignment = Enum.TextXAlignment.Right
+	K.text.Position += UDim2.fromOffset(0, -2)   -- Otterhook: level with the row label (was 2 px low)
 	kb.Items.Pill = Library.Wrap(K.Root)
 	local keyItem = Library.KeyList and Library.KeyList:Add("None", "None", "None")
 	if keyItem and keyItem.Instance then keyItem.Instance.Visible = false end
