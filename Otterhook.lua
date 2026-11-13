@@ -1521,163 +1521,195 @@ function Library.watchAnchor(anchor, root, close)
 	return function() if conn.Connected then conn:Disconnect() end end
 end
 
--- ---- Page (a tab across the top + a set of columns) ----
+-- ---- Page ----
+-- Otterhook: the top row holds the CATEGORIES, a second row of sub-tabs (the pages of the category and their SubPages) sits under it
+-- when the category has more than one page. Data.Category starts a category; once one was given, a page without it joins the current
+-- category (like a sidebar heading); before that every page is a category of its own (the plain Window:Page{Name} use).
+-- Data.SubName = the page's label in the sub-tab row (default: its Name). Page:SubPage{Name, Columns} adds a page right after it.
+local SUBH, SUBW_MIN = 26, 66
 function Library:Page(Data)
 	Data = Data or {}
 	local window = self
 	local W = window._W
 	local fx = Library.fx
-	local name = field(Data, "Name", "name") or "Page"
-	local columns = field(Data, "Columns", "columns") or 2
-	local T = Build.Tab(W.tabs)
-	T.Root.LayoutOrder = #window.Pages + 1
-	T.label.Text = tostring(name)
-	T.label.Position, T.label.Size = UDim2.new(), UDim2.new(1, 0, 1, 0)
-	T.label.TextYAlignment = Enum.TextYAlignment.Center
-	-- the icon (Font Awesome Free, assets/tab_icons.json) left of the name: Data.Icon, or the page name ("Anti-Aim" -> antiaim). The pair is centred.
-	local iconName = tostring(field(Data, "Icon", "icon") or string.lower((tostring(name):gsub("[^%w]", ""))))
-	local iconId = Build.IconAsset["tab_" .. iconName]
-	local icon
-	if iconId and iconId ~= "" then
-		icon = Instance.new("ImageLabel")
-		icon.Name = "\0"
-		icon.BackgroundTransparency, icon.BorderSizePixel = 1, 0
-		icon.Image = iconId
-		icon.AnchorPoint = Vector2.new(0, 0.5)
-		icon.Size = UDim2.fromOffset(14, 14)
-		icon.ImageColor3 = Library.Theme["Dim Text"]
-		icon.Parent = T.Root
-		local function place()
-			-- The NAME is centred on the tab (so on the line under it); the icon (14 px + 7 px gap) hangs to its left. (It used to centre
-			-- icon + name as a pair, which put every name 10 px right of its line's middle.) A tab whose icon would stick out more than
-			-- 12 px past the tab's left edge shows the name alone.
-			local b = T.label.TextBounds.X
-			local w = T.Root.Size.X.Offset
-			local show = (w - b) / 2 + 12 >= 21
-			if icon.Visible ~= show then icon.Visible = show end
-			T.label.TextXAlignment = Enum.TextXAlignment.Center
-			T.label.AnchorPoint = Vector2.new(0, 0)
-			T.label.Position, T.label.Size = UDim2.new(), UDim2.new(1, 0, 1, 0)
-			if show then icon.Position = UDim2.new(0.5, -(b / 2) - 21, 0.5, -1) end
+	window.Groups = window.Groups or {}
+
+	local function relayout(g)
+		local show = #g.Pages > 1
+		local x = 0
+		for _, p in g.Pages do
+			p.SubRoot.Position = UDim2.new(0, x, 0, 0)
+			x += p.SubRoot.Size.X.Offset + 2
+			p.Holder.Position = UDim2.new(0, 0, 0, show and (SUBH + 2) or 0)
+			p.Holder.Size = UDim2.new(1, 0, 1, show and -(SUBH + 2) or 0)
 		end
-		place()
-		T.label:GetPropertyChangedSignal("TextBounds"):Connect(place)
-		T.placeIcon = place
-		T.iconInst = icon
+		g.SubBar.Visible = show and window.Current ~= nil and window.Current.Group == g
 	end
-	-- Tabs share the bar: 96 px each while they fit, narrower when there are many (they used to run past the window's edge). A tab too
-	-- narrow for its icon shows the bare name (see place() above).
-	window.TabList = window.TabList or {}
-	table.insert(window.TabList, T)
-	if not window.FitTabs then
-		function window:FitTabs()
-			local n = #self.TabList
-			local avail = W.tabs.AbsoluteSize.X
-			if n == 0 or avail <= 0 then return end
-			local sc = W.Root:FindFirstChildOfClass("UIScale")
-			avail = avail / ((sc and sc.Scale > 0) and sc.Scale or 1)
-			local w = math.clamp(math.floor((avail - 6 * (n - 1)) / n), 52, 96)
-			for _, t in self.TabList do
-				if t.placeIcon then t.placeIcon() end
+
+	local function show(page, instant)
+		local g = page.Group
+		window.Current = page
+		g.Last = page
+		for _, gr in window.Groups do
+			local on = gr == g
+			Library:ChangeItemTheme(gr.T.bar, { BackgroundColor3 = on and "Header" or "Window Background" })
+			fx.tween(gr.T.bar, { BackgroundColor3 = on and Library.Theme.Header or Library.Theme["Window Background"] }, instant and 0 or 0.18)
+			Library:ChangeItemTheme(gr.T.label, { TextColor3 = on and "Bright Text" or "Dim Text" })
+			fx.tween(gr.T.label, { TextColor3 = on and Library.Theme["Bright Text"] or Library.Theme["Dim Text"] }, instant and 0 or 0.18)
+			gr.T.label.FontFace = on and Library.FontBold or Library.Font
+			gr.SubBar.Visible = on and #gr.Pages > 1
+		end
+		for _, p in window.Pages do
+			local on = p == page
+			if p.Group == g then
+				Library:ChangeItemTheme(p.SubT.bar, { BackgroundColor3 = on and "Header" or "Window Background" })
+				fx.tween(p.SubT.bar, { BackgroundColor3 = on and Library.Theme.Header or Library.Theme["Window Background"] }, instant and 0 or 0.15)
+				Library:ChangeItemTheme(p.SubT.label, { TextColor3 = on and "Bright Text" or "Dim Text" })
+				fx.tween(p.SubT.label, { TextColor3 = on and Library.Theme["Bright Text"] or Library.Theme["Dim Text"] }, instant and 0 or 0.15)
+				p.SubLine.Visible = on
+			end
+			if on then
+				if not p.Holder.Visible and not instant then
+					local base = p.Holder.Position
+					p.Holder.Position = base + UDim2.fromOffset(0, 8)
+					p.Holder.Visible = true
+					fx.tween(p.Holder, { Position = base }, 0.22)
+				else
+					p.Holder.Visible = true
+				end
+			else
+				p.Holder.Visible = false
 			end
 		end
-		Library:Connect(W.tabs:GetPropertyChangedSignal("AbsoluteSize"), function() window:FitTabs() end)
 	end
-	window:FitTabs()
-	local holder = Instance.new("Frame")
-	holder.Name = "\0"
-	holder.BackgroundTransparency = 1
-	holder.Size = UDim2.fromScale(1, 1)
-	holder.Visible = false
-	holder.Parent = W.pages
-	listLayout(holder, 0, Enum.FillDirection.Horizontal)
-	local page = setmetatable({ Items = {}, ColumnsData = {}, Window = window, Library = Library, Name = name, Columns = columns }, Library)
-	for i = 1, columns do
-		local col = Instance.new("ScrollingFrame")
-		col.Name = "\0"
-		col.BackgroundTransparency = 1
-		col.BorderSizePixel = 0
-		col.ScrollBarThickness = 2
-		col.ScrollBarImageColor3 = Library.Theme.Accent
-		col.CanvasSize = UDim2.new()
-		col.AutomaticCanvasSize = Enum.AutomaticSize.Y
-		col.Size = UDim2.new(1 / columns, 0, 1, 0)
-		col.Parent = holder
-		local cpad = Instance.new("UIPadding")
-		cpad.PaddingLeft = UDim.new(0, i == 1 and 1 or 3)
-		cpad.PaddingRight = UDim.new(0, i == columns and 4 or 3)
-		cpad.PaddingTop = UDim.new(0, 1)
-		cpad.PaddingBottom = UDim.new(0, 6)
-		cpad.Parent = col
-		listLayout(col, 6)
-		page.ColumnsData[i] = wrapInst(col)
+	window.ShowPage = show
+
+	local function newGroup(name)
+		local g = { Name = name, Pages = {} }
+		g.T = Build.Tab(W.tabs)
+		g.T.Root.LayoutOrder = #window.Groups + 1
+		g.T.label.Text = tostring(name)
+		g.T.label.Position, g.T.label.Size = UDim2.new(), UDim2.new(1, 0, 1, 0)
+		g.T.bar.ZIndex, g.T.label.ZIndex = 1, 2
+		fx.shade(g.T.bar, 0.3)
+		g.SubBar = Instance.new("Frame")
+		g.SubBar.Name = "\0"
+		g.SubBar.BackgroundTransparency, g.SubBar.BorderSizePixel = 1, 0
+		g.SubBar.Size = UDim2.new(1, 0, 0, SUBH)
+		g.SubBar.ZIndex = 5
+		g.SubBar.Visible = false
+		g.SubBar.Parent = W.pages
+		local rule = Instance.new("Frame")
+		rule.Name = "\0"
+		rule.BorderSizePixel = 0
+		rule.Position, rule.Size = UDim2.new(0, 0, 1, -1), UDim2.new(1, 0, 0, 1)
+		rule.ZIndex = 5
+		Library:AddToTheme(rule, { BackgroundColor3 = "Border" })
+		rule.Parent = g.SubBar
+		table.insert(window.Groups, g)
+		local n = #window.Groups
+		for _, gr in window.Groups do gr.T.Root.Size = UDim2.new(1 / n, 0, 1, 0) end
+		local btn = click(g.T.Root, function() show(g.Last or g.Pages[1]) end)
+		fx.hover(btn, function() if window.Current and window.Current.Group ~= g then fx.tween(g.T.label, { TextColor3 = Library.Theme.Text }, 0.12) end end,
+			function() if window.Current and window.Current.Group ~= g then fx.tween(g.T.label, { TextColor3 = Library.Theme["Dim Text"] }, 0.18) end end)
+		return g
 	end
-	page.Items["Inactive"] = wrapInst(T.Root)
-	page.Items["Page"] = wrapInst(holder)
-	-- the tabs share the row's width equally
-	window.Pages[#window.Pages + 1] = page
-	local n = #window.Pages
-	for _, p in window.Pages do
-		p.Items["Inactive"].Instance.Size = UDim2.new(1 / n, 0, 1, 0)
+
+	local function build(d, group, parent)
+		local name = field(d, "Name", "name") or "Page"
+		local columns = field(d, "Columns", "columns") or 2
+		local label = tostring(field(d, "SubName", "subname") or name)
+		local holder = Instance.new("Frame")
+		holder.Name = "\0"
+		holder.BackgroundTransparency = 1
+		holder.Size = UDim2.fromScale(1, 1)
+		holder.Visible = false
+		holder.Parent = W.pages
+		listLayout(holder, 0, Enum.FillDirection.Horizontal)
+		local page = setmetatable({ Items = {}, ColumnsData = {}, Window = window, Library = Library, Name = name, Columns = columns, Group = group, Holder = holder, Subs = {} }, Library)
+		for i = 1, columns do
+			local col = Instance.new("ScrollingFrame")
+			col.Name = "\0"
+			col.BackgroundTransparency = 1
+			col.BorderSizePixel = 0
+			col.ScrollBarThickness = 2
+			col.ScrollBarImageColor3 = Library.Theme.Accent
+			Library:AddToTheme(col, { ScrollBarImageColor3 = "Accent" })
+			col.CanvasSize = UDim2.new()
+			col.AutomaticCanvasSize = Enum.AutomaticSize.Y
+			col.Size = UDim2.new(1 / columns, 0, 1, 0)
+			col.Parent = holder
+			local cpad = Instance.new("UIPadding")
+			cpad.PaddingLeft = UDim.new(0, i == 1 and 1 or 3)
+			cpad.PaddingRight = UDim.new(0, i == columns and 4 or 3)
+			cpad.PaddingTop = UDim.new(0, 1)
+			cpad.PaddingBottom = UDim.new(0, 6)
+			cpad.Parent = col
+			listLayout(col, 6)
+			page.ColumnsData[i] = wrapInst(col)
+		end
+		-- the sub-tab button (a Tab of the design sheet, narrower)
+		local S = Build.Tab(group.SubBar)
+		local w = math.clamp(math.floor(#label * 7 + 22), SUBW_MIN, 150)
+		S.Root.Size = UDim2.new(0, w, 1, -1)
+		S.label.Text = label
+		S.label.Position, S.label.Size = UDim2.new(), UDim2.new(1, 0, 1, 0)
+		S.bar.ZIndex, S.label.ZIndex = 6, 7
+		fx.shade(S.bar, 0.3)
+		local line = Instance.new("Frame")
+		line.Name = "\0"
+		line.BorderSizePixel = 0
+		line.AnchorPoint, line.Position, line.Size = Vector2.new(0, 1), UDim2.new(0, 0, 1, 0), UDim2.new(1, 0, 0, 2)
+		line.ZIndex = 8
+		line.Visible = false
+		Library:AddToTheme(line, { BackgroundColor3 = "Accent" })
+		line.Parent = S.Root
+		page.SubT, page.SubRoot, page.SubLine, page.SubLabel = S, S.Root, line, S.label
+		page.Items["Inactive"] = wrapInst(S.Root)
+		page.Items["Page"] = wrapInst(holder)
+		-- where it goes in the category: right after its parent page (and the sub-pages that parent already has)
+		local at = #group.Pages + 1
+		if parent then
+			local last = parent.Subs[#parent.Subs] or parent
+			for i, p in group.Pages do if p == last then at = i + 1 end end
+			table.insert(parent.Subs, page)
+		end
+		table.insert(group.Pages, at, page)
+		table.insert(window.Pages, page)
+		relayout(group)
+		function page:Select() show(page) end
+		function page:SubPage(sd) return build(sd or {}, group, parent or page) end
+		function page:Turn(b, keep)
+			if b then show(page, keep) elseif window.Current ~= page then holder.Visible = false end
+		end
+		local btn = click(S.Root, function() show(page) end)
+		fx.hover(btn, function() if window.Current ~= page then fx.tween(S.label, { TextColor3 = Library.Theme.Text }, 0.12) end end,
+			function() if window.Current ~= page then fx.tween(S.label, { TextColor3 = Library.Theme["Dim Text"] }, 0.18) end end)
+		if #window.Pages == 1 then
+			show(page, true)
+		else
+			-- not the open page: its sub-tab is drawn in the idle colours
+			Library:ChangeItemTheme(S.bar, { BackgroundColor3 = "Window Background" })
+			Library:ChangeItemTheme(S.label, { TextColor3 = "Dim Text" })
+			S.bar.BackgroundColor3 = Library.Theme["Window Background"]
+			S.label.TextColor3 = Library.Theme["Dim Text"]
+			if window.Current and window.Current.Group == group then group.SubBar.Visible = #group.Pages > 1 end
+		end
+		return page
 	end
-	local active = false
-	page.Holder = holder
-	function page:Turn(bool, keepPage)
-		local was = active
-		active = bool
-		if not keepPage then holder.Visible = bool end
-		local key = bool and "Bright Text" or "Dim Text"
-		Library:ChangeItemTheme(T.label, { TextColor3 = key })
-		fx.tween(T.label, { TextColor3 = Library.Theme[key] }, 0.18)
-		if icon then
-			Library:ChangeItemTheme(icon, { ImageColor3 = bool and "Accent" or key })
-			fx.tween(icon, { ImageColor3 = bool and Library.Theme.Accent or Library.Theme[key] }, 0.18)
-		end
-		T.label.FontFace = bool and Library.FontBold or Library.Font
-		Library:ChangeItemTheme(T.bar, { BackgroundColor3 = bool and "Header" or "Window Background" })
-		fx.tween(T.bar, { BackgroundColor3 = bool and Library.Theme.Header or Library.Theme["Window Background"] }, 0.18)
-		if bool and not was and not keepPage then
-			holder.Position = UDim2.new(0, 0, 0, 8)
-			fx.tween(holder, { Position = UDim2.new() }, 0.22)
-		end
+
+	local category = field(Data, "Category", "category")
+	local group
+	if category then
+		for _, g in window.Groups do if g.Name == category then group = g end end
+		group = group or newGroup(category)
+		window.CurGroup = group
+	elseif window.CurGroup then
+		group = window.CurGroup
+	else
+		group = newGroup(field(Data, "Name", "name") or "Page")
 	end
-	-- changing tab: the tab lights up at once, the old page fades out under a cover in the panel's colour, the new one slides and fades in
-	T.bar.ZIndex, T.label.ZIndex = 1, 2
-	fx.shade(T.bar, 0.3)
-	local btn = click(T.Root, function()
-		if active then return end
-		if not Library.Animations then
-			for _, p in window.Pages do p:Turn(p == page) end
-			return
-		end
-		for _, p in window.Pages do p:Turn(p == page, true) end
-		local cover = window.PageCover
-		if not cover then
-			cover = Instance.new("Frame")
-			cover.Name = "\0"
-			cover.BorderSizePixel = 0
-			cover.BackgroundColor3 = Library.Theme["Dark Liner"]
-			Library:AddToTheme(cover, { BackgroundColor3 = "Dark Liner" })
-			cover.BackgroundTransparency = 1
-			cover.Size = UDim2.new(1, 0, 1, 0)
-			cover.ZIndex = 50
-			cover.Parent = W.pages
-			window.PageCover = cover
-		end
-		window.PageToken = (window.PageToken or 0) + 1
-		local my = window.PageToken
-		fx.tween(cover, { BackgroundTransparency = 0 }, 0.09, Enum.EasingStyle.Quad).Completed:Connect(function()
-			if window.PageToken ~= my then return end
-			for _, p in window.Pages do p.Holder.Visible = p == page end
-			holder.Position = UDim2.new(0, 0, 0, 8)
-			fx.tween(holder, { Position = UDim2.new() }, 0.22)
-			fx.tween(cover, { BackgroundTransparency = 1 }, 0.18, Enum.EasingStyle.Quad)
-		end)
-	end)
-	fx.hover(btn, function() if not active then fx.tween(T.label, { TextColor3 = Library.Theme.Text }, 0.12) if icon then fx.tween(icon, { ImageColor3 = Library.Theme.Text }, 0.12) end end end,
-		function() if not active then fx.tween(T.label, { TextColor3 = Library.Theme["Dim Text"] }, 0.18) if icon then fx.tween(icon, { ImageColor3 = Library.Theme["Dim Text"] }, 0.18) end end end)
-	page:Turn(n == 1)
-	return page
+	return build(Data, group, nil)
 end
 
 -- ---- Section (a header bar with the accent line on its left; a click on the header folds the section) ----
@@ -2462,7 +2494,7 @@ local function optionStore(opts)
 			local at = table.find(st.Value, name)
 			if at then table.remove(st.Value, at) o.selected = false else table.insert(st.Value, name) o.selected = true end
 		elseif o.selected then
-			o.selected, st.Value = false, nil
+			return
 		else
 			for _, other in st.Options do other.selected = false paintRow(other) end
 			o.selected, st.Value = true, name
@@ -2473,12 +2505,14 @@ local function optionStore(opts)
 	function st.set(v)
 		if st.multi then
 			if type(v) ~= "table" then return end
-			st.Value = v
+			st.Value = {}
 			for _, o in st.Options do o.selected = false end
 			for _, name in v do
 				local o = st.Options[name]
-				if not o then break end
-				o.selected = true
+				if o and not o.selected then
+					o.selected = true
+					table.insert(st.Value, name)
+				end
 			end
 			for _, o in st.Options do paintRow(o) end
 			Library.Flags[opts.flag] = st.Value
@@ -3545,20 +3579,16 @@ end
 
 local function pageBox(page, title, height)
 	local S = Build.Section(page.ColumnsData[1].Instance)
-	S.Root.AutomaticSize = Enum.AutomaticSize.None
-	S.Root.Size = UDim2.new(1, 0, 0, height + 7)
-	-- the title in the groupbox's top edge (a mask strip of the window colour, growing with the text)
+	S.Root.Size = UDim2.new(1, 0, 0, height + 2)
+	-- Otterhook: the title sits in the header bar (accent line on its left), the card has a fixed height
 	S.title.Text = title
-	S.title.AutomaticSize = Enum.AutomaticSize.X
-	S.title.Position, S.title.Size = UDim2.new(0, 3, 0, 0), UDim2.new(0, 0, 1, 0)
-	S.titleMask.AutomaticSize = Enum.AutomaticSize.X
-	S.titleMask.Size = UDim2.new(0, 0, 0, 12)
-	Instance.new("UIPadding", S.titleMask).PaddingRight = UDim.new(0, 3)
-	S.titleMask.ZIndex, S.title.ZIndex = 3, 4
-	S.card.AutomaticSize = Enum.AutomaticSize.None
-	S.card.Size, S.card.Position = UDim2.new(1, 0, 0, height), UDim2.new(0, 0, 0, 7)
+	S.head.ZIndex, S.accent.ZIndex = 2, 3
+	Library.fx.shade(S.head, 0.26)
+	Library.fx.shade(S.accent, 0.3)
+	Library.fx.shadow(S.card, { radius = 6, transparency = 0.45 })
+	S.card.Position, S.card.Size = UDim2.new(), UDim2.new(1, 0, 0, height)
 	S.content.AutomaticSize = Enum.AutomaticSize.None
-	S.content.Position, S.content.Size = UDim2.new(0, 8, 0, 14), UDim2.new(1, -16, 1, -22)
+	S.content.Position, S.content.Size = UDim2.new(0, 8, 0, 26), UDim2.new(1, -16, 1, -32)
 	for _, c in S.content:GetChildren() do if c:IsA("UIListLayout") then c:Destroy() end end
 	return S
 end
