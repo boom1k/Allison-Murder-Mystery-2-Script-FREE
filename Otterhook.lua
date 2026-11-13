@@ -4656,7 +4656,10 @@ function Library:EspPreview(Data)
 		t.BackgroundTransparency = 1
 		t.FontFace, t.TextSize = ARIAL, size or 12
 		t.TextColor3 = white
-		t.TextStrokeTransparency, t.TextStrokeColor3 = 0, black
+		t.TextStrokeTransparency = 1   -- outlined like the game ESP: a 1 px stroke
+		local st = Instance.new("UIStroke")
+		st.Name, st.Thickness, st.Color, st.LineJoinMode = "\0Outline", 1, black, Enum.LineJoinMode.Miter
+		st.Parent = t
 		t.Size = UDim2.fromOffset(160, size or 12)
 		t.ZIndex = 3
 		t.Parent = box
@@ -4724,7 +4727,8 @@ function Library:EspPreview(Data)
 	end
 
 	local function paint()
-		boxStroke.Enabled, outer.Enabled = state.Box, state.Box
+		local cornered = state.BoxStyle == "2D Cornered"
+		boxStroke.Enabled, outer.Enabled = state.Box and not cornered, state.Box and not cornered
 		boxStroke.Color, outer.Color = state.BoxColor, state.OutlineColor
 		fill.Visible = state.Box and state.Fill
 		fillGrad.Color = ColorSequence.new(state.FillColor1, state.FillColor2)
@@ -4737,18 +4741,19 @@ function Library:EspPreview(Data)
 		local side = state.Health and state.HealthPos or nil
 		local y = -2 - (side == "Top" and width + gap + 2 or 0)
 		weapT.Visible = state.Weapon
-		weapT.Text, weapT.TextSize, weapT.TextColor3 = tostring(state.WeaponText), state.FlagSize - 1, state.FlagColor
+		if state.Font then for _, t in { nameT, weapT, distT, hpT } do t.FontFace = state.Font end end
+		weapT.Text, weapT.TextSize, weapT.TextColor3 = tostring(state.WeaponText), state.FlagSize, state.FlagColor
 		weapT.Size = UDim2.fromOffset(160, state.FlagSize)
 		weapT.Position = UDim2.new(0.5, 0, 0, y)
 		if state.Weapon then y -= state.FlagSize + 1 end
 		nameT.Visible = state.Name
 		nameT.Text, nameT.TextSize, nameT.TextColor3 = tostring(state.NameText), state.NameSize, state.NameColor
 		nameT.Size = UDim2.fromOffset(160, state.NameSize)
-		nameT.TextStrokeTransparency = state.NameOutline and 0.2 or 1
-		nameT.TextStrokeColor3 = state.NameOutlineColor
+		local nst = nameT:FindFirstChild("\0Outline")
+		if nst then nst.Enabled, nst.Color = state.NameOutline ~= false, state.NameOutlineColor or black end
 		nameT.Position = UDim2.new(0.5, 0, 0, y)
 		distT.Visible = state.Distance
-		distT.Text, distT.TextSize, distT.TextColor3 = "[2m]", state.FlagSize - 1, white
+		distT.Text, distT.TextSize, distT.TextColor3 = "[2m]", state.FlagSize, white
 		distT.Position = UDim2.new(0.5, 0, 1, 2 + (side == "Bottom" and width + gap + 2 or 0))
 		-- the flags, right of the box (past a Right bar)
 		local fx0 = 3 + (side == "Right" and width + gap + 4 + (state.HealthText and 18 or 0) or 0)
@@ -4760,7 +4765,8 @@ function Library:EspPreview(Data)
 				flagRows[i] = r
 			end
 			r.Visible = true
-			r.Text, r.TextSize, r.TextColor3 = tostring(ln.text), state.FlagSize - 1, ln.col or state.FlagColor
+			r.Text, r.TextSize, r.TextColor3 = tostring(ln.text), state.FlagSize, ln.col or state.FlagColor
+			if state.Font then r.FontFace = state.Font end
 			r.Size = UDim2.fromOffset(120, state.FlagSize)
 			r.Position = UDim2.new(1, fx0, 0, 1 + (i - 1) * (state.FlagSize + 1))
 		end
@@ -4768,7 +4774,7 @@ function Library:EspPreview(Data)
 		hpBack.BackgroundColor3 = state.HealthOutlineColor
 		hpBack.BackgroundTransparency = state.HealthOutline == "None" and 1 or 0
 		hpBack.Visible = state.Health
-		hpT.TextSize = state.HealthTextSize - 1
+		hpT.TextSize = state.HealthTextSize
 		hpT.Size = UDim2.fromOffset(30, state.HealthTextSize)
 		ringStroke.Color, edgeStroke.Color = state.LineColor, state.OutlineColor
 		for i, l in bones do l.BackgroundColor3, boneEdges[i].BackgroundColor3 = state.LineColor, state.OutlineColor end
@@ -5009,20 +5015,68 @@ function Library:EspPreview(Data)
 		for _, l in chamLines do l.Color = lineCol end
 	end
 	-- the ESP box: around the body parts' corners as the camera sees them
+	-- Box Style "2D Cornered": 8 arms (1 px line over a 3 px outline) at the corners of the box
+	local cornerArms
+	local function placeCorners(w, h)
+		local on = state.Box and state.BoxStyle == "2D Cornered"
+		if not cornerArms then
+			if not on then return end
+			cornerArms = {}
+			for i = 1, 8 do
+				local o = Instance.new("Frame") o.Name, o.BorderSizePixel, o.ZIndex = "\0", 0, 2 o.Parent = box
+				local l = Instance.new("Frame") l.Name, l.BorderSizePixel, l.ZIndex = "\0", 0, 3 l.Parent = box
+				cornerArms[i] = { out = o, line = l }
+			end
+		end
+		local L = math.max(math.floor(math.min(w, h) * 0.25), 3)
+		local rects = { { 0, 0, L, 1 }, { 0, 0, 1, L }, { w - L, 0, L, 1 }, { w - 1, 0, 1, L },
+			{ 0, h - 1, L, 1 }, { 0, h - L, 1, L }, { w - L, h - 1, L, 1 }, { w - 1, h - L, 1, L } }
+		for i, a in cornerArms do
+			local r = rects[i]
+			a.out.Visible, a.line.Visible = on, on
+			a.line.Position, a.line.Size = UDim2.fromOffset(r[1], r[2]), UDim2.fromOffset(r[3], r[4])
+			a.out.Position, a.out.Size = UDim2.fromOffset(r[1] - 1, r[2] - 1), UDim2.fromOffset(r[3] + 2, r[4] + 2)
+			a.line.BackgroundColor3, a.out.BackgroundColor3 = state.BoxColor, state.OutlineColor
+		end
+	end
+	-- the box the game ESP draws (BloxStrike Otterhook): height = head top -> feet straight through the root, width = a root-space box
+	-- (X +-1.2, Z +-0.5) projected; Static = 0.55 x the height. Without a root: the bounds of the body parts.
 	local function fitBox()
+		local root = model and model:FindFirstChild("HumanoidRootPart")
 		local x0, y0, x1, y1 = math.huge, math.huge, -math.huge, -math.huge
-		for _, p in body do
-			local cf, h = p.CFrame, p.Size / 2
-			for i = 0, 7 do
-				local sp = project(cf * Vector3.new(i % 2 == 0 and -h.X or h.X, math.floor(i / 2) % 2 == 0 and -h.Y or h.Y, math.floor(i / 4) % 2 == 0 and -h.Z or h.Z))
-				if sp then
-					x0, y0, x1, y1 = math.min(x0, sp.X), math.min(y0, sp.Y), math.max(x1, sp.X), math.max(y1, sp.Y)
+		if root then
+			local rcf, head = root.CFrame, model:FindFirstChild("Head")
+			local top = head and (rcf:PointToObjectSpace(head.Position).Y + head.Size.Y * 0.5 + 0.1) or 2.4
+			for _, cy in { -3.1, top } do
+				for _, cx in { -1.2, 1.2 } do
+					for _, cz in { -0.5, 0.5 } do
+						local sp = project(rcf * Vector3.new(cx, cy, cz))
+						if sp then x0, x1 = math.min(x0, sp.X), math.max(x1, sp.X) end
+					end
+				end
+			end
+			local s1, s2 = project(rcf.Position + Vector3.new(0, top, 0)), project(rcf.Position - Vector3.new(0, 3.1, 0))
+			if s1 and s2 and s2.Y > s1.Y then
+				y0, y1 = s1.Y, s2.Y
+				if state.BoxStyle == "2D Static" then
+					local mid, half = project(rcf.Position), (s2.Y - s1.Y) * 0.55 / 2
+					if mid then x0, x1 = mid.X - half, mid.X + half end
+				end
+			end
+		else
+			for _, p in body do
+				local cf, h = p.CFrame, p.Size / 2
+				for i = 0, 7 do
+					local sp = project(cf * Vector3.new(i % 2 == 0 and -h.X or h.X, math.floor(i / 2) % 2 == 0 and -h.Y or h.Y, math.floor(i / 4) % 2 == 0 and -h.Z or h.Z))
+					if sp then x0, y0, x1, y1 = math.min(x0, sp.X), math.min(y0, sp.Y), math.max(x1, sp.X), math.max(y1, sp.Y) end
 				end
 			end
 		end
 		if x0 < x1 and y0 < y1 then
-			box.Position = UDim2.fromOffset(math.floor(x0) - 1, math.floor(y0) - 1)
-			box.Size = UDim2.fromOffset(math.ceil(x1 - x0) + 2, math.ceil(y1 - y0) + 2)
+			local w, h = math.max(math.floor(x1 - x0), 2), math.max(math.floor(y1 - y0), 2)
+			box.Position = UDim2.fromOffset(math.floor(x0), math.floor(y0))
+			box.Size = UDim2.fromOffset(w, h)
+			placeCorners(w, h)
 		end
 	end
 	buildModel()
