@@ -1280,7 +1280,7 @@ function Library:Window(Data)
 	root.AnchorPoint = Vector2.new(0.5, 0.5)
 	local nth = #self.Windows
 	root.Position = UDim2.new(0.5, nth * 28, 0.5, nth * 28)
-	if typeof(size) == "UDim2" then root.Size = size end
+	root.Size = typeof(size) == "UDim2" and size or UDim2.fromOffset(550, 570)   -- Otterhook: default 550 x 570
 	-- the two-tone title, left in the header: "Cadia.xyz" = the name in white, its extension (from the last dot) in the accent colour.
 	-- A name without a dot: the first word white, the rest in the accent.
 	local first, rest = tostring(name):match("^(.-)(%.[%w_]+)$")
@@ -1639,7 +1639,10 @@ function Library:Page(Data)
 				local sc = W.Root:FindFirstChildOfClass("UIScale")
 				if sc and sc.Scale > 0 then w = w / sc.Scale end
 				icon.Visible = (w - b) / 2 >= 24
-				icon.Position = UDim2.new(0.5, -(b / 2) - 21, 0.5, 0)
+				-- icon (14) + gap (7) + name are centred as one group: the name moves right by half the icon's share
+				local shift = icon.Visible and math.floor(21 / 2 + 0.5) or 0
+				g.T.label.Position = UDim2.fromOffset(shift, 0)
+				icon.Position = UDim2.new(0.5, -(b / 2) - 21 + shift, 0.5, 0)
 			end
 			g.T.label:GetPropertyChangedSignal("TextBounds"):Connect(place)
 			g.T.Root:GetPropertyChangedSignal("AbsoluteSize"):Connect(place)
