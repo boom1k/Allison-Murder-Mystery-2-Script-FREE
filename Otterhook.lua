@@ -5999,20 +5999,77 @@ do
 			return b
 		end
 
+		-- ---- type: Builder Sans (Roblox's built-in UI family, no file is written) in four weights; the menu's own font when it is missing ----
+		local function family(weight, fallback)
+			local ok, f = pcall(function() return Font.new("rbxasset://fonts/families/BuilderSans.json", weight) end)
+			return ok and f or fallback
+		end
+		local FT = {
+			heavy  = family(Enum.FontWeight.ExtraBold, Library.FontBold),   -- the page title, a tile's name
+			bold   = family(Enum.FontWeight.Bold, Library.FontBold),        -- pills, badges
+			medium = family(Enum.FontWeight.Medium, Library.Font),          -- the game
+			light  = family(Enum.FontWeight.Regular, Library.Font),         -- when it was saved, the summary line
+		}
+		local WHITE, BLACK, INK = Color3.new(1, 1, 1), Color3.new(0, 0, 0), Color3.fromRGB(14, 14, 18)
+		local SHADOW_IMG, SHADOW_SLICE = Build.IconAsset.fx_shadow, Rect.new(34, 34, 94, 94)
+
+		-- a soft rounded drop shadow (the lib's 9-slice blur) under a frame that does not clip: spread px around it, dy px lower
+		local function softShadow(parent, spread, dy, transparency, z)
+			local img = Instance.new("ImageLabel")
+			img.Name = "\0Shadow"
+			img.BackgroundTransparency, img.BorderSizePixel = 1, 0
+			img.Image = SHADOW_IMG or ""
+			img.ImageColor3 = BLACK
+			img.ScaleType = Enum.ScaleType.Slice
+			img.SliceCenter = SHADOW_SLICE
+			img.SliceScale = spread / 24
+			img.ImageTransparency = transparency
+			img.Position = UDim2.new(0, -spread, 0, -spread + dy)
+			img.Size = UDim2.new(1, spread * 2, 1, spread * 2)
+			img.ZIndex = z or 1
+			img.Parent = parent
+			return img
+		end
+		-- lit from above: the fill fades darker to the bottom, the edge is a thin bright line on top that fades out
+		local function lit(inst, depth, edge)
+			local g = Instance.new("UIGradient")
+			g.Rotation = 90
+			local d = math.floor(255 * (1 - (depth or 0.18)))
+			g.Color = ColorSequence.new(WHITE, Color3.fromRGB(d, d, d))
+			g.Parent = inst
+			if edge then
+				local s = Instance.new("UIStroke")
+				s.ApplyStrokeMode, s.Thickness, s.Color = Enum.ApplyStrokeMode.Border, 1, WHITE
+				local sg = Instance.new("UIGradient")
+				sg.Rotation = 90
+				sg.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, edge), NumberSequenceKeypoint.new(0.45, 0.92), NumberSequenceKeypoint.new(1, 1) })
+				sg.Parent = s
+				s.Parent = inst
+			end
+			return g
+		end
+
 		-- ---- header: a title, what is listed, a rounded name box + New (+ Import / Export) ----
 		local function pill(parent, text, pos, sz, bg, fg, r)
 			local b = Instance.new("TextButton")
 			b.Name = "\0"
 			b.AutoButtonColor = false
 			b.Text = text
-			b.FontFace = Library.FontBold
-			b.TextSize = 11
+			b.FontFace = FT.bold
+			b.TextSize = 12
 			b.BorderSizePixel = 0
 			b.Position, b.Size = pos, sz
 			b.ZIndex = 6
 			if type(bg) == "string" then b.BackgroundColor3 = Library.Theme[bg] Library:AddToTheme(b, { BackgroundColor3 = bg }) else b.BackgroundColor3 = bg end
 			if type(fg) == "string" then b.TextColor3 = Library.Theme[fg] Library:AddToTheme(b, { TextColor3 = fg }) else b.TextColor3 = fg end
 			round(b, r or 9)
+			lit(b, 0.16, 0.45)
+			-- pressed: sinks a little
+			local sc = Instance.new("UIScale")
+			sc.Parent = b
+			b.MouseButton1Down:Connect(function() fx.tween(sc, { Scale = 0.94 }, 0.07) end)
+			b.MouseButton1Up:Connect(function() fx.tween(sc, { Scale = 1 }, 0.25, Enum.EasingStyle.Back) end)
+			b.MouseLeave:Connect(function() fx.tween(sc, { Scale = 1 }, 0.2) end)
 			b.Parent = parent
 			return b
 		end
@@ -6022,8 +6079,10 @@ do
 		head.Size = UDim2.new(1, 0, 0, 74)
 		head.LayoutOrder = 1
 		head.Parent = col
-		local title = label(head, "Configs", "Bright Text", 17, true, UDim2.fromOffset(6, 4), UDim2.new(1, -130, 0, 20))
-		local sub = label(head, "", "Dim Text", 11, false, UDim2.fromOffset(6, 24), UDim2.new(1, -12, 0, 14))
+		local title = label(head, "Configs", "Bright Text", 20, true, UDim2.fromOffset(6, 2), UDim2.new(1, -130, 0, 22))
+		title.FontFace = FT.heavy
+		local sub = label(head, "", "Dim Text", 12, false, UDim2.fromOffset(6, 24), UDim2.new(1, -12, 0, 14))
+		sub.FontFace = FT.light
 		local box = Instance.new("TextBox")
 		box.Name = "\0"
 		box.BackgroundColor3 = Library.Theme["Section Background"]
@@ -6034,7 +6093,7 @@ do
 		box.PlaceholderColor3 = Library.Theme["Dim Text"]
 		box.Text = ""
 		box.TextColor3 = Library.Theme.Text
-		box.FontFace, box.TextSize = Library.Font, 12
+		box.FontFace, box.TextSize = FT.medium, 13
 		box.TextXAlignment = Enum.TextXAlignment.Left
 		box.Position, box.Size = UDim2.fromOffset(4, 44), UDim2.new(1, -8 - 64, 0, 26)
 		box.ZIndex = 3
@@ -6044,7 +6103,25 @@ do
 		round(box, 13)
 		stroke(box, "Border")
 		box.Parent = head
-		local newBtn = pill(head, "New", UDim2.new(1, -4 - 58, 0, 44), UDim2.fromOffset(58, 26), "Accent", Color3.fromRGB(12, 12, 16), 13)
+		-- the name box sits a little into the page (an inner shadow along its top edge)
+		local inset = Instance.new("Frame")
+		inset.Name = "\0"
+		inset.BackgroundColor3 = BLACK
+		inset.BorderSizePixel = 0
+		inset.Size = UDim2.new(1, 0, 1, 0)
+		inset.ZIndex = 3
+		round(inset, 13)
+		local ig = Instance.new("UIGradient")
+		ig.Rotation = 90
+		ig.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.55), NumberSequenceKeypoint.new(0.35, 1), NumberSequenceKeypoint.new(1, 1) })
+		ig.Parent = inset
+		inset.Parent = box
+		box.ZIndex = 4
+		local newBtn = pill(head, "New", UDim2.new(1, -4 - 58, 0, 44), UDim2.fromOffset(58, 26), "Accent", INK, 13)
+		newBtn.TextSize = 13
+		local newShadow = softShadow(head, 8, 3, 0.55, 5)
+		newShadow.Position = UDim2.new(1, -4 - 58 - 8, 0, 44 - 8 + 3)
+		newShadow.Size = UDim2.fromOffset(58 + 16, 26 + 16)
 		local extra = 0
 		local function addExtra(text, fn)
 			extra += 1
@@ -6065,7 +6142,7 @@ do
 		grid.LayoutOrder = 2
 		grid.Parent = col
 		local gpad = Instance.new("UIPadding")
-		gpad.PaddingLeft, gpad.PaddingRight, gpad.PaddingTop, gpad.PaddingBottom = UDim.new(0, 5), UDim.new(0, 5), UDim.new(0, 5), UDim.new(0, 8)
+		gpad.PaddingLeft, gpad.PaddingRight, gpad.PaddingTop, gpad.PaddingBottom = UDim.new(0, 8), UDim.new(0, 8), UDim.new(0, 6), UDim.new(0, 18)   -- room for the shadows
 		gpad.Parent = grid
 		local gl = Instance.new("UIGridLayout")
 		local PER, GAP = field(Data, "PerRow", "perrow") or 3, 10
@@ -6082,7 +6159,7 @@ do
 				if sc and sc.Scale > 0 then k *= sc.Scale end
 				a = a.Parent
 			end
-			local w = grid.AbsoluteSize.X / k - 10
+			local w = grid.AbsoluteSize.X / k - 16
 			if w < 60 then return end
 			local c = math.floor((w - GAP * (PER - 1)) / PER)
 			if gl.CellSize.X.Offset ~= c then gl.CellSize = UDim2.fromOffset(c, c) end
@@ -6094,7 +6171,6 @@ do
 		empty.LayoutOrder = 3
 
 		local cards, lastUsed = {}, nil
-		local WHITE, BLACK = Color3.new(1, 1, 1), Color3.new(0, 0, 0)
 
 		local function run(fn, ...)
 			if not fn then return false end
@@ -6105,26 +6181,41 @@ do
 
 		local function build(c)
 			local other = c.other
-			local cell = Instance.new("Frame")   -- the grid cell; the tile inside it is what grows
+			local cell = Instance.new("Frame")   -- the grid cell
 			cell.Name = "\0"
 			cell.BackgroundTransparency = 1
+			-- lift: carries the shadow and the scale, does not clip; the tile inside it clips its artwork to the rounded corners
+			local lift = Instance.new("Frame")
+			lift.Name = "\0"
+			lift.BackgroundTransparency = 1
+			lift.AnchorPoint, lift.Position, lift.Size = Vector2.new(0.5, 0.5), UDim2.fromScale(0.5, 0.5), UDim2.fromScale(1, 1)
+			lift.ZIndex = 2
+			lift.Parent = cell
+			local scale = Instance.new("UIScale")
+			scale.Parent = lift
+			-- two shadows: a wide soft one (ambient) and a short dark one right under the tile (contact)
+			local amb = softShadow(lift, 18, 8, 0.45, 1)
+			local contact = softShadow(lift, 6, 3, 0.35, 1)
 			local f = Instance.new("TextButton")
 			f.Name = "\0"
 			f.AutoButtonColor = false
 			f.Text = ""
 			f.BorderSizePixel = 0
-			f.AnchorPoint, f.Position, f.Size = Vector2.new(0.5, 0.5), UDim2.fromScale(0.5, 0.5), UDim2.fromScale(1, 1)
+			f.Size = UDim2.fromScale(1, 1)
 			f.ZIndex = 2
 			f.ClipsDescendants = true
 			round(f, 16)
-			f.Parent = cell
-			local scale = Instance.new("UIScale")
-			scale.Parent = f
-			local st = Instance.new("UIStroke")
-			st.Thickness, st.ApplyStrokeMode = 1, Enum.ApplyStrokeMode.Border
+			f.Parent = lift
 			local active = c.Name == lastUsed
-			st.Color = Library.Theme[active and "Accent" or "Border"]
-			Library:AddToTheme(st, { Color = active and "Accent" or "Border" })
+			-- edge: a glassy rim, bright along the top and fading down (accent all round on the config in use)
+			local st = Instance.new("UIStroke")
+			st.Thickness, st.ApplyStrokeMode = active and 2 or 1, Enum.ApplyStrokeMode.Border
+			st.Color = active and Library.Theme.Accent or WHITE
+			if active then Library:AddToTheme(st, { Color = "Accent" }) end
+			local stg = Instance.new("UIGradient")
+			stg.Rotation = 90
+			stg.Transparency = active and NumberSequence.new(0) or NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.55), NumberSequenceKeypoint.new(0.5, 0.88), NumberSequenceKeypoint.new(1, 0.82) })
+			stg.Parent = st
 			st.Parent = f
 
 			-- artwork: the icon of the game the config was made in; with no game on record, a colour of its own from the name
@@ -6150,7 +6241,7 @@ do
 			else
 				local mono = label(f, c.Name:sub(1, 1):upper(), "Bright Text", 44, true, UDim2.new(0, 0, 0, 14), UDim2.new(1, 0, 0.5, 0), Enum.TextXAlignment.Center)
 				Library:ChangeItemTheme(mono, {})
-				mono.RichText, mono.TextColor3, mono.TextTransparency = false, WHITE, other and 0.6 or 0.15
+				mono.RichText, mono.FontFace, mono.TextSize, mono.TextColor3, mono.TextTransparency = false, FT.heavy, 52, WHITE, other and 0.6 or 0.12
 			end
 			-- scrim: the lower part fades to black so the text reads on any artwork
 			local scrim = Instance.new("Frame")
@@ -6165,6 +6256,19 @@ do
 			sg.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.85), NumberSequenceKeypoint.new(0.35, 0.7), NumberSequenceKeypoint.new(0.7, 0.12), NumberSequenceKeypoint.new(1, 0.02) })
 			sg.Parent = scrim
 			scrim.Parent = f
+			-- sheen: a faint light on the upper part, as if the tile were glass lit from above
+			local sheen = Instance.new("Frame")
+			sheen.Name = "\0"
+			sheen.BackgroundColor3 = WHITE
+			sheen.BorderSizePixel = 0
+			sheen.Size = UDim2.fromScale(1, 1)
+			sheen.ZIndex = 3
+			round(sheen, 16)
+			local shg = Instance.new("UIGradient")
+			shg.Rotation = 90
+			shg.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.86), NumberSequenceKeypoint.new(0.4, 0.97), NumberSequenceKeypoint.new(0.55, 1), NumberSequenceKeypoint.new(1, 1) })
+			shg.Parent = sheen
+			sheen.Parent = f
 
 			-- the text block sits at the bottom and slides up when the actions show
 			local info = Instance.new("Frame")
@@ -6173,26 +6277,30 @@ do
 			info.AnchorPoint, info.Position, info.Size = Vector2.new(0, 1), UDim2.new(0, 0, 1, -8), UDim2.new(1, 0, 0, 48)
 			info.ZIndex = 4
 			info.Parent = f
-			local function text(t, size, bold, y, h, tr)
-				local l = label(info, t, "Bright Text", size, bold, UDim2.fromOffset(11, y), UDim2.new(1, -22, 0, h))
+			-- white text with a soft dark shadow 1 px below it (a second, blurred-looking copy), so it stands off the artwork
+			local function text(t, size, font, y, h, tr)
+				local sh = label(info, t, "Bright Text", size, false, UDim2.fromOffset(12, y + 1), UDim2.new(1, -22, 0, h))
+				Library:ChangeItemTheme(sh, {})
+				sh.RichText, sh.FontFace, sh.TextColor3, sh.TextTransparency, sh.ZIndex = false, font, BLACK, 0.45 + tr * 0.5, 4
+				local l = label(info, t, "Bright Text", size, false, UDim2.fromOffset(11, y), UDim2.new(1, -22, 0, h))
 				Library:ChangeItemTheme(l, {})
-				l.RichText, l.TextColor3, l.TextTransparency, l.ZIndex = false, WHITE, tr, 4
+				l.RichText, l.FontFace, l.TextColor3, l.TextTransparency, l.ZIndex = false, font, WHITE, tr, 5
 				return l
 			end
-			text(c.Name, 14, true, 0, 17, other and 0.3 or 0)
-			text(tostring(c.Game or (other and "unknown game" or game_.Game)), 11, false, 18, 14, 0.25)
-			text(ago(c.Updated) or "not dated", 10, false, 33, 13, 0.42)
+			text(c.Name, 17, FT.heavy, -3, 19, other and 0.3 or 0)
+			text(tostring(c.Game or (other and "unknown game" or game_.Game)), 12, FT.medium, 17, 14, 0.18)
+			text(ago(c.Updated) or "not dated", 11, FT.light, 32, 13, 0.4)
 
 			-- badges
 			if other then
 				local tag = pill(f, "OTHER GAME", UDim2.new(1, -8 - 72, 0, 8), UDim2.fromOffset(72, 16), "Risky", WHITE, 8)
-				tag.TextSize, tag.Active, tag.ZIndex = 9, false, 5
+				tag.TextSize, tag.Active, tag.ZIndex = 10, false, 5
 			end
 			local autoBtn
 			if auto then
 				local on = auto.Get and auto.Get() == c.Name
 				autoBtn = pill(f, "AUTO", UDim2.fromOffset(8, 8), UDim2.fromOffset(40, 16), on and "Accent" or BLACK, on and Color3.fromRGB(12, 12, 16) or WHITE, 8)
-				autoBtn.TextSize = 9
+				autoBtn.TextSize = 10
 				autoBtn.BackgroundTransparency = on and 0 or 0.45
 				autoBtn.Visible = on
 				autoBtn.MouseButton1Click:Connect(function()
@@ -6214,7 +6322,7 @@ do
 			local bs = pill(acts, "Save", UDim2.new(0.4, 0, 0, 0), UDim2.new(0.3, -3, 1, 0), WHITE, WHITE, 11)
 			local bd = pill(acts, "Delete", UDim2.new(0.7, 0, 0, 0), UDim2.new(0.3, 0, 1, 0), "Risky", WHITE, 11)
 			bs.BackgroundTransparency = 0.78
-			bd.TextSize = 10
+			bd.TextSize = 11
 			local function doLoad()
 				if run(loadFn, c.Name) then lastUsed = c.Name; note("Loaded " .. hl(c.Name)); card.Refresh()
 				else note("Could not load " .. hl(c.Name)) end
@@ -6244,17 +6352,21 @@ do
 
 			-- focus: the tile grows, its edge lights up, the text slides up and the actions appear
 			f.MouseEnter:Connect(function()
-				cell.ZIndex, f.ZIndex = 3, 3
-				fx.tween(scale, { Scale = 1.045 }, 0.16)
-				fx.tween(st, { Color = active and Library.Theme.Accent or WHITE, Transparency = active and 0 or 0.35 }, 0.16)
+				cell.ZIndex = 3
+				fx.tween(scale, { Scale = 1.05 }, 0.18)
+				fx.tween(amb, { ImageTransparency = 0.18, Position = UDim2.new(0, -18, 0, -18 + 14) }, 0.18)
+				fx.tween(contact, { ImageTransparency = 0.25 }, 0.18)
+				fx.tween(stg, { Offset = Vector2.new(0, -0.15) }, 0.18)
 				fx.tween(info, { Position = UDim2.new(0, 0, 1, -36) }, 0.16)
 				acts.Visible = true
 				if autoBtn then autoBtn.Visible = true end
 			end)
 			f.MouseLeave:Connect(function()
-				cell.ZIndex, f.ZIndex = 1, 2
-				fx.tween(scale, { Scale = 1 }, 0.2)
-				fx.tween(st, { Color = Library.Theme[active and "Accent" or "Border"], Transparency = 0 }, 0.2)
+				cell.ZIndex = 1
+				fx.tween(scale, { Scale = 1 }, 0.22)
+				fx.tween(amb, { ImageTransparency = 0.45, Position = UDim2.new(0, -18, 0, -18 + 8) }, 0.22)
+				fx.tween(contact, { ImageTransparency = 0.35 }, 0.22)
+				fx.tween(stg, { Offset = Vector2.new() }, 0.22)
 				fx.tween(info, { Position = UDim2.new(0, 0, 1, -8) }, 0.2)
 				acts.Visible = false
 				if autoBtn then autoBtn.Visible = auto.Get ~= nil and auto.Get() == c.Name end
