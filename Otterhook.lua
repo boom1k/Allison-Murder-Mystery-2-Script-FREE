@@ -890,7 +890,7 @@ Library.Themes = {
 		["Window Background"] = Color3.fromRGB(12, 12, 16), ["Section Background"] = Color3.fromRGB(15, 15, 19), ["Inline"] = Color3.fromRGB(24, 24, 31),
 		["Element"] = Color3.fromRGB(21, 21, 27), ["Border"] = Color3.fromRGB(30, 30, 38), ["Outline"] = Color3.fromRGB(5, 5, 8),
 		["Dark Liner"] = Color3.fromRGB(9, 9, 12), ["Text"] = Color3.fromRGB(215, 215, 222), ["Bright Text"] = Color3.fromRGB(255, 255, 255),
-		["Dim Text"] = Color3.fromRGB(110, 110, 122), ["Risky"] = Color3.fromRGB(235, 80, 80), ["Accent"] = Color3.fromRGB(120, 160, 252),
+		["Dim Text"] = Color3.fromRGB(110, 110, 122), ["Risky"] = Color3.fromRGB(235, 80, 80), ["Warn"] = Color3.fromRGB(235, 170, 70), ["Accent"] = Color3.fromRGB(120, 160, 252),
 		["Shadow"] = Color3.fromRGB(0, 0, 0), ["Highlight"] = Color3.fromRGB(46, 46, 58), ["Element Hover"] = Color3.fromRGB(29, 29, 37),
 		["Header"] = Color3.fromRGB(23, 23, 29),
 	},
@@ -943,7 +943,7 @@ do
 	Library.Themes["Light"] = {
 		["Window Background"] = rgb(232, 233, 237), ["Section Background"] = rgb(242, 243, 246), ["Inline"] = rgb(186, 189, 198), ["Element"] = rgb(220, 222, 228), ["Border"] = rgb(198, 201, 209),
 		["Outline"] = rgb(150, 154, 165), ["Dark Liner"] = rgb(226, 228, 233), ["Highlight"] = rgb(170, 174, 185), ["Element Hover"] = rgb(206, 209, 217), ["Shadow"] = rgb(90, 92, 100),
-		["Text"] = rgb(48, 50, 58), ["Bright Text"] = rgb(14, 15, 20), ["Dim Text"] = rgb(112, 116, 128), ["Risky"] = rgb(205, 50, 50), ["Accent"] = rgb(70, 110, 220), ["Header"] = rgb(214, 216, 223),
+		["Text"] = rgb(48, 50, 58), ["Bright Text"] = rgb(14, 15, 20), ["Dim Text"] = rgb(112, 116, 128), ["Risky"] = rgb(205, 50, 50), ["Warn"] = rgb(200, 130, 30), ["Accent"] = rgb(70, 110, 220), ["Header"] = rgb(214, 216, 223),
 	}
 	table.insert(Library.ThemeOrder, "Light")
 end
@@ -2289,6 +2289,26 @@ function Library.guardedClick(section, anchor, name, confirm, fn)
 	end
 end
 
+-- Library.markRisky(root, label, name, explicitRisky, confirm): colours a button that is a risky action (see above)
+function Library.markRisky(root, label, name, explicitRisky, confirm)
+	local msg, danger = Library.riskyMessage(name)
+	local kind
+	if explicitRisky then kind = "Risky"
+	elseif confirm == false then kind = nil
+	elseif confirm == true or type(confirm) == "string" then kind = "Warn"
+	elseif msg then kind = danger and "Risky" or "Warn" end
+	if not kind then return end
+	Library:ChangeItemTheme(label, { TextColor3 = kind })
+	label.TextColor3 = Library.Theme[kind]
+	local bar = Instance.new("Frame")
+	bar.Name = "RiskBar"
+	bar.BorderSizePixel = 0
+	bar.Size = UDim2.new(0, 2, 1, 0)
+	bar.ZIndex = root.ZIndex + 1
+	bar.Parent = root
+	Library:AddToTheme(bar, { BackgroundColor3 = kind })
+end
+
 function Library:Button(Data)
 	Data = Data or {}
 	local section = self
@@ -2298,7 +2318,7 @@ function Library:Button(Data)
 	Library.attachTooltip(B.Root, field(Data, "Tooltip", "tooltip"))
 	Library.regSearch(section, B.Root, B.label.Text)
 	local callback = field(Data, "Callback", "callback")
-	if field(Data, "Risky", "risky") then B.label.TextColor3 = Library.Theme.Risky end
+	Library.markRisky(B.Root, B.label, B.label.Text, field(Data, "Risky", "risky"), field(Data, "Confirm", "confirm"))
 	local btn = click(B.Root, Library.guardedClick(section, B.Root, B.label.Text, field(Data, "Confirm", "confirm"), callback))
 	Library.raiseButton(B.Root, btn)
 	local obj = { Items = { Button = Library.Wrap(B.Root) }, Section = section }
@@ -2312,6 +2332,7 @@ function Library:Button(Data)
 		sub.Root.Size = UDim2.new(0.5, -2, 0, 22)
 		sub.Root.Position = UDim2.new(0.5, 2, 0, 0)
 		sub.label.Text = tostring(field(d, "Name", "name") or "Button")
+		Library.markRisky(sub.Root, sub.label, sub.label.Text, field(d, "Risky", "risky"), field(d, "Confirm", "confirm"))
 		local cb = field(d, "Callback", "callback")
 		Library.raiseButton(sub.Root, click(sub.Root, Library.guardedClick(section, sub.Root, sub.label.Text, field(d, "Confirm", "confirm"), cb)))
 		return { SetVisibility = function(_, b) sub.Root.Visible = b end }
@@ -2337,7 +2358,7 @@ function Library:Buttons(List)
 		B.Root.Position = UDim2.new((i - 1) / n, GAP * (i - 1) / n, 0, 2)
 		B.label.Text = tostring(field(d, "Name", "name") or "Button")
 		Library.regSearch(section, row, B.label.Text)
-		if field(d, "Risky", "risky") then B.label.TextColor3 = Library.Theme.Risky end
+		Library.markRisky(B.Root, B.label, B.label.Text, field(d, "Risky", "risky"), field(d, "Confirm", "confirm"))
 		local btn = click(B.Root, Library.guardedClick(section, B.Root, B.label.Text, field(d, "Confirm", "confirm"), field(d, "Callback", "callback")))
 		Library.raiseButton(B.Root, btn)
 		out[i] = { Items = { Button = Library.Wrap(B.Root) }, SetVisibility = function(_, b) B.Root.Visible = b end }
