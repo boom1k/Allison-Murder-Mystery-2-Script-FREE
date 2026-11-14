@@ -11,8 +11,8 @@ Build.IconPng = {
 	["logo"] = { w = 17.5, h = 14, b64 = "iVBORw0KGgoAAAANSUhEUgAAAEgAAAA4CAYAAABez76GAAAEYElEQVR4nOybAXbiIBCG//j2HktP0niS2pO0nsR4kuJJyp7EhWZokQADhKTq83uPNhpI8GeYGYhu8CDJBg+SPARi+FNS+Xw+C/3PlJ6pqmzpuk7hhum4CiTKTpc31KF0Oeoy3KJYSYG0OO+oF8ZH6XLUIr3jhggKRFZzAD+ValC6bG/FmiYCLSyORaGhSLrPPcY+G6QuJ4z+T2ImIYE+kO+EU/TMeak/wBYN0H3+xBg8fBRGwfa1g9F5N9rhZyRCNzM3GpCBE/EOCHcedL13zCRjUBUqheroBgLpSFX9QZhrKxSInnGPF8QHw96vKFB0NH8/EnVMeH7FTJiIqHR5neszCoXK8oEdY57G0T2hARnOv6VPEuBzN4WMQeGWGns0gkbrlKjSo+G9aBql+i90OdAMimIEOoLBTA8TKWiaZBNoJxPVBzSmQCQRvYb5k/APT2Y09Pmz897WNUsnWsE3V78dRrP+DNyniZ+LobthpvYuUSXqSuwUk6GTJI6Ak/NYEYxpUv5hivFjH2Qtgs5P2iWcImvFM+FchSARJ7DbHfShzOgbh+bmTaFIYV6/Me2iGFFNLkZTc8f5h1yoLwNTrQ/dz82DQqb/FBt1b/q4JCNfpN2A+BRoEkkTn9FlEkk5CxKJc0PkfRlrQJl6iNj7X32ImX8JmRn0xIo2TmMVaJDq2B7TuS0ZZ/uCOnq0QWbUuejjhmksCkO7ioVMsoIedYicSuTDjP+yAWPnVVEZl+ndF517ccTnqMIYaSRd4BmJ7BvOlgPV41J/DjYNiCyZLvzXOX8D8DuV8VfzXL7wG7BOOjW4bgQtEGhvF7T+pv0//D4KP3mRzFzAttoWtjzbg6KnGitQu2DtsRAtnospXYx/kJhP7eJYoC3CHtRYkKL//qOcwdlmeKabCKovMq6LrsEecmtKBPp2XDFIrEmdXOcfybInTtobiB7tEfbAn2Iy0ag2yTPM2Ve6CO8Uzk3EMo65xzIoe7DKs3myrBqRBm9rpUd6e7gVyh5sYicCzF0TDSgXya+/hjgGZQ9KLah6C8LZcsgWyV1gJha6i3IhEHVIMm0Oheuzi+uTozd+RTHVpfe6Khn0BvRvZrOTPdikTkYQurzRgrDKoug52NdmGkarkoFqCm14oUWsQOYyqnOe0012+hZwhIr+H7sZT1ETG3StuVgYd5HOxJ51z2VbmwyuKNCra0ExJy2xDK0XlUsg3RcxgeYkdikErpvJt+CCAs1I7DgkrpjQplwqDxrQniOul6BBRAUiK0pucxagMMNBr4CKRdiOa3ml27CtiQ5ezlLDmJ7E/ZK07NxHzzlLg1tkz017dopZKFU3GbbAfZD1jZJsgQx3JNJFtpyiaLvD+cbGUonk0iiMPmfIbVBkQS7ntj9TWAOJ0XJUQZt6gQwNfuiyBgozvkE7SyDLlQql0OA72E0EclnhkUwMReXUNfxFUXOBXJyvwgj8RD6BdkjzZ8klzKIC3QOP36wyPARi+A8AAP//g9pqaAAAAAZJREFUAwBK7x5dIe5WPAAAAABJRU5ErkJggg==" },
 	["warn"] = { w = 14, h = 14, b64 = "iVBORw0KGgoAAAANSUhEUgAAADgAAAA4CAYAAACohjseAAAC9ElEQVR4nOyasW7bMBCGT0b2PkIVdOzWDl0VoM+QrvTWJ8ga+y2y1RnbZygQo3u7dbY6ZukruMfkrNr0UTqSd0Jk+AMI2UeR1uGnfpKSZ3DizODEOSc4dc4JarPdbmsYkdESxMQWWLb4ceM/w0hUMAKYUIOHhyA8r6pqBcaMleAGD3UQbrFcYZItGGI+RGk41kyVjzkwxlRBMpTNwGmXlipaK3grOMeBIWYKRozF08LxkDVT0VLBL0xsieWeiT9YzY8mCUaMpUWVFr7As4r7+HMdGKCeICnB3Xv3kc87bi1UtFDQMbGWlHsiomKsbRGqJtMzLfgJfR2c2wBvQqqGo60gZyyrMDkPxVbCPrJRS5CMpQnCfmjOe5p5V22DWIN9OVBCJUGhsRxBQ9HUcLQUdEzswFjwgm+w/KVys4tbTxvFJiMxFjznHR5+BvXvsf4X1Tvg771iw9FQkLuwdWAsb5hzuhjtC1fCvpMoSpCsvmGq5pCOieGUKsiuN3OGlZXhZCfYt96ETCwMJyvBnmlhCeWoqpirIJdcq/EQSXudmpwgGYtjqq5AD99XG8SyVMxRUM1YYvQYTvLGOClBC2OJoWU44gRz15uFFBtOioKOiZmot0PDcEQJ9qgnXbE8CmMg/A2xilIFxRtZDjzvBx7u9kJ3FJO0XUPBOnVwN0HGEqrnh+YlJIJ9vX760ar6k9iuhufHG3VQNR+ae2eCjtWMxSeWmhy1ayHTcIaGqGNi2caCF/PBF8ggd9qoei6mBuETMgnY31c8XNPXb9jHJ0gkZ2Pcp6BkIyu9sI/wPznPNcWSyNkYzyIX1IDeRtbzShiTkLQxjimovd78Dofz3iPFkkk1nKN7UHNaCPp9i4fP9NXPg7+hgMhr8WVogFXQyDfgjGVwvhmbiBCeA8O5CCpjb2TrMf/6UYjDsth96RQUvk+fCp2K+ybj4HToRuIFnCbdcjA0Gc6ZpoZfjHTPh7hpooYJE87Vqm94XyLn/4tOnXOCU+cfAAAA///aGZ/LAAAABklEQVQDAE5aXuQv3bm9AAAAAElFTkSuQmCC" },
 	["game"] = { w = 16, h = 16, b64 = "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAACzklEQVR4nOybC26jMBCG/1R7EOck9Z5k6UlWe5LQkyw5ybonYT2NEVVUwzzMwyGfNCIVBsJXj21s8oKD84KD8xSAg/MUgINjFtD3vUPFlKgBv/sb/2JcYjQxPCrhBCN043HjvtkVYnQxrvT5dDp12CElBPTMogE7FGISQNU9bi7QEVKQkG4rIVYBdPMNyhCwgRCrgFz+lyCkbRfjfSkhVgHc/C9FQGpHopAWBVALMOZ/KQKMDatFQMn8L0WAUIhFwJL5X4qAm5A/UUb4roBFwNr5b+GcE/ADClL+V0Pu5gmVgMgr6qGd2qkV4FEP16mdqjbgUfKfENeAR8p/QpMCD5P/hEaAh42u0Hk4XOcKiNsAa/7HKnlK53G4SXhNW4fynOdSQCSgwPi/jV/oLXNuh1FIgwIMsqeQzgk62PjI7aD/FD3hkaD0xc8xSFYHHS2nkFSAtQHsuAW/CPmJUYaE2fz/vA4ElMp/DYqnz9n8J9i9QIH+v4UNLynMuXlCOxTWwKqSEzhB2ZZbUCJgtfy/R1H72LIlAhoY4FbJDFL5HbcgS0CBpa4WNryksEQ2twY42FDnf6r+TnBIKyjLFrBZ/iv4kBTmCvAwsNf8J1gDE+MAKDv+X+La0sHW7FC4wACo+frugORAxbVbCOE8C5SYAHG4daOXJGMQ4hnHLcpsdVlhASQgsyocr/0XsvbnTbpmyBGwxQIoxTvkcw9naYM72QtsNAHqUnjI6DS9zVw3WNMEaICCOQEe9aAabU62AY+0AJIj2w2mScoWlaAdbXJHgg7jjO3weU+oR5vatUGHfQkR9/8DppekBnYg5LxoCkhJQig8xpWfxbDMNi8i4J6FhZieNleZFU7Vk6Kjv/vxFXsf4xdsQkyzzavUAA6GtUF1/hO7EXAPd/XYkv+fx6MSMj2NKf+JagTcM7QjxvnGegWU4vmrMRycpwAcnMML+A8AAP//FZhfWQAAAAZJREFUAwDmKzV9/esTvAAAAABJRU5ErkJggg==" },
-	["otter"] = { w = 22.5, h = 18, b64 = "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" },
 	["search"] = { w = 10, h = 10, b64 = "iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAC4klEQVR4nOxYPUwUQRR+S0wo1EQSC+8oLGzUixTQ63mcNthQ2SghGtTGSKUUdsZoiAVcrtBELTAW9tggMbGgw9iIWhi8xmiiFWhQm/N73JC8G3b+didhC77ky3s7O+/tx8zy5u31UMHRQwXHrsC8KLzAPZQB7Xb7MMwoWAUHwDLYC66BLXAZXEiS5AXlRBIyGcIqMFPgBc+Qn2ADQu9QRngLhLhbMPcpGz6B1yF0kQLhJRDinsBcSrnFD1wCV8ENsA/kVR5WVscERD6mmAIN4hrgDB72xRJXh+FVr2u3xhD3jGIITNnWr+B4yFYhB7+z97ThQeR45xOfWBLzFr2nbnFnkfgDBQK5rsI8FEOvkWfYJ9ZWB6e06/Es4hiIewQzLYZqEH3eKzZtUNW5lhjiUnGDcgJ5P8McUZdeq2hawVHteobioCn8mloIK0wCq8JftP23BkI/WU66AkwCB4S/RJGAP/QbzIoYOuGKMQksC3+V4kLuRsk12dQs9Ap/g+Lij+E5qTCt4Jrw+yguDgh/3TXZJLAl/ArFxTHDc1JhErgsfK+K7wOUlSGYfjH01hVjErgg/Io6+GNgTPh/qdMNWWE7i3/AHFSXXAvPUA4g33HqLjFPkfOyK852FjeEX1edTR7MatdNnyBXu/UR5qgYuqYO/iAgzxzMRTE0izyTPrEugfzuvdKGp5HcazXVtvLKyXeYS0sZOX755LB+dqrGdEIbvsldCTgJlgzChkAWtkLbO+r94Dzu7yMP+H6T8PbMGW6zCD6++ITgIsx1rj9l3roSt4U34DnXSoZ81Q3CPABPUzh4NW+D8+ApChAZ9F3MUJ3wFbDmmMp17jnY3Pr+UNuaJnIEc35TDIFCKDeb3M9xy8TvIh/8vI0t6pwQXDv/pcQFicwsMA9MIiGwqs/dEYEMiNwL85K6RZYg8ruct2O/bqntHKHO9jLu6uI251EBgNU8lCaOUQiBNuz+wpoXhRf4HwAA//+eLvLwAAAABklEQVQDAPF45wjNvs5dAAAAAElFTkSuQmCC" },
+	["otter"] = { w = 22.5, h = 18, b64 = "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" },
 	["tab_aim"] = { w = 96, h = 96, b64 = "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" },
 	["tab_legit"] = { w = 96, h = 96, b64 = "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" },
 	["tab_combat"] = { w = 96, h = 96, b64 = "iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAYAAADimHc4AAAJO0lEQVR4AeydAbaUOBBFYTYyuhJ1JepK/K5EXYnOSnRW0r7bJv/wW0heICFwDh5iaFJJqt6rKhLAmX+G609XBC4CusI/DBcBFwGdEeg8/RUBFwGdEeg8/RUBFwGdEeg8/Wkj4Ha7fVB5Uvmi8qEzjqunPx0BAvuVyndZ/EXlkwrgQ8JPXX+l36c6TkeA0AX4t6ofD8CHmMfrf/8+0JVTESAPx9vnwI+QEh2p9ih3mPpUBAi1Nyq54yIgh1Dj9n8bj191+LNFQFXjjzDYaQhQ/ucmS8nhdqr7wGEJAHAV1vnfVd+E+k8VJ78jQx+WpSxP2S9wTd2PdxyKAAGN9wJ6BJx1/lrwiBZWTSxbIyGMzfXDMHEIAgLwAIWXA3oLgACesSGDyFhLbFXduhIQgGfzBPB4a1XjFgaDCOaKRPB7QbT95W4ECPwnmQfwPT0xEoEuUmf/Y0cC/hgn4MnzAE86+HOx799EwCfpxU2b81212ZUAGYm3A/7uhhqoohNpaddo2I0AgY9h5HsDi24ikEA0oOsuSuxCgMBnhXOUlOMAuxsJzQkQ+Hg9NzvH8DmZX7r4OZSvqnPHDwl8VHFkJbZ4QAKOsyhQo6EpAQKfUCbvr9EV4D+O4/h6HMcnijnIL8l+VaHvqD6QASk6LT7YRWNDcUe3QzMCBD7Ar0k7gAXolEcv/t81LMqJCMh4p9+vVR7H06XsQSQ0I6EJAQF8Uk/WuokAHv9ZgL1T4XzS9HwKOc8/Fk7+m7vOmCpEA2Vp/LmuXHsfbOK8amlCgDQs9fwfAgePz3kawKVIYJykl2se2okIaqlqHayOmtwPqhMgTwFE0o9lmYRiitBp+hB4ELDkwbRxs04PotYwDrIUXbEONpDYZgm7QlUJEPh4Son3Az6AuvoOATw8mH54MSCSuoigVHS8mINxVACU/i/aEj9IRdiYEHnZlPtVlQBNVhKmpAtAVLeyQ8BNVzolK6S/JtJYJSQAfomNf833eKEaAfJ+0g7lcY6534CPF8+19bhGJLnR8zbYWkXPagRIm/cq1iGvOxL4Ma0RjdxHHBtK0mxyvJoEuLvdQ4Ef0ZFTAL57P+CGTDqK3VfXVQhQSLrgk3rcUF9t1NqOIsFNRYDv2pxUpwoBmsENSdfDNGS3g1TkTG6n3NRgmwkI3o9HpOah7dDej4IURQGpyIlS0pC76GDo2bKZgNlR5y+ewfuj5q6uhyDA+V6TlYbjVRGArrWiwNXVsj1lTI0IcLyAm1tKj6I2pT2+7+H1oU5vvMvlnA1V0TgZYYcEJ/Ump6lBgKPE7BPKpGYzjbfbjU0Q75S56UfimZ9zHhtDxtthpu+KS04a2nwfKCJAANxfUKjmwyaK+8j5zaTPquWb+gMy8wH4Ep60EQ3ILsksXtccz/ZJCJJVZQ+eD4FFLEX2WQRIMZjGeJ6DoBiTUFxDkY0FRfFUwMpaNxFg7snP5GmJ7LBg3xrbsLHIPosAmYpBrkISzx6AD6FZQQQEEIbRh59OwWGeHMEg082+LAHB+JrgB5sHQHLHXbPasPr0ti9LgNCyDJHcmsMlwJWb6uBGTFf7HAKKX4RPUcict/znRC4BXe1zCHDWwxmcF5vd5SmPBxYHWWhw9x5d7XMIwPgWSvJsyAXp2wLIqcsl5HazL0uAtuUQwBNC6pTBJW2M5Wx04pgARJ/4O1ffX1nmhGjvbV+WgImSvEiBCLx2WhDJlSgP6KteoGsC5lZlHSWyPKeC3Dn7nMlwjtX2WQSgBZ6icv+KQTWf/WEkgNI8DEOy+hb6rH6Brv4YytdtgLU0GW182IXskszsdY1/jxrV0TY3hd3lQ79i+2wC5rTWpBhMmWueXvs0/bH2PMyHp0J8BJn5OS+OrIwe1vI06JQZarl5EwFhWAAIp4uVuyRcHCA2YLAKnoan63TkeyDOS3a+cbhU7ew9SD2pMbJtNQhwQrVk15tVurVA2B07TuPYnlS3BgGEf3KS0FglDYWxWlfu+17X9kV9axBACnIU4Vm+E9aLyu7RIO9HR0p2unEcsT0rlxLYTEBQwt0onSEKXB1ZBaawtdo2ExBmcSIAUaKAR8ucH67I+9HN8n4p79os0eWjCgEhClyFeHXo3OCWtW7XwnsBZ3T2Q5vTDxNVIYCBVFibq8oegG+/jMmOVklA3l+ik5tys9pVI0BRQARQspNKgGWp620Sb3sE8O3UE2y9K7X1r2oEBEVKbkz3F+ChX3El0O79VfMOltxdPAYd6K/aBV+iQ4mNyCdLVQLkGeTFEgW5HxTtYAUY0UO6IIJYsQA+JBS/6NdYjEH/JEiTRh53YOPk0rbTqgQEVUhDlPAzW0FCCXiANuex9r1FwEcSS8DnYV2Rs2Qtl0B1AlZEgdQY7uAJmKSBagewOfCH8AdgU+18gsIYfNyVlAvjTauSyJ72S55XJ4DZNpBANKQ+rHKeUM4CK/IgJ6Yu1CwpPOwriWp77CYEMLtI4EmhuzSlSywACAmkJbw1XnfrFy/6BTybP4Bf4/XMSd5vAj6DNyOAwUUCKWUNCXQnLcWbK7VLBp7Ox7sU/uN/gA+pjFlaeG+NDaX9bPmmBAQt1kZC6D5ABOBz86UeMn8Am9URJSOabGa3y8ufpNDWxuYEKAri6mFtJGy1cU1/0k6Tm+6jMs0JiBOKCEJ5F6PinCtrbrjourJ7WbfdCEAtkUA6yr1YRzRd2rSywQL8ZjfcObV3JQAFRMLdUJ0fKSWRcni3vCv4wqDP/0kPElQIc6KhJxEADvDoAh67l90jYGqhSIg3aIggPU2bW54zF8CTcojIlnMlx+5KQNQsEMENGiKIiBagMCapRtONfEzF76hCt/oQBETrR73kViEdsP6mQAreGkVKagAmxUAono7HM3bJGM1lD0VAtFYkkJrYhbIZwltHtREdAKrT5EE/DTECOMDzEZfTLzloq8ZDEjBn7Kjo0HW8WlXycGSSA+zZeBoC9gRlz7nORkDLf060J+7Pc52NACeXb/5e8xmdHU4KCNhBm/wU5PcUCdyA166a8rM3kDgVAeFGzNIUIh7h4BpLzsfrh/59KgJAMpAw3SMAOhsslp2p6KD74crpCABBSFCJewTW+YfbYKGnU05JgGPYWWQuAjozdRFwEdAZgc7TXxFwEdAZgc7TXxGQIaB1828AAAD//3bKcc8AAAAGSURBVAMA0Dow7iE+Sz0AAAAASUVORK5CYII=" },
@@ -799,6 +799,126 @@ function Build.GameRow(parent)
 	local n3 = N("TextLabel", { Name = "name", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 35, 0, 8), Size = UDim2.new(1, -42, 0, 18), BackgroundTransparency = 1, Text = "BloxStrike", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(215, 215, 222) }, root)
 	P["name"] = n3
 	Th(n3, { TextColor3 = "Text" })
+	return P
+end
+
+function Build.SkinTile(parent)
+	local P = {}
+	local root = N("Frame", { Name = "SkinTile", BorderSizePixel = 0, Size = UDim2.new(0, 150, 0, 150), BackgroundColor3 = Color3.fromRGB(21, 21, 27), BackgroundTransparency = 0 }, parent)
+	P.Root = root
+	Th(root, { BackgroundColor3 = "Element" })
+	N("UICorner", { CornerRadius = UDim.new(0, 16) }, root)
+	local n1 = N("Frame", { Name = "art", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 10, 0, 12), Size = UDim2.new(1, -20, 0, 80), BackgroundTransparency = 1 }, root)
+	P["art"] = n1
+	local n2 = N("Frame", { Name = "scrim", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 0, 0, 0), Size = UDim2.new(1, 0, 1, 0), BackgroundColor3 = Color3.fromRGB(0, 0, 0), BackgroundTransparency = 0.7 }, root)
+	P["scrim"] = n2
+	N("UICorner", { CornerRadius = UDim.new(0, 16) }, n2)
+	local n3 = N("Frame", { Name = "info", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 1), Position = UDim2.new(0, 0, 1, -10), Size = UDim2.new(1, 0, 0, 46), BackgroundTransparency = 1 }, root)
+	P["info"] = n3
+	local n3_1 = N("TextLabel", { Name = "name", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 12, 0, 0), Size = UDim2.new(1, -24, 0, 18), BackgroundTransparency = 1, Text = "Asiimov", TextSize = 16, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.FontBold, TextColor3 = Color3.fromRGB(255, 255, 255) }, n3)
+	P["name"] = n3_1
+	Th(n3_1, { TextColor3 = "Bright Text" })
+	local n3_2 = N("TextLabel", { Name = "weapon", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 12, 0, 18), Size = UDim2.new(1, -24, 0, 14), BackgroundTransparency = 1, Text = "AK-47", TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(215, 215, 222) }, n3)
+	P["weapon"] = n3_2
+	Th(n3_2, { TextColor3 = "Text" })
+	local n3_3 = N("Frame", { Name = "dot", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 12, 0, 37), Size = UDim2.new(0, 6, 0, 6), BackgroundColor3 = Color3.fromRGB(235, 75, 75), BackgroundTransparency = 0 }, n3)
+	P["dot"] = n3_3
+	N("UICorner", { CornerRadius = UDim.new(0, 3) }, n3_3)
+	local n3_4 = N("TextLabel", { Name = "rarity", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 23, 0, 33), Size = UDim2.new(1, -35, 0, 13), BackgroundTransparency = 1, Text = "Covert", TextSize = 11, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.FontBold, TextColor3 = Color3.fromRGB(235, 75, 75) }, n3)
+	P["rarity"] = n3_4
+	local n4 = N("Frame", { Name = "bar", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 1), Position = UDim2.new(0, 0, 1, 0), Size = UDim2.new(1, 0, 0, 3), BackgroundColor3 = Color3.fromRGB(235, 75, 75), BackgroundTransparency = 0 }, root)
+	P["bar"] = n4
+	local n5 = N("Frame", { Name = "action", BorderSizePixel = 0, AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -8, 0, 8), Size = UDim2.new(0, 58, 0, 20), BackgroundColor3 = Color3.fromRGB(255, 255, 255), BackgroundTransparency = 0 }, root)
+	P["action"] = n5
+	Th(n5, { BackgroundColor3 = "Bright Text" })
+	N("UICorner", { CornerRadius = UDim.new(0, 10) }, n5)
+	local n5_1 = N("TextLabel", { Name = "actionText", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 0, 0, 0), Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1, Text = "Remove", TextSize = 12, TextXAlignment = Enum.TextXAlignment.Center, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.FontBold, TextColor3 = Color3.fromRGB(12, 12, 16) }, n5)
+	P["actionText"] = n5_1
+	Th(n5_1, { TextColor3 = "Window Background" })
+	return P
+end
+
+function Build.SkinAddTile(parent)
+	local P = {}
+	local root = N("Frame", { Name = "SkinAddTile", BorderSizePixel = 0, Size = UDim2.new(0, 150, 0, 150), BackgroundColor3 = Color3.fromRGB(15, 15, 19), BackgroundTransparency = 0 }, parent)
+	P.Root = root
+	Th(root, { BackgroundColor3 = "Section Background" })
+	N("UICorner", { CornerRadius = UDim.new(0, 16) }, root)
+	local rootS = N("UIStroke", { Color = Color3.fromRGB(30, 30, 38), Thickness = 1, ApplyStrokeMode = Enum.ApplyStrokeMode.Border }, root)
+	Th(rootS, { Color = "Border" })
+	local n1 = N("Frame", { Name = "ring", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 52, 0, 38), Size = UDim2.new(0, 48, 0, 48), BackgroundColor3 = Color3.fromRGB(21, 21, 27), BackgroundTransparency = 0 }, root)
+	P["ring"] = n1
+	Th(n1, { BackgroundColor3 = "Element" })
+	N("UICorner", { CornerRadius = UDim.new(0, 24) }, n1)
+	local n1S = N("UIStroke", { Color = Color3.fromRGB(30, 30, 38), Thickness = 1, ApplyStrokeMode = Enum.ApplyStrokeMode.Border }, n1)
+	Th(n1S, { Color = "Border" })
+	local n1_1 = N("Frame", { Name = "plusH", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 15, 0, 23), Size = UDim2.new(0, 18, 0, 2), BackgroundColor3 = Color3.fromRGB(120, 160, 252), BackgroundTransparency = 0 }, n1)
+	P["plusH"] = n1_1
+	Th(n1_1, { BackgroundColor3 = "Accent" })
+	N("UICorner", { CornerRadius = UDim.new(0, 1) }, n1_1)
+	local n1_2 = N("Frame", { Name = "plusV", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 23, 0, 15), Size = UDim2.new(0, 2, 0, 18), BackgroundColor3 = Color3.fromRGB(120, 160, 252), BackgroundTransparency = 0 }, n1)
+	P["plusV"] = n1_2
+	Th(n1_2, { BackgroundColor3 = "Accent" })
+	N("UICorner", { CornerRadius = UDim.new(0, 1) }, n1_2)
+	local n2 = N("TextLabel", { Name = "text", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 1, 0, 99), Size = UDim2.new(1, -2, 0, 16), BackgroundTransparency = 1, Text = "Add skin", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Center, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.FontBold, TextColor3 = Color3.fromRGB(255, 255, 255) }, root)
+	P["text"] = n2
+	Th(n2, { TextColor3 = "Bright Text" })
+	local n3 = N("TextLabel", { Name = "sub", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 1, 0, 116), Size = UDim2.new(1, -2, 0, 14), BackgroundTransparency = 1, Text = "pick a weapon", TextSize = 12, TextXAlignment = Enum.TextXAlignment.Center, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(110, 110, 122) }, root)
+	P["sub"] = n3
+	Th(n3, { TextColor3 = "Dim Text" })
+	return P
+end
+
+function Build.SkinPill(parent)
+	local P = {}
+	local root = N("Frame", { Name = "SkinPill", BorderSizePixel = 0, Size = UDim2.new(0, 64, 0, 24), BackgroundColor3 = Color3.fromRGB(15, 15, 19), BackgroundTransparency = 0 }, parent)
+	P.Root = root
+	Th(root, { BackgroundColor3 = "Section Background" })
+	N("UICorner", { CornerRadius = UDim.new(0, 12) }, root)
+	local rootS = N("UIStroke", { Color = Color3.fromRGB(30, 30, 38), Thickness = 1, ApplyStrokeMode = Enum.ApplyStrokeMode.Border }, root)
+	Th(rootS, { Color = "Border" })
+	local n1 = N("TextLabel", { Name = "text", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 1, 0, 0), Size = UDim2.new(1, -2, 1, 0), BackgroundTransparency = 1, Text = "Rifles", TextSize = 13, TextXAlignment = Enum.TextXAlignment.Center, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(215, 215, 222) }, root)
+	P["text"] = n1
+	Th(n1, { TextColor3 = "Text" })
+	return P
+end
+
+function Build.SkinHead(parent)
+	local P = {}
+	local root = N("Frame", { Name = "SkinHead", BorderSizePixel = 0, Size = UDim2.new(0, 500, 0, 46), BackgroundTransparency = 1 }, parent)
+	P.Root = root
+	local n1 = N("TextLabel", { Name = "title", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 6, 0, 2), Size = UDim2.new(1, -80, 0, 22), BackgroundTransparency = 1, Text = "Skins", TextSize = 21, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.FontBold, TextColor3 = Color3.fromRGB(255, 255, 255) }, root)
+	P["title"] = n1
+	Th(n1, { TextColor3 = "Bright Text" })
+	local n2 = N("TextLabel", { Name = "sub", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 6, 0, 26), Size = UDim2.new(1, -80, 0, 14), BackgroundTransparency = 1, Text = "3 active", TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(110, 110, 122) }, root)
+	P["sub"] = n2
+	Th(n2, { TextColor3 = "Dim Text" })
+	local n3 = N("Frame", { Name = "action", BorderSizePixel = 0, AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -6, 0, 8), Size = UDim2.new(0, 64, 0, 26), BackgroundColor3 = Color3.fromRGB(120, 160, 252), BackgroundTransparency = 0 }, root)
+	P["action"] = n3
+	Th(n3, { BackgroundColor3 = "Accent" })
+	N("UICorner", { CornerRadius = UDim.new(0, 13) }, n3)
+	local n3_1 = N("TextLabel", { Name = "actionText", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 0, 0, 0), Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1, Text = "Back", TextSize = 14, TextXAlignment = Enum.TextXAlignment.Center, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.FontBold, TextColor3 = Color3.fromRGB(12, 12, 16) }, n3)
+	P["actionText"] = n3_1
+	Th(n3_1, { TextColor3 = "Window Background" })
+	return P
+end
+
+function Build.SkinSearch(parent)
+	local P = {}
+	local root = N("Frame", { Name = "SkinSearch", BorderSizePixel = 0, Size = UDim2.new(0, 500, 0, 30), BackgroundTransparency = 1 }, parent)
+	P.Root = root
+	local n1 = N("Frame", { Name = "field", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 4, 0, 2), Size = UDim2.new(1, -8, 0, 26), BackgroundColor3 = Color3.fromRGB(15, 15, 19), BackgroundTransparency = 0 }, root)
+	P["field"] = n1
+	Th(n1, { BackgroundColor3 = "Section Background" })
+	N("UICorner", { CornerRadius = UDim.new(0, 13) }, n1)
+	local n1S = N("UIStroke", { Color = Color3.fromRGB(30, 30, 38), Thickness = 1, ApplyStrokeMode = Enum.ApplyStrokeMode.Border }, n1)
+	Th(n1S, { Color = "Border" })
+	local n1_1 = N("ImageLabel", { Name = "icon", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 11, 0, 8), Size = UDim2.new(0, 10, 0, 10), BackgroundTransparency = 1, Image = Build.IconAsset["search"] or "", ImageColor3 = Color3.fromRGB(110, 110, 122) }, n1)
+	P["icon"] = n1_1
+	Th(n1_1, { ImageColor3 = "Dim Text" })
+	local n1_2 = N("TextLabel", { Name = "text", BorderSizePixel = 0, AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, 29, 0, 5), Size = UDim2.new(1, -40, 0, 16), BackgroundTransparency = 1, Text = "search every skin", TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Center, FontFace = Build.Font, TextColor3 = Color3.fromRGB(110, 110, 122) }, n1)
+	P["text"] = n1_2
+	Th(n1_2, { TextColor3 = "Dim Text" })
 	return P
 end
 
@@ -6426,6 +6546,557 @@ do
 		end
 		card.Refresh()
 		return card
+	end
+end
+
+
+-- ===== runtime/skins.lua =====
+-- Otterhook runtime: Page:SkinCards - the skin changer as TV-app style tiles (the tiles come from the design sheet: Build.SkinTile /
+-- SkinAddTile / SkinPill / SkinHead / SkinSearch in build/override.jsx).
+-- The page shows ONLY the skins that are active, after one "+" tile. The "+" tile opens the picker on the same page: category pills, the
+-- weapons of that category, a search over every skin, and the skins as tiles (the game's own render, the name, the rarity). A click on a
+-- skin adds it (one skin per weapon; in an Exclusive category - knives, gloves - one per category) and goes back to the active skins.
+--   page:SkinCards({
+--     Flag = "Skins",                                  -- the choices as JSON { weapon = skin } in Library.Flags[Flag] (saved with configs)
+--     Catalog = { { Name = "Rifles", Exclusive = false, Weapons = { { Name = "AK-47", Skins = {
+--         { Skin = "Asiimov", Label = "Asiimov" (shown; default Skin), Image = "rbxassetid://..", RarityName = "Covert", Color = Color3 }, ... } }, ... } }, ... },
+--     Callback = function(weapon, skin) end,           -- skin = nil: removed
+--   }) -> { Select(weapon, skin), ResetAll(), SetCatalog(catalog), Refresh(), Selected }
+do
+	local WHITE, BLACK, INK = Color3.new(1, 1, 1), Color3.new(0, 0, 0), Color3.fromRGB(14, 14, 18)
+	local NO_RARITY = Color3.fromRGB(150, 150, 160)
+
+	function Library:SkinCards(Data)
+		Data = Data or {}
+		local page = self
+		local fx = Library.fx
+		local col = page.ColumnsData[1].Instance
+		local flag = field(Data, "Flag", "flag") or Library:NextFlag()
+		local callback = field(Data, "Callback", "callback") or function() end
+		local PER, GAP = field(Data, "PerRow", "perrow") or 3, 10
+		local sc = { Flag = flag, Page = page, Catalog = field(Data, "Catalog", "catalog") or {}, Selected = {}, Category = 1, Weapon = nil, Query = "", View = "home" }
+
+		local function family(weight, fallback)
+			local ok, f = pcall(function() return Font.new("rbxasset://fonts/families/BuilderSans.json", weight) end)
+			return ok and f or fallback
+		end
+		local FT = {
+			heavy = family(Enum.FontWeight.ExtraBold, Library.FontBold), bold = family(Enum.FontWeight.Bold, Library.FontBold),
+			medium = family(Enum.FontWeight.Medium, Library.Font), light = family(Enum.FontWeight.Regular, Library.Font),
+		}
+		local SHADOW_IMG, SHADOW_SLICE = Build.IconAsset.fx_shadow, Rect.new(34, 34, 94, 94)
+		local function softShadow(parent, spread, dy, transparency)
+			local img = Instance.new("ImageLabel")
+			img.Name = "\0Shadow"
+			img.BackgroundTransparency, img.BorderSizePixel = 1, 0
+			img.Image = SHADOW_IMG or ""
+			img.ImageColor3 = BLACK
+			img.ScaleType, img.SliceCenter, img.SliceScale = Enum.ScaleType.Slice, SHADOW_SLICE, spread / 24
+			img.ImageTransparency = transparency
+			img.Position = UDim2.new(0, -spread, 0, -spread + dy)
+			img.Size = UDim2.new(1, spread * 2, 1, spread * 2)
+			img.Parent = parent
+			return img
+		end
+		local function gradient(inst, rotation, transparency, color)
+			local g = Instance.new("UIGradient")
+			g.Rotation = rotation
+			if transparency then g.Transparency = transparency end
+			if color then g.Color = color end
+			g.Parent = inst
+			return g
+		end
+		local function seq(...)
+			local pts, args = {}, { ... }
+			for i = 1, #args, 2 do pts[#pts + 1] = NumberSequenceKeypoint.new(args[i], args[i + 1]) end
+			return NumberSequence.new(pts)
+		end
+		-- a pressable layer over a part: returns the button (hover / click are connected by the caller)
+		local function hit(inst)
+			local b = Instance.new("TextButton")
+			b.Name = "\0"
+			b.BackgroundTransparency, b.Text, b.AutoButtonColor = 1, "", false
+			b.Size = UDim2.fromScale(1, 1)
+			b.ZIndex = 20
+			b.Parent = inst
+			return b
+		end
+		local function press(inst, button)   -- a pressed pill sinks a little
+			local s = Instance.new("UIScale")
+			s.Parent = inst
+			button.MouseButton1Down:Connect(function() fx.tween(s, { Scale = 0.94 }, 0.07) end)
+			button.MouseButton1Up:Connect(function() fx.tween(s, { Scale = 1 }, 0.25, Enum.EasingStyle.Back) end)
+			button.MouseLeave:Connect(function() fx.tween(s, { Scale = 1 }, 0.2) end)
+		end
+		local function holder(order)   -- a full-width block of the page that takes the height of what is in it
+			local f = Instance.new("Frame")
+			f.Name = "\0"
+			f.BackgroundTransparency = 1
+			f.Size = UDim2.new(1, 0, 0, 0)
+			f.AutomaticSize = Enum.AutomaticSize.Y
+			f.LayoutOrder = order
+			return f
+		end
+		local function list(parent, pad)
+			local l = Instance.new("UIListLayout")
+			l.SortOrder = Enum.SortOrder.LayoutOrder
+			l.Padding = UDim.new(0, pad or 0)
+			l.Parent = parent
+			return l
+		end
+
+		-- ---- data ----
+		local index = {}   -- weapon -> { cat = category index, weapon = entry, skins = { skin name -> entry } }
+		local function reindex()
+			index = {}
+			for ci, cat in ipairs(sc.Catalog) do
+				for _, w in ipairs(cat.Weapons or {}) do
+					local skins = {}
+					for _, s in ipairs(w.Skins or {}) do skins[s.Skin] = s end
+					index[w.Name] = { cat = ci, weapon = w, skins = skins }
+				end
+			end
+		end
+		reindex()
+		local function save()
+			local ok, json = pcall(function() return HttpService:JSONEncode(sc.Selected) end)
+			Library.Flags[flag] = (ok and next(sc.Selected) ~= nil) and json or "{}"   -- an empty selection is "{}" (not "[]")
+		end
+		save()
+		local function fire(weapon, skin)
+			task.spawn(function()
+				local ok, err = pcall(callback, weapon, skin)
+				if not ok then warn("[SkinCards] callback: " .. tostring(err)) end
+			end)
+		end
+		local function hl(name) return ('<font color="#%s">%s</font>'):format(Library.Theme.Accent:ToHex(), (tostring(name):gsub("<", "&lt;"))) end
+
+		-- ---- the two views ----
+		local home, picker = holder(1), holder(2)
+		home.Parent, picker.Parent = col, col
+		picker.Visible = false
+		list(home, 4)
+		list(picker, 6)
+
+		local function head(parent, order, title, sub, action)
+			local H = Build.SkinHead(parent)
+			H.Root.LayoutOrder = order
+			H.Root.Size = UDim2.new(1, 0, 0, H.Root.Size.Y.Offset)
+			H.title.FontFace, H.sub.FontFace, H.actionText.FontFace = FT.heavy, FT.light, FT.bold
+			H.title.Text, H.sub.Text, H.actionText.Text = title, sub, action
+			H.sub.RichText = true
+			H.title.TextTruncate, H.sub.TextTruncate = Enum.TextTruncate.AtEnd, Enum.TextTruncate.AtEnd
+			gradient(H.action, 90, nil, ColorSequence.new(WHITE, Color3.fromRGB(214, 214, 214)))
+			H.button = hit(H.action)
+			press(H.action, H.button)
+			return H
+		end
+		local function grid(parent, order)
+			local g = holder(order)
+			local pad = Instance.new("UIPadding")
+			pad.PaddingLeft, pad.PaddingRight, pad.PaddingTop, pad.PaddingBottom = UDim.new(0, 8), UDim.new(0, 8), UDim.new(0, 8), UDim.new(0, 20)   -- room for the shadows
+			pad.Parent = g
+			local gl = Instance.new("UIGridLayout")
+			gl.CellPadding = UDim2.fromOffset(GAP, GAP)
+			gl.CellSize = UDim2.fromOffset(150, 150)
+			gl.SortOrder = Enum.SortOrder.LayoutOrder
+			gl.Parent = g
+			local function fit()   -- square cells, PER in a row (AbsoluteSize is in screen pixels: the window's DPI scale is taken out)
+				local k = 1
+				local top = g:FindFirstAncestorWhichIsA("LayerCollector")
+				local a = g.Parent
+				while a and a ~= top do
+					local s = a:FindFirstChildOfClass("UIScale")
+					if s and s.Scale > 0 then k *= s.Scale end
+					a = a.Parent
+				end
+				local w = g.AbsoluteSize.X / k - 16
+				if w < 60 then return end
+				local c = math.floor((w - GAP * (PER - 1)) / PER)
+				if gl.CellSize.X.Offset ~= c then gl.CellSize = UDim2.fromOffset(c, c) end
+			end
+			g:GetPropertyChangedSignal("AbsoluteSize"):Connect(fit)
+			task.defer(fit)
+			g.Parent = parent
+			return g
+		end
+		local function clear(g)
+			for _, c in ipairs(g:GetChildren()) do
+				if c:IsA("GuiObject") then c:Destroy() end
+			end
+		end
+		-- a grid cell that lifts on hover: the cell keeps its place, the lift inside it carries the shadows and the scale
+		local function liftCell(parent, order)
+			local cell = Instance.new("Frame")
+			cell.Name = "\0"
+			cell.BackgroundTransparency = 1
+			cell.LayoutOrder = order
+			local lift = Instance.new("Frame")
+			lift.Name = "\0"
+			lift.BackgroundTransparency = 1
+			lift.AnchorPoint, lift.Position, lift.Size = Vector2.new(0.5, 0.5), UDim2.fromScale(0.5, 0.5), UDim2.fromScale(1, 1)
+			lift.Parent = cell
+			local scale = Instance.new("UIScale")
+			scale.Parent = lift
+			local amb = softShadow(lift, 18, 8, 0.5)
+			local contact = softShadow(lift, 6, 3, 0.4)
+			cell.Parent = parent
+			return cell, lift, scale, amb, contact
+		end
+		local function hover(cell, button, scale, amb, contact, onIn, onOut)
+			button.MouseEnter:Connect(function()
+				cell.ZIndex = 3
+				fx.tween(scale, { Scale = 1.05 }, 0.18)
+				fx.tween(amb, { ImageTransparency = 0.2, Position = UDim2.new(0, -18, 0, -18 + 14) }, 0.18)
+				fx.tween(contact, { ImageTransparency = 0.28 }, 0.18)
+				if onIn then onIn() end
+			end)
+			button.MouseLeave:Connect(function()
+				cell.ZIndex = 1
+				fx.tween(scale, { Scale = 1 }, 0.22)
+				fx.tween(amb, { ImageTransparency = 0.5, Position = UDim2.new(0, -18, 0, -18 + 8) }, 0.22)
+				fx.tween(contact, { ImageTransparency = 0.4 }, 0.22)
+				if onOut then onOut() end
+			end)
+		end
+
+		-- one skin as a tile: the render on a dark field in the rarity's colour, name / weapon / rarity at the bottom
+		local function tile(parent, order, weapon, s, opts)
+			local color = typeof(s.Color) == "Color3" and s.Color or NO_RARITY
+			local cell, lift, scale, amb, contact = liftCell(parent, order)
+			local P = Build.SkinTile(lift)
+			local f = P.Root
+			f.Size = UDim2.fromScale(1, 1)
+			f.ClipsDescendants = true
+			Library:ChangeItemTheme(f, {})
+			f.BackgroundColor3 = WHITE
+			gradient(f, 60, nil, ColorSequence.new(color:Lerp(BLACK, 0.5), color:Lerp(INK, 0.9)))
+			-- the render
+			local art = Instance.new("ImageLabel")
+			art.Name = "\0"
+			art.BackgroundTransparency = 1
+			art.Size = UDim2.fromScale(1, 1)
+			art.ScaleType = Enum.ScaleType.Fit
+			art.Image = tostring(s.Image or "")
+			art.Parent = P.art
+			-- scrim: the lower part fades to black so the text reads on any render; sheen: a faint light on the upper part
+			P.scrim.BackgroundColor3, P.scrim.BackgroundTransparency = BLACK, 0
+			gradient(P.scrim, 90, seq(0, 1, 0.45, 0.85, 0.75, 0.25, 1, 0.05))
+			local sheen = Instance.new("Frame")
+			sheen.Name = "\0"
+			sheen.BackgroundColor3, sheen.BorderSizePixel = WHITE, 0
+			sheen.Size = UDim2.fromScale(1, 1)
+			Instance.new("UICorner", sheen).CornerRadius = UDim.new(0, 16)
+			gradient(sheen, 90, seq(0, 0.88, 0.4, 0.97, 0.55, 1, 1, 1))
+			sheen.Parent = P.scrim
+			-- the rim: glass, bright along the top; the accent all round on the skin that is active (in the picker)
+			local st = Instance.new("UIStroke")
+			st.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+			st.Thickness = opts.active and 2 or 1
+			st.Color = opts.active and Library.Theme.Accent or WHITE
+			if opts.active then Library:AddToTheme(st, { Color = "Accent" }) end
+			local stg = gradient(st, 90, opts.active and NumberSequence.new(0) or seq(0, 0.55, 0.5, 0.88, 1, 0.82))
+			st.Parent = f
+			-- text
+			for _, l in { P.name, P.weapon, P.rarity, P.actionText } do Library:ChangeItemTheme(l, {}) l.TextTruncate = Enum.TextTruncate.AtEnd end
+			P.name.FontFace, P.weapon.FontFace, P.rarity.FontFace, P.actionText.FontFace = FT.heavy, FT.medium, FT.bold, FT.bold
+			P.name.Text, P.weapon.Text = tostring(s.Label or s.Skin), tostring(weapon)
+			P.name.TextColor3, P.weapon.TextColor3, P.weapon.TextTransparency = WHITE, WHITE, 0.2
+			P.rarity.Text = tostring(s.RarityName or s.Rarity or "")
+			local bright = color:Lerp(WHITE, 0.25)
+			P.rarity.TextColor3, P.dot.BackgroundColor3 = bright, bright
+			P.bar.Visible = false   -- (a full-width line cannot follow the rounded corners: the dot, the text and the field carry the rarity colour)
+			-- the action pill (top right, shown while hovered)
+			Library:ChangeItemTheme(P.action, {})
+			P.action.BackgroundColor3 = opts.danger and Library.Theme.Risky or WHITE
+			if opts.danger then Library:AddToTheme(P.action, { BackgroundColor3 = "Risky" }) end
+			P.actionText.TextColor3 = opts.danger and WHITE or INK
+			P.actionText.Text = opts.action or ""
+			P.action.Visible = false
+			local tag
+			if opts.active then   -- ACTIVE badge (top left)
+				tag = Instance.new("TextLabel")
+				tag.Name = "\0"
+				tag.BorderSizePixel = 0
+				tag.BackgroundColor3 = Library.Theme.Accent
+				Library:AddToTheme(tag, { BackgroundColor3 = "Accent" })
+				tag.Text, tag.FontFace, tag.TextSize, tag.TextColor3 = "ACTIVE", FT.bold, 10, INK
+				tag.Position, tag.Size = UDim2.fromOffset(8, 8), UDim2.fromOffset(50, 16)
+				Instance.new("UICorner", tag).CornerRadius = UDim.new(0, 8)
+				tag.Parent = f
+			end
+			local b = hit(f)
+			hover(cell, b, scale, amb, contact, function()
+				fx.tween(stg, { Offset = Vector2.new(0, -0.15) }, 0.18)
+				P.action.Visible = opts.action ~= nil
+			end, function()
+				fx.tween(stg, { Offset = Vector2.new() }, 0.22)
+				P.action.Visible = false
+			end)
+			b.MouseButton1Click:Connect(function() if opts.click then opts.click(cell) end end)
+			return cell
+		end
+
+		-- ---- home: the "+" tile, then the active skins ----
+		local homeHead = head(home, 1, field(Data, "Title", "title") or "Skins", "", "Clear")
+		local homeGrid = grid(home, 2)
+		local showHome, showPicker   -- defined below
+
+		local function activeList()
+			local out = {}
+			for weapon, skin in pairs(sc.Selected) do
+				local e = index[weapon]
+				out[#out + 1] = { weapon = weapon, skin = skin, cat = e and e.cat or 99, data = (e and e.skins[skin]) or { Skin = skin } }
+			end
+			table.sort(out, function(a, b) if a.cat ~= b.cat then return a.cat < b.cat end return a.weapon < b.weapon end)
+			return out
+		end
+		local function renderHome()
+			clear(homeGrid)
+			local active = activeList()
+			homeHead.sub.Text = #active == 0 and "No skins yet. Press + to add one." or (#active .. (#active == 1 and " active skin" or " active skins") .. " - hover a card to remove it")
+			homeHead.action.Visible = #active > 0
+			-- the "+" tile
+			local cell, lift, scale, amb, contact = liftCell(homeGrid, 0)
+			local A = Build.SkinAddTile(lift)
+			A.Root.Size = UDim2.fromScale(1, 1)
+			A.text.FontFace, A.sub.FontFace = FT.bold, FT.light
+			A.sub.Text = "choose from every skin"
+			-- the ring and the two lines stay centred when the cell is not the design's 150 px
+			A.ring.AnchorPoint, A.ring.Position = Vector2.new(0.5, 0.5), UDim2.new(0.5, 0, 0.5, -14)
+			A.text.AnchorPoint, A.text.Position, A.text.Size = Vector2.new(0, 0.5), UDim2.new(0, 0, 0.5, 31), UDim2.new(1, 0, 0, 16)
+			A.sub.AnchorPoint, A.sub.Position, A.sub.Size = Vector2.new(0, 0.5), UDim2.new(0, 0, 0.5, 48), UDim2.new(1, 0, 0, 14)
+			local ringScale = Instance.new("UIScale")
+			ringScale.Parent = A.ring
+			local b = hit(A.Root)
+			hover(cell, b, scale, amb, contact, function()
+				fx.tween(ringScale, { Scale = 1.12 }, 0.18)
+				fx.tween(A.ring, { BackgroundColor3 = Library.Theme["Element Hover"] }, 0.15)
+			end, function()
+				fx.tween(ringScale, { Scale = 1 }, 0.2)
+				fx.tween(A.ring, { BackgroundColor3 = Library.Theme.Element }, 0.2)
+			end)
+			b.MouseButton1Click:Connect(function() showPicker() end)
+			for i, a in ipairs(active) do
+				tile(homeGrid, i, a.weapon, a.data, { action = "Remove", danger = true, click = function() sc:Select(a.weapon, nil) end })
+			end
+		end
+		homeHead.button.MouseButton1Click:Connect(function()
+			Library:Confirm({ Title = "Remove every skin?", Text = "All active skins are taken off. Your own skins come back.", Yes = "remove", Danger = true, Anchor = homeHead.action }, function()
+				sc:ResetAll()
+			end)
+		end)
+
+		-- ---- picker: categories, weapons, search, skins ----
+		local pickHead = head(picker, 1, "Add skin", "", "Back")
+		local function pillRow(order)
+			local r = holder(order)
+			local pad = Instance.new("UIPadding")
+			pad.PaddingLeft, pad.PaddingRight = UDim.new(0, 6), UDim.new(0, 6)
+			pad.Parent = r
+			local l = list(r, 6)
+			l.FillDirection = Enum.FillDirection.Horizontal
+			l.Wraps = true   -- (rows are spaced by the pills' own cells: 24 px pill in a 30 px cell)
+			r.Parent = picker
+			return r
+		end
+		local catRow, weaponRow = pillRow(2), pillRow(3)
+		local S = Build.SkinSearch(picker)
+		S.Root.LayoutOrder = 4
+		S.Root.Size = UDim2.new(1, 0, 0, S.Root.Size.Y.Offset)
+		S.text.Visible = false
+		local box = Instance.new("TextBox")
+		box.Name = "\0"
+		box.BackgroundTransparency = 1
+		box.ClearTextOnFocus = false
+		box.Text, box.PlaceholderText = "", S.text.Text
+		box.FontFace, box.TextSize = FT.medium, 13
+		box.TextXAlignment = Enum.TextXAlignment.Left
+		box.TextColor3, box.PlaceholderColor3 = Library.Theme.Text, Library.Theme["Dim Text"]
+		Library:AddToTheme(box, { TextColor3 = "Text", PlaceholderColor3 = "Dim Text" })
+		box.Position, box.Size = UDim2.new(0, 28, 0, 0), UDim2.new(1, -40, 1, 0)
+		box.Parent = S.field
+		local pickGrid = grid(picker, 5)
+		local emptyNote = Instance.new("TextLabel")
+		emptyNote.Name = "\0"
+		emptyNote.BackgroundTransparency = 1
+		emptyNote.Size = UDim2.new(1, 0, 0, 60)
+		emptyNote.FontFace, emptyNote.TextSize = FT.light, 12
+		emptyNote.TextColor3 = Library.Theme["Dim Text"]
+		Library:AddToTheme(emptyNote, { TextColor3 = "Dim Text" })
+		emptyNote.TextWrapped = true
+		emptyNote.LayoutOrder = 6
+		emptyNote.Visible = false
+		emptyNote.Parent = picker
+
+		local MAX_RESULTS = 60
+		local renderPicker
+		local function pill(parent, order, text, on, fn)
+			local cell = Instance.new("Frame")
+			cell.Name = "\0"
+			cell.BackgroundTransparency = 1
+			cell.LayoutOrder = order
+			local P = Build.SkinPill(cell)
+			P.Root.Size = UDim2.fromOffset(math.max(44, #text * 7 + 24), P.Root.Size.Y.Offset)
+			cell.Size = UDim2.fromOffset(P.Root.Size.X.Offset, P.Root.Size.Y.Offset + 6)
+			cell.Parent = parent
+			P.text.Text = text
+			P.text.FontFace = on and FT.bold or FT.medium
+			if on then
+				Library:AddToTheme(P.Root, { BackgroundColor3 = "Accent" })
+				Library:AddToTheme(P.text, { TextColor3 = "Window Background" })
+				gradient(P.Root, 90, nil, ColorSequence.new(WHITE, Color3.fromRGB(214, 214, 214)))
+			end
+			local b = hit(P.Root)
+			if not on then
+				b.MouseEnter:Connect(function() fx.tween(P.Root, { BackgroundColor3 = Library.Theme["Element Hover"] }, 0.1) end)
+				b.MouseLeave:Connect(function() fx.tween(P.Root, { BackgroundColor3 = Library.Theme["Section Background"] }, 0.15) end)
+			end
+			b.MouseButton1Click:Connect(fn)
+			return P
+		end
+		local function choose(weapon, s)
+			sc:Select(weapon, s.Skin)
+			Library:Notification(hl(s.Label or s.Skin) .. " on " .. tostring(weapon), 3)
+			showHome()
+		end
+		function renderPicker()
+			clear(catRow) clear(weaponRow) clear(pickGrid)
+			local cat = sc.Catalog[sc.Category] or sc.Catalog[1]
+			if not cat then
+				pickHead.sub.Text = "The game's skin list is not loaded yet."
+				emptyNote.Text, emptyNote.Visible = "No skins to show yet. They appear here as soon as the game has loaded them.", true
+				weaponRow.Visible, catRow.Visible = false, false
+				return
+			end
+			catRow.Visible = true
+			local query = sc.Query:lower():gsub("^%s+", ""):gsub("%s+$", "")
+			local searching = #query > 0
+			for i, c in ipairs(sc.Catalog) do
+				pill(catRow, i, tostring(c.Name), (not searching) and c == cat, function()
+					sc.Category, sc.Weapon, sc.Query = i, nil, ""
+					box.Text = ""
+					renderPicker()
+				end)
+			end
+			local n = 0
+			if searching then
+				weaponRow.Visible = false
+				for _, c in ipairs(sc.Catalog) do
+					for _, w in ipairs(c.Weapons or {}) do
+						for _, s in ipairs(w.Skins or {}) do
+							if n >= MAX_RESULTS then break end
+							if (tostring(s.Label or s.Skin) .. " " .. tostring(w.Name)):lower():find(query, 1, true) then
+								n += 1
+								local on = sc.Selected[w.Name] == s.Skin
+								tile(pickGrid, n, w.Name, s, { active = on, action = on and "Remove" or "Add", danger = on,
+									click = function() if on then sc:Select(w.Name, nil) renderPicker() else choose(w.Name, s) end end })
+							end
+						end
+					end
+				end
+				pickHead.sub.Text = n == 0 and "nothing found" or (n >= MAX_RESULTS and ("first " .. MAX_RESULTS .. " results") or (n .. (n == 1 and " result" or " results")))
+			else
+				weaponRow.Visible = true
+				local weapons = cat.Weapons or {}
+				local weapon
+				for _, w in ipairs(weapons) do if w.Name == sc.Weapon then weapon = w end end
+				weapon = weapon or weapons[1]
+				sc.Weapon = weapon and weapon.Name or nil
+				for i, w in ipairs(weapons) do
+					local P = pill(weaponRow, i, tostring(w.Name), w == weapon, function() sc.Weapon = w.Name renderPicker() end)
+					if sc.Selected[w.Name] and w ~= weapon then   -- a weapon that already has a skin: accent text
+						Library:AddToTheme(P.text, { TextColor3 = "Accent" })
+					end
+				end
+				if weapon then
+					for i, s in ipairs(weapon.Skins or {}) do
+						n += 1
+						local on = sc.Selected[weapon.Name] == s.Skin
+						tile(pickGrid, i, weapon.Name, s, { active = on, action = on and "Remove" or "Add", danger = on,
+							click = function() if on then sc:Select(weapon.Name, nil) renderPicker() else choose(weapon.Name, s) end end })
+					end
+				end
+				pickHead.sub.Text = weapon and (tostring(cat.Name) .. " - " .. hl(weapon.Name) .. " - " .. n .. (n == 1 and " skin" or " skins")) or tostring(cat.Name)
+			end
+			emptyNote.Text, emptyNote.Visible = "No skins match that search.", n == 0
+		end
+		box:GetPropertyChangedSignal("Text"):Connect(function()
+			if sc.Query == box.Text then return end
+			sc.Query = box.Text
+			if sc.View == "picker" then renderPicker() end
+		end)
+		pickHead.button.MouseButton1Click:Connect(function() showHome() end)
+
+		function showHome()
+			sc.View = "home"
+			picker.Visible, home.Visible = false, true
+			renderHome()
+			pcall(function() col.CanvasPosition = Vector2.new() end)
+			task.defer(function() pcall(function() col.CanvasPosition = Vector2.new() end) end)
+		end
+		function showPicker()
+			sc.View = "picker"
+			home.Visible, picker.Visible = false, true
+			renderPicker()
+			pcall(function() col.CanvasPosition = Vector2.new() end)
+			task.defer(function() pcall(function() col.CanvasPosition = Vector2.new() end) end)
+		end
+		local function refresh() if sc.View == "picker" then renderPicker() else renderHome() end end
+		sc.Refresh = refresh
+		sc.ShowPicker, sc.ShowHome = showPicker, showHome
+
+		-- ---- API ----
+		function sc:Select(weapon, skin, silent)
+			if skin ~= nil then
+				local e = index[weapon]
+				local cat = e and sc.Catalog[e.cat]
+				if cat and cat.Exclusive then   -- one knife, one pair of gloves
+					for _, w in ipairs(cat.Weapons or {}) do
+						if w.Name ~= weapon and sc.Selected[w.Name] ~= nil then
+							sc.Selected[w.Name] = nil
+							fire(w.Name, nil)
+						end
+					end
+				end
+			end
+			if sc.Selected[weapon] == skin then return end
+			sc.Selected[weapon] = skin
+			save()
+			fire(weapon, skin)
+			if not silent then refresh() end
+		end
+		function sc:ResetAll()
+			local old = sc.Selected
+			sc.Selected = {}
+			save()
+			for w in pairs(old) do fire(w, nil) end
+			refresh()
+		end
+		function sc:SetCatalog(catalog)
+			sc.Catalog = catalog or {}
+			reindex()
+			refresh()
+		end
+		Library.SetFlags[flag] = function(value)
+			local decoded = value
+			if type(value) == "string" then
+				local ok, d = pcall(function() return HttpService:JSONDecode(value) end)
+				decoded = ok and d or nil
+			end
+			if type(decoded) ~= "table" then return end
+			local new = {}
+			for w, s in decoded do if type(w) == "string" and type(s) == "string" then new[w] = s end end
+			local old = sc.Selected
+			sc.Selected = new
+			save()
+			refresh()
+			for w, s in new do if old[w] ~= s then fire(w, s) end end
+			for w in old do if new[w] == nil then fire(w, nil) end end
+		end
+
+		renderHome()
+		return sc
 	end
 end
 
