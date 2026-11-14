@@ -5763,6 +5763,11 @@ function Library:SaveConfig(name)
 			if p ~= nil then data[flag] = p end
 		end
 	end
+	-- which game the config was made in, and when (the Configs cards show it; loading ignores it, it is not a flag)
+	if not Library.GameName then
+		pcall(function() Library.GameName = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name end)
+	end
+	data._meta = { Game = Library.GameName or tostring(game.PlaceId), GameId = game.GameId, PlaceId = game.PlaceId, Updated = os.time() }
 	local ok = pcall(function() writefile(pathOf(name), HttpService:JSONEncode(data)) end)
 	return ok
 end
@@ -5837,56 +5842,18 @@ do
 	end
 end
 
--- Window:SettingsPage(name) -> page: configs (save / load / delete, auto load), the menu key, the theme and accent, the HUD, unload
+-- Window:SettingsPage(name) -> page: a "Menu" sub-tab (menu key, theme and accent, HUD, unload) and a "Configs" sub-tab of config cards (page.Configs)
 function Library:SettingsPage(Name)
 	local window = self
-	local page = window:Page({ Name = Name or "Settings" })
+	local page = window:Page({ Name = Name or "Settings", Category = Name or "Settings", SubName = "Menu" })
 	local function accentHex() return Library.Theme.Accent:ToHex() end
 	local function note(fmt, n) Library:Notification(fmt:format(accentHex(), tostring(n)), 3) end
 
-	local C = page:Section({ Name = "Configs", Side = 1 })
-	local nameBox = C:Textbox({ Name = "Config Name", Placeholder = "default", Flag = "_CfgName" })
-	local list = C:Listbox({ Name = "Saved Configs", Items = Library:ConfigList(), Flag = "_CfgList", Size = 106 })
-	local auto
-	local function selected()
-		local typed = nameBox:Get()
-		if typed and typed ~= "" then return typed end
-		return list:Get()
-	end
-	C:Buttons({
-		{ Name = "Save", Confirm = false, Callback = function()
-			local n = selected() or "default"
-			if Library:SaveConfig(n) then list:Refresh(Library:ConfigList()) note('Saved <font color="#%s">%s</font>', n) end
-		end },
-		{ Name = "Load", Confirm = false, Callback = function()
-			local n = list:Get() or selected()
-			if n and Library:LoadConfig(n) then note('Loaded <font color="#%s">%s</font>', n) end
-		end },
-		{ Name = "Delete", Callback = function()
-			local n = list:Get()
-			if n and Library:DeleteConfig(n) then list:Refresh(Library:ConfigList()) note('Deleted <font color="#%s">%s</font>', n) end
-		end },
-	})
-	C:Button({ Name = "Refresh List", Callback = function() list:Refresh(Library:ConfigList()) end })
-	local autoLabel
-	auto = C:Toggle({ Name = "Auto Load Selected", Flag = "_CfgAuto", Callback = function(v)
-		if v then
-			local n = list:Get() or selected()
-			if n then Library:SetAutoload(n) end
-		else
-			Library:SetAutoload("")
-		end
-		if autoLabel then
-			local n = Library:GetAutoload()
-			autoLabel:SetText(n ~= "" and ('Auto load: <font color="#%s">%s</font>'):format(accentHex(), n) or "Auto load: off")
-		end
-	end })
-	do
-		local n = Library:GetAutoload()
-		autoLabel = C:Label(n ~= "" and ('Auto load: <font color="#%s">%s</font>'):format(accentHex(), n) or "Auto load: off")
-	end
+	-- Configs: a sub-tab of their own, the configs as cards (Page:ConfigCards, below) with the game they were made in and when they were saved
+	local cfgPage = page:SubPage({ Name = "Configs", Columns = 1 })
+	page.Configs = cfgPage:ConfigCards({})
 
-	local M = page:Section({ Name = "Menu", Side = 2 })
+	local M = page:Section({ Name = "Menu", Side = 1 })
 	M:Keybind({ Name = "Menu Bind", Menu = true, Flag = "_MenuKey" })
 	M:Dropdown({ Name = "Theme", Items = Library.ThemeOrder, Default = "Default", Flag = "_Theme", Callback = function(v)
 		local th = v and Library.Themes[v]
@@ -5898,6 +5865,456 @@ function Library:SettingsPage(Name)
 	M:Toggle({ Name = "Animations", Flag = "_Anim", Default = true, Callback = function(v) Library.Animations = v end })
 	M:Button({ Name = "Unload", Callback = function() Library:Unload() end })
 	return page
+end
+
+-- ===== Page:ConfigCards (Otterhook): the configs of a game as clean rounded cards, on a page of their own =====
+-- Every card shows the config's name, the game it was made for, when it was last saved, and Load / Save / Delete. A config made for another game is dimmed and
+-- tagged, and asks before it is loaded, so settings never get mixed up between games.
+--   page:ConfigCards({
+--     Game = "BloxStrike",                    -- name of the current game (default: this place's name from the Marketplace)
+--     List = function() return { { Name = "legit", Game = "BloxStrike", GameId = 123, Updated = 1731600000 }, ... } end,
+--     Save = function(name) end,  Load = function(name) end,  Delete = function(name) end,   -- Create uses Save
+--     Import = function(code) end, Export = function(name) end,                              -- optional: shows Import / Export buttons
+--     Autoload = { Get = function() return "legit" end, Set = function(name) end },          -- optional: the AUTO tag on a card
+--   }) -> { Refresh = fn }
+-- With no callbacks it uses the library's own config files (SaveConfig / LoadConfig / DeleteConfig / ConfigList).
+do
+	local MarketplaceService = game:GetService("MarketplaceService")
+
+	function Library:ConfigMeta(name)   -- { Game, GameId, PlaceId, Updated } stored in a config file by SaveConfig (nil without one)
+		if not (type(isfile) == "function" and type(readfile) == "function") then return nil end
+		local ok, data = pcall(function() return HttpService:JSONDecode(readfile(Library.Folders.Configs .. "/" .. tostring(name) .. ".json")) end)
+		if ok and type(data) == "table" and type(data._meta) == "table" then return data._meta end
+		return nil
+	end
+
+	local function gameKey(g) return g and (g.GameId and tonumber(g.GameId) and tonumber(g.GameId) > 0 and ("id" .. g.GameId) or (g.Game and ("n" .. tostring(g.Game):lower()))) or nil end
+
+	function Library:ConfigCards(Data)
+		Data = Data or {}
+		local page = self
+		local fx = Library.fx
+		local T = Library.Theme
+		local col = page.ColumnsData[1].Instance
+		local card = {}
+
+		-- the current game
+		local game_ = { Game = field(Data, "Game", "game"), GameId = game.GameId, PlaceId = game.PlaceId }
+		if not game_.Game then
+			if Library.GameName then game_.Game = Library.GameName
+			else
+				game_.Game = "this game"
+				task.spawn(function()
+					local ok, info = pcall(function() return MarketplaceService:GetProductInfo(game.PlaceId) end)
+					if ok and info and info.Name then Library.GameName = info.Name; game_.Game = info.Name; if card.Refresh then card.Refresh() end end
+				end)
+			end
+		end
+		local function meta() return { Game = game_.Game, GameId = game_.GameId, PlaceId = game_.PlaceId, Updated = os.time() } end
+		card.Meta = meta
+
+		-- storage (the callbacks, or the library's own files)
+		local listFn = field(Data, "List", "list")
+		local saveFn, loadFn, delFn = field(Data, "Save", "save"), field(Data, "Load", "load"), field(Data, "Delete", "delete")
+		local importFn, exportFn = field(Data, "Import", "import"), field(Data, "Export", "export")
+		local auto = field(Data, "Autoload", "autoload")
+		if not listFn then
+			listFn = function()
+				local out = {}
+				for _, n in Library:ConfigList() do
+					local m = Library:ConfigMeta(n) or {}
+					out[#out + 1] = { Name = n, Game = m.Game, GameId = m.GameId, Updated = m.Updated }
+				end
+				return out
+			end
+			saveFn = saveFn or function(n) return Library:SaveConfig(n) end
+			loadFn = loadFn or function(n) return Library:LoadConfig(n) end
+			delFn = delFn or function(n) return Library:DeleteConfig(n) end
+			auto = auto or { Get = function() return Library:GetAutoload() end, Set = function(n) Library:SetAutoload(n or "") end }
+		end
+		local function note(text) Library:Notification(text, 3) end
+		local function hl(name) return ('<font color="#%s">%s</font>'):format(Library.Theme.Accent:ToHex(), (tostring(name):gsub("<", "&lt;"))) end
+
+		local function ago(t)
+			t = tonumber(t)
+			if not t then return nil end
+			local d = os.time() - t
+			local rel
+			if d < 60 then rel = "just now"
+			elseif d < 3600 then rel = math.floor(d / 60) .. " min ago"
+			elseif d < 86400 then rel = math.floor(d / 3600) .. " h ago"
+			else rel = math.floor(d / 86400) .. " d ago" end
+			local okd, date = pcall(os.date, "%b %d, %H:%M", t)
+			return rel .. (okd and (" - " .. date) or "")
+		end
+
+		local function round(inst, r)
+			local c = Instance.new("UICorner")
+			c.CornerRadius = UDim.new(0, r or 8)
+			c.Parent = inst
+			return c
+		end
+		local function stroke(inst, key)
+			local s = Instance.new("UIStroke")
+			s.Thickness, s.ApplyStrokeMode = 1, Enum.ApplyStrokeMode.Border
+			s.Color = Library.Theme[key]
+			Library:AddToTheme(s, { Color = key })
+			s.Parent = inst
+			return s
+		end
+		local function label(parent, text, key, size, bold, pos, sz, align)
+			local l = Instance.new("TextLabel")
+			l.Name = "\0"
+			l.BackgroundTransparency = 1
+			l.RichText = true
+			l.Text = text
+			l.FontFace = bold and Library.FontBold or Library.Font
+			l.TextSize = size
+			l.TextColor3 = Library.Theme[key]
+			Library:AddToTheme(l, { TextColor3 = key })
+			l.TextXAlignment = align or Enum.TextXAlignment.Left
+			l.TextTruncate = Enum.TextTruncate.AtEnd
+			l.Position, l.Size = pos, sz
+			l.ZIndex = 3
+			l.Parent = parent
+			return l
+		end
+		local function button(parent, text, key, pos, sz, danger)
+			local b = Instance.new("TextButton")
+			b.Name = "\0"
+			b.AutoButtonColor = false
+			b.Text = text
+			b.FontFace = Library.Font
+			b.TextSize = 12
+			b.TextColor3 = Library.Theme[key]
+			Library:AddToTheme(b, { TextColor3 = key, BackgroundColor3 = "Header" })
+			b.BackgroundColor3 = Library.Theme.Header
+			b.BorderSizePixel = 0
+			b.Position, b.Size = pos, sz
+			b.ZIndex = 3
+			round(b, 5)
+			b.Parent = parent
+			b.MouseEnter:Connect(function() fx.tween(b, { BackgroundColor3 = Library.Theme["Element Hover"] }, 0.1) end)
+			b.MouseLeave:Connect(function() fx.tween(b, { BackgroundColor3 = Library.Theme.Header }, 0.15) end)
+			return b
+		end
+
+		-- ---- header: a title, what is listed, a rounded name box + New (+ Import / Export) ----
+		local function pill(parent, text, pos, sz, bg, fg, r)
+			local b = Instance.new("TextButton")
+			b.Name = "\0"
+			b.AutoButtonColor = false
+			b.Text = text
+			b.FontFace = Library.FontBold
+			b.TextSize = 11
+			b.BorderSizePixel = 0
+			b.Position, b.Size = pos, sz
+			b.ZIndex = 6
+			if type(bg) == "string" then b.BackgroundColor3 = Library.Theme[bg] Library:AddToTheme(b, { BackgroundColor3 = bg }) else b.BackgroundColor3 = bg end
+			if type(fg) == "string" then b.TextColor3 = Library.Theme[fg] Library:AddToTheme(b, { TextColor3 = fg }) else b.TextColor3 = fg end
+			round(b, r or 9)
+			b.Parent = parent
+			return b
+		end
+		local head = Instance.new("Frame")
+		head.Name = "\0"
+		head.BackgroundTransparency = 1
+		head.Size = UDim2.new(1, 0, 0, 74)
+		head.LayoutOrder = 1
+		head.Parent = col
+		local title = label(head, "Configs", "Bright Text", 17, true, UDim2.fromOffset(6, 4), UDim2.new(1, -130, 0, 20))
+		local sub = label(head, "", "Dim Text", 11, false, UDim2.fromOffset(6, 24), UDim2.new(1, -12, 0, 14))
+		local box = Instance.new("TextBox")
+		box.Name = "\0"
+		box.BackgroundColor3 = Library.Theme["Section Background"]
+		Library:AddToTheme(box, { BackgroundColor3 = "Section Background", TextColor3 = "Text", PlaceholderColor3 = "Dim Text" })
+		box.BorderSizePixel = 0
+		box.ClearTextOnFocus = false
+		box.PlaceholderText = field(Data, "Placeholder", "placeholder") or (field(Data, "Import", "import") and "name for New, or paste a code and press Import" or "new config name")
+		box.PlaceholderColor3 = Library.Theme["Dim Text"]
+		box.Text = ""
+		box.TextColor3 = Library.Theme.Text
+		box.FontFace, box.TextSize = Library.Font, 12
+		box.TextXAlignment = Enum.TextXAlignment.Left
+		box.Position, box.Size = UDim2.fromOffset(4, 44), UDim2.new(1, -8 - 64, 0, 26)
+		box.ZIndex = 3
+		local pad = Instance.new("UIPadding")
+		pad.PaddingLeft, pad.PaddingRight = UDim.new(0, 12), UDim.new(0, 12)
+		pad.Parent = box
+		round(box, 13)
+		stroke(box, "Border")
+		box.Parent = head
+		local newBtn = pill(head, "New", UDim2.new(1, -4 - 58, 0, 44), UDim2.fromOffset(58, 26), "Accent", Color3.fromRGB(12, 12, 16), 13)
+		local extra = 0
+		local function addExtra(text, fn)
+			extra += 1
+			local b = pill(head, text, UDim2.new(1, -4 - (extra - 1) * 62 - 58, 0, 4), UDim2.fromOffset(58, 22), "Section Background", "Text", 11)
+			stroke(b, "Border")
+			b.MouseEnter:Connect(function() fx.tween(b, { BackgroundColor3 = Library.Theme["Element Hover"] }, 0.1) end)
+			b.MouseLeave:Connect(function() fx.tween(b, { BackgroundColor3 = Library.Theme["Section Background"] }, 0.15) end)
+			b.MouseButton1Click:Connect(fn)
+			return b
+		end
+
+		-- ---- the tiles: rounded squares, the game's icon as the artwork (TV-app style); a hovered tile grows a little and shows its actions ----
+		local grid = Instance.new("Frame")
+		grid.Name = "\0"
+		grid.BackgroundTransparency = 1
+		grid.Size = UDim2.new(1, 0, 0, 0)
+		grid.AutomaticSize = Enum.AutomaticSize.Y
+		grid.LayoutOrder = 2
+		grid.Parent = col
+		local gpad = Instance.new("UIPadding")
+		gpad.PaddingLeft, gpad.PaddingRight, gpad.PaddingTop, gpad.PaddingBottom = UDim.new(0, 5), UDim.new(0, 5), UDim.new(0, 5), UDim.new(0, 8)
+		gpad.Parent = grid
+		local gl = Instance.new("UIGridLayout")
+		local PER, GAP = field(Data, "PerRow", "perrow") or 3, 10
+		gl.CellPadding = UDim2.fromOffset(GAP, GAP)
+		gl.CellSize = UDim2.fromOffset(160, 160)
+		gl.SortOrder = Enum.SortOrder.LayoutOrder
+		gl.Parent = grid
+		local function fitCells()   -- square cells, PER in a row (AbsoluteSize is in screen pixels: the window's DPI scale is taken out)
+			local k = 1
+			local sg = grid:FindFirstAncestorWhichIsA("LayerCollector")
+			local a = grid.Parent
+			while a and a ~= sg do
+				local sc = a:FindFirstChildOfClass("UIScale")
+				if sc and sc.Scale > 0 then k *= sc.Scale end
+				a = a.Parent
+			end
+			local w = grid.AbsoluteSize.X / k - 10
+			if w < 60 then return end
+			local c = math.floor((w - GAP * (PER - 1)) / PER)
+			if gl.CellSize.X.Offset ~= c then gl.CellSize = UDim2.fromOffset(c, c) end
+		end
+		grid:GetPropertyChangedSignal("AbsoluteSize"):Connect(fitCells)
+		task.defer(fitCells)
+		local empty = label(col, "No configs for this game yet.\nType a name above and press New.", "Dim Text", 12, false, UDim2.new(), UDim2.new(1, 0, 0, 90))
+		empty.TextWrapped, empty.TextXAlignment, empty.Visible = true, Enum.TextXAlignment.Center, false
+		empty.LayoutOrder = 3
+
+		local cards, lastUsed = {}, nil
+		local WHITE, BLACK = Color3.new(1, 1, 1), Color3.new(0, 0, 0)
+
+		local function run(fn, ...)
+			if not fn then return false end
+			local ok, res = pcall(fn, ...)
+			if not ok then return false end
+			return res ~= false
+		end
+
+		local function build(c)
+			local other = c.other
+			local cell = Instance.new("Frame")   -- the grid cell; the tile inside it is what grows
+			cell.Name = "\0"
+			cell.BackgroundTransparency = 1
+			local f = Instance.new("TextButton")
+			f.Name = "\0"
+			f.AutoButtonColor = false
+			f.Text = ""
+			f.BorderSizePixel = 0
+			f.AnchorPoint, f.Position, f.Size = Vector2.new(0.5, 0.5), UDim2.fromScale(0.5, 0.5), UDim2.fromScale(1, 1)
+			f.ZIndex = 2
+			f.ClipsDescendants = true
+			round(f, 16)
+			f.Parent = cell
+			local scale = Instance.new("UIScale")
+			scale.Parent = f
+			local st = Instance.new("UIStroke")
+			st.Thickness, st.ApplyStrokeMode = 1, Enum.ApplyStrokeMode.Border
+			local active = c.Name == lastUsed
+			st.Color = Library.Theme[active and "Accent" or "Border"]
+			Library:AddToTheme(st, { Color = active and "Accent" or "Border" })
+			st.Parent = f
+
+			-- artwork: the icon of the game the config was made in; with no game on record, a colour of its own from the name
+			local hsum = 0
+			for i = 1, #c.Name do hsum = (hsum * 31 + c.Name:byte(i)) % 360 end
+			f.BackgroundColor3 = Color3.fromHSV(hsum / 360, 0.5, 0.42)
+			local bgGrad = Instance.new("UIGradient")
+			bgGrad.Rotation = 55
+			bgGrad.Color = ColorSequence.new(Color3.fromHSV(hsum / 360, 0.45, 1), Color3.fromHSV(((hsum + 50) % 360) / 360, 0.6, 0.45))
+			bgGrad.Parent = f
+			local gid = tonumber(c.GameId) or ((not other) and tonumber(game_.GameId)) or nil
+			if gid and gid > 0 then
+				local art = Instance.new("ImageLabel")
+				art.Name = "\0"
+				art.BackgroundTransparency = 1
+				art.Size = UDim2.fromScale(1, 1)
+				art.ScaleType = Enum.ScaleType.Crop
+				art.Image = ("rbxthumb://type=GameIcon&id=%d&w=150&h=150"):format(gid)
+				art.ImageColor3 = other and Color3.fromRGB(120, 120, 126) or WHITE
+				art.ZIndex = 2
+				round(art, 16)
+				art.Parent = f
+			else
+				local mono = label(f, c.Name:sub(1, 1):upper(), "Bright Text", 44, true, UDim2.new(0, 0, 0, 14), UDim2.new(1, 0, 0.5, 0), Enum.TextXAlignment.Center)
+				Library:ChangeItemTheme(mono, {})
+				mono.RichText, mono.TextColor3, mono.TextTransparency = false, WHITE, other and 0.6 or 0.15
+			end
+			-- scrim: the lower part fades to black so the text reads on any artwork
+			local scrim = Instance.new("Frame")
+			scrim.Name = "\0"
+			scrim.BackgroundColor3 = BLACK
+			scrim.BorderSizePixel = 0
+			scrim.Size = UDim2.fromScale(1, 1)
+			scrim.ZIndex = 3
+			round(scrim, 16)
+			local sg = Instance.new("UIGradient")
+			sg.Rotation = 90
+			sg.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.85), NumberSequenceKeypoint.new(0.35, 0.7), NumberSequenceKeypoint.new(0.7, 0.12), NumberSequenceKeypoint.new(1, 0.02) })
+			sg.Parent = scrim
+			scrim.Parent = f
+
+			-- the text block sits at the bottom and slides up when the actions show
+			local info = Instance.new("Frame")
+			info.Name = "\0"
+			info.BackgroundTransparency = 1
+			info.AnchorPoint, info.Position, info.Size = Vector2.new(0, 1), UDim2.new(0, 0, 1, -8), UDim2.new(1, 0, 0, 48)
+			info.ZIndex = 4
+			info.Parent = f
+			local function text(t, size, bold, y, h, tr)
+				local l = label(info, t, "Bright Text", size, bold, UDim2.fromOffset(11, y), UDim2.new(1, -22, 0, h))
+				Library:ChangeItemTheme(l, {})
+				l.RichText, l.TextColor3, l.TextTransparency, l.ZIndex = false, WHITE, tr, 4
+				return l
+			end
+			text(c.Name, 14, true, 0, 17, other and 0.3 or 0)
+			text(tostring(c.Game or (other and "unknown game" or game_.Game)), 11, false, 18, 14, 0.25)
+			text(ago(c.Updated) or "not dated", 10, false, 33, 13, 0.42)
+
+			-- badges
+			if other then
+				local tag = pill(f, "OTHER GAME", UDim2.new(1, -8 - 72, 0, 8), UDim2.fromOffset(72, 16), "Risky", WHITE, 8)
+				tag.TextSize, tag.Active, tag.ZIndex = 9, false, 5
+			end
+			local autoBtn
+			if auto then
+				local on = auto.Get and auto.Get() == c.Name
+				autoBtn = pill(f, "AUTO", UDim2.fromOffset(8, 8), UDim2.fromOffset(40, 16), on and "Accent" or BLACK, on and Color3.fromRGB(12, 12, 16) or WHITE, 8)
+				autoBtn.TextSize = 9
+				autoBtn.BackgroundTransparency = on and 0 or 0.45
+				autoBtn.Visible = on
+				autoBtn.MouseButton1Click:Connect(function()
+					if auto.Get and auto.Get() == c.Name then auto.Set(nil); note("Autoload off")
+					else auto.Set(c.Name); note("Autoload: " .. hl(c.Name)) end
+					card.Refresh()
+				end)
+			end
+
+			-- actions (shown while the tile is hovered); a click on the tile itself loads
+			local acts = Instance.new("Frame")
+			acts.Name = "\0"
+			acts.BackgroundTransparency = 1
+			acts.AnchorPoint, acts.Position, acts.Size = Vector2.new(0, 1), UDim2.new(0, 8, 1, -8), UDim2.new(1, -16, 0, 22)
+			acts.ZIndex = 5
+			acts.Visible = false
+			acts.Parent = f
+			local bl = pill(acts, "Load", UDim2.new(0, 0, 0, 0), UDim2.new(0.4, -3, 1, 0), WHITE, Color3.fromRGB(12, 12, 16), 11)
+			local bs = pill(acts, "Save", UDim2.new(0.4, 0, 0, 0), UDim2.new(0.3, -3, 1, 0), WHITE, WHITE, 11)
+			local bd = pill(acts, "Delete", UDim2.new(0.7, 0, 0, 0), UDim2.new(0.3, 0, 1, 0), "Risky", WHITE, 11)
+			bs.BackgroundTransparency = 0.78
+			bd.TextSize = 10
+			local function doLoad()
+				if run(loadFn, c.Name) then lastUsed = c.Name; note("Loaded " .. hl(c.Name)); card.Refresh()
+				else note("Could not load " .. hl(c.Name)) end
+			end
+			local function load(anchor)
+				if other then
+					Library:Confirm({ Title = "Config from another game", Text = ("%s was made for %s, you are in %s. Load it here anyway?"):format(c.Name, tostring(c.Game or "another game"), tostring(game_.Game)), Yes = "load", Anchor = anchor }, doLoad)
+				else
+					doLoad()
+				end
+			end
+			f.MouseButton1Click:Connect(function() load(cell) end)
+			bl.MouseButton1Click:Connect(function() load(cell) end)
+			bs.MouseButton1Click:Connect(function()
+				Library:Confirm({ Title = "Overwrite config?", Text = other and ("%s was made for %s. Overwrite it with your current settings for %s?"):format(c.Name, tostring(c.Game or "another game"), tostring(game_.Game))
+					or ("Overwrite %s with your current settings?"):format(c.Name), Yes = "overwrite", Anchor = cell }, function()
+					if run(saveFn, c.Name) then lastUsed = c.Name; note("Saved " .. hl(c.Name)); card.Refresh()
+					else note("Could not save " .. hl(c.Name)) end
+				end)
+			end)
+			bd.MouseButton1Click:Connect(function()
+				Library:Confirm({ Title = "Delete config?", Text = c.Name .. " will be deleted for good.", Yes = "delete", Danger = true, Anchor = cell }, function()
+					if run(delFn, c.Name) then if lastUsed == c.Name then lastUsed = nil end; note("Deleted " .. hl(c.Name)); card.Refresh()
+					else note("Could not delete " .. hl(c.Name)) end
+				end)
+			end)
+
+			-- focus: the tile grows, its edge lights up, the text slides up and the actions appear
+			f.MouseEnter:Connect(function()
+				cell.ZIndex, f.ZIndex = 3, 3
+				fx.tween(scale, { Scale = 1.045 }, 0.16)
+				fx.tween(st, { Color = active and Library.Theme.Accent or WHITE, Transparency = active and 0 or 0.35 }, 0.16)
+				fx.tween(info, { Position = UDim2.new(0, 0, 1, -36) }, 0.16)
+				acts.Visible = true
+				if autoBtn then autoBtn.Visible = true end
+			end)
+			f.MouseLeave:Connect(function()
+				cell.ZIndex, f.ZIndex = 1, 2
+				fx.tween(scale, { Scale = 1 }, 0.2)
+				fx.tween(st, { Color = Library.Theme[active and "Accent" or "Border"], Transparency = 0 }, 0.2)
+				fx.tween(info, { Position = UDim2.new(0, 0, 1, -8) }, 0.2)
+				acts.Visible = false
+				if autoBtn then autoBtn.Visible = auto.Get ~= nil and auto.Get() == c.Name end
+			end)
+			return cell
+		end
+
+		function card.Refresh()
+			for _, f in cards do f:Destroy() end
+			table.clear(cards)
+			local ok, items = pcall(listFn)
+			items = ok and type(items) == "table" and items or {}
+			local key = gameKey(game_)
+			for _, it in items do
+				local k = gameKey(it)
+				-- no game stored (an old config): treated as this game's, shown without a badge
+				it.other = k ~= nil and k ~= key and not (it.Game and game_.Game and tostring(it.Game):lower() == tostring(game_.Game):lower())
+			end
+			table.sort(items, function(a, b)
+				if a.other ~= b.other then return not a.other end
+				local ua, ub = tonumber(a.Updated) or 0, tonumber(b.Updated) or 0
+				if ua ~= ub then return ua > ub end
+				return tostring(a.Name):lower() < tostring(b.Name):lower()
+			end)
+			for i, it in items do
+				local f = build(it)
+				f.LayoutOrder = i
+				f.Parent = grid
+				cards[#cards + 1] = f
+			end
+			empty.Visible = #items == 0
+			local mine = 0
+			for _, it in items do if not it.other then mine += 1 end end
+			sub.Text = ("%s  -  %d config%s for this game%s"):format(tostring(game_.Game), mine, mine == 1 and "" or "s", #items > mine and ("  -  " .. (#items - mine) .. " from other games") or "")
+		end
+
+		local function create()
+			local name = box.Text:gsub("[^%w _%-]", ""):gsub("^%s+", ""):gsub("%s+$", "")
+			if #name == 0 then note("Type a name first") return end
+			for _, it in ((pcall(listFn) and listFn()) or {}) do
+				if it.Name == name then note("A config called " .. hl(name) .. " already exists") return end
+			end
+			if run(saveFn, name) then box.Text = ""; lastUsed = name; note("Created " .. hl(name)); card.Refresh()
+			else note("Could not create " .. hl(name)) end
+		end
+		newBtn.MouseButton1Click:Connect(create)
+		box.FocusLost:Connect(function(enter) if enter then create() end end)
+		if importFn then
+			addExtra("Import", function()
+				local code = box.Text
+				if #code == 0 then note("Paste a config code into the box first") return end
+				if run(importFn, code) then box.Text = ""; card.Refresh() end
+			end)
+		end
+		if exportFn then
+			addExtra("Export", function() run(exportFn, lastUsed) end)
+		end
+		card.Refresh()
+		return card
+	end
 end
 
 
