@@ -4613,12 +4613,14 @@ function Library:EspPreview(Data)
 	local glows, neonParts = {}, {}   -- the Test style: glow hint shells, the body parts turned Neon
 	local shellOf = setmetatable({}, { __mode = "k" })   -- shell / glow copy -> the body part it covers
 	local testSaved = { sas = {}, tex = {}, decals = {} }   -- what the Test style set aside on the clone (put back by restoreBody)
+	local fitK, fitY = 1, 0.2   -- the view fit of the model (buildModel)
 	local function buildModel()
 		if model then model:Destroy() model, parts, body = nil, {}, {} end
 		if wall then wall:Destroy() wall = nil end
 		chamSig = nil
-		local char = Players.LocalPlayer.Character
+		local char = (type(Data.ModelSource) == "function" and Data.ModelSource()) or Players.LocalPlayer.Character
 		if not char then return end
+		local skip = type(Data.SkipPart) == "function" and Data.SkipPart or nil
 		local was = char.Archivable
 		char.Archivable = true
 		local ok, c = pcall(function() return char:Clone() end)
@@ -4628,15 +4630,38 @@ function Library:EspPreview(Data)
 			if d:IsA("Script") or d:IsA("LocalScript") or d:IsA("ModuleScript") or d:IsA("Sound") then d:Destroy()
 			elseif d:IsA("BasePart") then
 				d.Anchored = true
+				if skip then
+					local okS, hide = pcall(skip, d)
+					if okS and hide then d.Transparency = 1 end
+				end
 				parts[#parts + 1] = { part = d, color = d.Color, mat = d.Material, trans = d.Transparency, refl = d.Reflectance }
 			end
 		end
 		c:PivotTo(CFrame.new())
 		c.Parent = world
 		model = c
-		for _, n in CHAM_PARTS do
-			local p = c:FindFirstChild(n)
-			if p and p:IsA("BasePart") then body[#body + 1] = p end
+		if skip then
+			-- every visible part dresses (the game's own hit boxes are hidden above)
+			for _, p in parts do
+				if p.trans < 0.95 and p.part.Name ~= "HumanoidRootPart" then body[#body + 1] = p.part end
+			end
+		else
+			for _, n in CHAM_PARTS do
+				local p = c:FindFirstChild(n)
+				if p and p:IsA("BasePart") then body[#body + 1] = p end
+			end
+		end
+		-- the view: the camera distance grows with the model's height, aimed at its middle
+		fitK, fitY = 1, 0.2
+		do
+			local lo2, hi2 = math.huge, -math.huge
+			for _, p in body do
+				lo2, hi2 = math.min(lo2, p.Position.Y - p.Size.Y / 2), math.max(hi2, p.Position.Y + p.Size.Y / 2)
+			end
+			if lo2 < hi2 then
+				fitK = math.clamp((hi2 - lo2) / 5.6, 1, 4)
+				if fitK > 1 then fitY = (lo2 + hi2) / 2 end
+			end
 		end
 		-- the half wall: across the front of the model (it faces -Z), from under the feet up to the waist
 		local lo, hi = math.huge, -math.huge
@@ -5240,8 +5265,8 @@ function Library:EspPreview(Data)
 		-- a release the view did not see (outside the window, a menu on top) must not leave the drag on
 		if dragging and not (UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) or UserInputService.TouchEnabled) then dragging = false end
 		if state.AutoRotate and not dragging then yaw += dt * 0.6 end
-		local target = Vector3.new(0, 0.2, 0)
-		local orbit = CFrame.new(target) * CFrame.Angles(0, yaw, 0) * CFrame.Angles(-pitch, 0, 0) * CFrame.new(0, 0, 11 / state.Zoom)
+		local target = Vector3.new(0, fitY, 0)
+		local orbit = CFrame.new(target) * CFrame.Angles(0, yaw, 0) * CFrame.Angles(-pitch, 0, 0) * CFrame.new(0, 0, 11 * fitK / state.Zoom)
 		cam.CFrame = CFrame.lookAt(orbit.Position, target)
 		camTop.CFrame = cam.CFrame
 		chamsFrame(t)
