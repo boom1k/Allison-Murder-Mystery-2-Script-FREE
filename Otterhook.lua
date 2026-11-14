@@ -4758,7 +4758,7 @@ function Library:EspPreview(Data)
 	end
 
 	local function paint()
-		local cornered = state.BoxStyle == "2D Cornered"
+		local cornered = state.BoxStyle == "2D Cornered" or state.BoxStyle == "2D Cornered Static"
 		boxStroke.Enabled, outer.Enabled = state.Box and not cornered, state.Box and not cornered
 		boxStroke.Color, outer.Color = state.BoxColor, state.OutlineColor
 		fill.Visible = state.Box and state.Fill
@@ -5049,7 +5049,7 @@ function Library:EspPreview(Data)
 	-- Box Style "2D Cornered": 8 arms (1 px line over a 3 px outline) at the corners of the box
 	local cornerArms
 	local function placeCorners(w, h)
-		local on = state.Box and state.BoxStyle == "2D Cornered"
+		local on = state.Box and (state.BoxStyle == "2D Cornered" or state.BoxStyle == "2D Cornered Static")
 		if not cornerArms then
 			if not on then return end
 			cornerArms = {}
@@ -5089,7 +5089,7 @@ function Library:EspPreview(Data)
 			local s1, s2 = project(rcf.Position + Vector3.new(0, top, 0)), project(rcf.Position - Vector3.new(0, 3.1, 0))
 			if s1 and s2 and s2.Y > s1.Y then
 				y0, y1 = s1.Y, s2.Y
-				if state.BoxStyle == "2D Static" then
+				if state.BoxStyle == "2D Static" or state.BoxStyle == "2D Cornered Static" then
 					local mid, half = project(rcf.Position), (s2.Y - s1.Y) * 0.55 / 2
 					if mid then x0, x1 = mid.X - half, mid.X + half end
 				end
