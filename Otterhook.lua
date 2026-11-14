@@ -2209,7 +2209,7 @@ function Library:Confirm(Data, onYes)
 	fx.bevel(C.confirm, 0.18, true)
 	fx.bevel(C.cancel, 0.14, true)
 	if anchor then
-		local W = math.max(anchor.AbsoluteSize.X / k, 260)
+		local W = math.max(anchor.AbsoluteSize.X / k, 160)   -- the width of the button it sits on (only a very narrow button gets a wider box)
 		fitHeight(W)
 		local ra, a, s = root.AbsolutePosition, anchor.AbsolutePosition, anchor.AbsoluteSize
 		local x, top = (a.X - ra.X) / k, (a.Y - ra.Y) / k
