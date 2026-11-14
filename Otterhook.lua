@@ -3634,6 +3634,13 @@ do
 	effect.Name = "\0"
 	effect.Size = 0
 	effect.Enabled = true
+	local function sweep()
+		for _, c in Lighting:GetChildren() do
+			if c:IsA("BlurEffect") and c:GetAttribute("OtterhookBlur") and c ~= effect then pcall(function() c:Destroy() end) end
+		end
+	end
+	effect:SetAttribute("OtterhookBlur", true)
+	pcall(sweep)
 	pcall(function() effect.Parent = Lighting end)
 	function Library.UpdateBlur()
 		local anyOpen = false
@@ -3651,7 +3658,7 @@ do
 		Library.UpdateBlur()
 	end
 	Library.OnUnload = Library.OnUnload or {}
-	table.insert(Library.OnUnload, function() pcall(function() effect:Destroy() end) end)
+	table.insert(Library.OnUnload, function() pcall(function() effect:Destroy() end) pcall(sweep) end)
 	task.defer(Library.UpdateBlur)
 end
 
