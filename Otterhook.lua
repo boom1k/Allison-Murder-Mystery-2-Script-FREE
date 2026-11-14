@@ -3157,6 +3157,7 @@ function Library.AddKeybind(owner, row, Data, ownerToggle)
 	local name = field(Data, "Name", "name") or "Keybind"
 	local callback = field(Data, "Callback", "callback")
 	local passive = field(Data, "Passive", "passive") and true or false
+	local linked = ownerToggle and not passive   -- the key switches the toggle itself; a passive key keeps a state of its own
 	local K = Build.KeyPill(row)
 	K.Root.LayoutOrder = 1
 	local kb = { Toggled = false, Key = nil, Mode = "Toggle", Flag = flag, Picking = false, Items = {}, ShowInList = field(Data, "ShowInList", "showinlist") ~= false }
@@ -3173,7 +3174,7 @@ function Library.AddKeybind(owner, row, Data, ownerToggle)
 		f.Mode, f.Key, f.Toggled = kb.Mode, kb.Key, kb.Toggled
 	end
 	local function update()
-		if ownerToggle then kb.Toggled = ownerToggle.Value == true end   -- a toggle's keybind shows the toggle's real state
+		if linked then kb.Toggled = ownerToggle.Value == true end   -- a toggle's (non-passive) keybind shows the toggle's real state
 		writeFlags()
 		K.text.Text = "[" .. keyText(kb.Key) .. "]"
 		K.Root.Size = UDim2.new(0, math.max(18, #K.text.Text * 7 + 2), 0, 14)
@@ -3187,8 +3188,8 @@ function Library.AddKeybind(owner, row, Data, ownerToggle)
 	function kb:SetVisibility(v) K.Root.Visible = v end
 	function kb:SetMode(mode)
 		kb.Mode = mode
-		if ownerToggle then
-			if mode == "Always" and not passive and not ownerToggle.Value then ownerToggle:Set(true) end
+		if linked then
+			if mode == "Always" and not ownerToggle.Value then ownerToggle:Set(true) end
 			kb.Toggled = ownerToggle.Value == true
 		else kb.Toggled = mode == "Always" end
 		update() fire()
@@ -3199,7 +3200,6 @@ function Library.AddKeybind(owner, row, Data, ownerToggle)
 			elseif kb.Mode == "Hold" then ownerToggle:Set(down == true)
 			elseif kb.Mode == "Always" then ownerToggle:Set(true) end
 			kb.Toggled = ownerToggle.Value == true
-		elseif ownerToggle then kb.Toggled = ownerToggle.Value == true
 		elseif kb.Mode == "Toggle" then kb.Toggled = not kb.Toggled
 		elseif kb.Mode == "Hold" then kb.Toggled = down == true
 		else kb.Toggled = true end
