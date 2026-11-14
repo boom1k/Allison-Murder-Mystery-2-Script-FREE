@@ -1758,11 +1758,14 @@ function Library:Page(Data)
 				local w = g.T.Root.AbsoluteSize.X
 				local sc = W.Root:FindFirstChildOfClass("UIScale")
 				if sc and sc.Scale > 0 then w = w / sc.Scale end
-				icon.Visible = (w - b) / 2 >= 24
-				-- icon (14) + gap (7) + name are centred as one group: the name moves right by half the icon's share
-				local shift = icon.Visible and math.floor(21 / 2 + 0.5) or 0
+				-- icon (14) + gap + name are centred as one group: gap 7, or 4 on a tight tab; the icon goes only when even that leaves under 3 px a side
+				-- (it used to need 24 px of room each side, so with 6 top tabs most icons were gone)
+				local gap = (w - b - 21 >= 8) and 7 or 4
+				local grp = 14 + gap
+				icon.Visible = w - b - grp >= 6
+				local shift = icon.Visible and math.floor(grp / 2 + 0.5) or 0
 				g.T.label.Position = UDim2.fromOffset(shift, -1)   -- (-1: Ubuntu sits ~1 px low in its line box, measured)
-				icon.Position = UDim2.new(0.5, -(b / 2) - 21 + shift, 0.5, 0)
+				icon.Position = UDim2.new(0.5, -(b / 2) - grp + shift, 0.5, 0)
 			end
 			g.T.label:GetPropertyChangedSignal("TextBounds"):Connect(place)
 			g.T.Root:GetPropertyChangedSignal("AbsoluteSize"):Connect(place)
