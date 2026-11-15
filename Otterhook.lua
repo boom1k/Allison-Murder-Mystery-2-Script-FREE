@@ -1151,6 +1151,7 @@ do
 	-- the Allison logo (white, 77x38): the circle button of the mobile menu
 	Build.IconPng.fx_allisonlogo = { b64 = "iVBORw0KGgoAAAANSUhEUgAAAE0AAAAmCAYAAACBOhYpAAAFCUlEQVR4nN2ae4jUVRTHPztsiyWmrSmJPahMsJdZVvhIK9YUtNIwsKggswdUSgnhnz0QKoyKIBKNSsqSdUkKe7Dby9bMHlKbpb20B+K2lZZrK6K737hxBsb1N79778ysM9MXLjP85p5z75zfueee8723hkhI8nUZC4wBenKe1QD7gFeBLopATY1TVWWQlNaGSGpTfsz1yPduNZLqcp9VAmpLrG8WcE7K73cDrwO/p/Q5ARgBnAlcYnNcAHRQrVB+rxgq6Rv5Mb+XXK2kQZKmSWqUtF3SHo9M3laRUP4JL1QYNks6UdJMSUskNUnaKulgiswGSfX/N6MNl7RN4Vgq6SvF4eFKMVqmRHrmAadG9J8NfBc5hotrZ1EBKIXRRgE3R8rU22bQGiHTr4BxKtJotcAdwCkFyM4BfgYORsjMBSZT5UZrMKMVgoHAfuCtCJnjgJuocqNdCdQVKf+L218ic8FLKSMOq0kidqAZQKPFmmLwpr28qREyLcAVScY+EmVWMZ52S4DB3re4lYbxwDtAe8TYF1q1UBZkilhWUzx9Omy3WxsQ26YBH0SM72SW2GdVGG0o8BDQ39NvDfAT8BKwy9P3cmCvxbcYb7uBKjHa9cBoT5+/gOfs+0fAsgC9I4GVkXOZDwyjwo1Wb7HMh2eBj3sF7gMeGRejzo30tpGWu1W00RYAZ3v6OOO83evZh7ZMfXC00AqgO2JOLm4Op0KNNsxqRh9W266ZC5fEPgL84ZE9HzgG2Eg4TgcWAkdRLqQwCE8GMBG/SRqRouOZAB1/SnpQUk8EA7JfUkMkK1xwC/W0iwKL5Rbgh5TfXwD2BMTNk4FmwuGqkpmUHoMtbh5ip0wE9TPA0+dv4GlPnw2WivgwHfg08hDmduBqikN/Y23c5vI88K61calSCe44XtK+gCXSGOje4yQdCND3iqTXFIemApbbQEkXS1psh0L/JOhdnkp0JihdFTDZLjNG6ESXBejcLekuSd9GGM394dmesd2ZxARJT0laI2mjpE6P3l2SpmR1+E6jpga6/K/m1qclkQAJKclOOwc9OqXfIOAaYKvFlRC4nfcBYL2NkX021k7JzrBKYoxn7CRK6l7gPcf/pbEcQ4yBuIDyYhFwq6UWobjH0h63OUwEJpUgJekyJ2qt9RCM5TZYdh7NkUZbbLSRrz6OwY+W2K936zupg8uw76Qy0GCHMJsDqhFylmQxcFcqtgCbgO3Al8C6bHKez9McpTyBysEoYDnwaJFMcVqc3WZ01k4jDlz86kwiOpOMdrwF4ErCZcAn9rad55UCPbaBNVvuuMmMllr31tXVJRptke02lYZ5wFI7HyjkDkq3MShbjPBcZ3HKLblgjr+7uxt3Kyf32Xmm8NgA+cesZCrF2emcQPr6CSttbgzUu9viUat5qvOmHcVMNJPJHJbMuusCIWjpfQWqyDY54dJLEjokPW4FehLcfZAdkl6WNEvSSZL6lbRYz2QO8bSJxuf7vKwTuCqB/ikWKwI9aKUlxlkytN1iUpsF8a+B7+kjOKPlxobbApflG31gMIdVwHUB8crdW7vPKPU2i03uLOKI4D8nM7ebJGlv4NKckea+IYPmac7rX0zh6Vbbda7R1pdyNOyturzn/sDsuSmS54qBbOlda7va5+ZJX9iO1x5576PP4N7YAKOxB9u27OrRrMtkv9fYLrnW/kB+hZ4Tbo83ujk4wvMzzxXTssH9v38BCy27DHFyM6IAAAAASUVORK5CYII=" }
 	Build.IconPng.fx_pattern = { b64 = "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAHElEQVR42mP4////fwYkgM5nwCeJwqeRJH3cAADh6D/Bw/cxeQAAAABJRU5ErkJggg==" }   -- Otterhook: the window background stripes (build/patch_bg.py)
+	Build.IconPng.fx_tabpattern = { b64 = "iVBORw0KGgoAAAANSUhEUgAAAAYAAAAGCAYAAADgzO9IAAAAFklEQVR4nGNgwAf+////H68C8gBBYwFWXAf5ta/jhgAAAABJRU5ErkJggg==" }   -- Otterhook: the tab button dots (build/patch_tabpattern.py)
 	if type(writefile) == "function" and getasset and b64 then
 		for name, ic in Build.IconPng do
 			pcall(function()
@@ -1464,6 +1465,23 @@ do
 	end
 end
 
+-- Otterhook: the dot grid on a tab button (Library.TabPattern / Library.TabPatternTransparency), different from the window's stripes
+function Library.tabPattern(T)
+	if Library.TabPattern == false or not (T and T.bar) or not Build.IconAsset.fx_tabpattern then return end
+	local pat = Instance.new("ImageLabel")
+	pat.Name = "pattern"
+	pat.BackgroundTransparency = 1
+	pat.BorderSizePixel = 0
+	pat.Size = UDim2.fromScale(1, 1)
+	pat.Image = Build.IconAsset.fx_tabpattern
+	pat.ScaleType = Enum.ScaleType.Tile
+	pat.TileSize = UDim2.fromOffset(6, 6)
+	pat.ImageColor3 = Color3.new(1, 1, 1)
+	pat.ImageTransparency = tonumber(Library.TabPatternTransparency) or 0.9
+	pat.ZIndex = T.bar.ZIndex
+	pat.Parent = T.bar
+	return pat
+end
 -- ---- Window ----
 -- Aurora Hex: a double-edged flat window, the name centred in the top edge ("aurora hex" = the first word in the accent colour,
 -- the rest white), a search field top right, equal-width tabs across the top, the pages below. Dragged by the title row, resized
@@ -1899,6 +1917,7 @@ function Library:Page(Data)
 	local function newGroup(name, iconKey)
 		local g = { Name = name, Pages = {} }
 		g.T = Build.Tab(W.tabs)
+		Library.tabPattern(g.T)
 		g.T.Root.LayoutOrder = #window.Groups + 1
 		g.T.label.Text = tostring(name)
 		g.T.label.Position, g.T.label.Size = UDim2.fromOffset(0, -1), UDim2.new(1, 0, 1, 0)   -- (-1: optical centre, measured)
@@ -1994,6 +2013,7 @@ function Library:Page(Data)
 		end
 		-- the sub-tab button (a Tab of the design sheet, narrower)
 		local S = Build.Tab(group.SubBar)
+		Library.tabPattern(S)
 		local w = math.clamp(math.floor(#label * 7 + 22), SUBW_MIN, 150)
 		S.Root.Size = UDim2.new(0, w, 1, -1)
 		S.label.Text = label
