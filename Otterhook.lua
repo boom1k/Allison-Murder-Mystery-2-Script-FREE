@@ -1467,7 +1467,7 @@ end
 
 -- Otterhook: the dot grid on a tab button (Library.TabPattern / Library.TabPatternTransparency), different from the window's stripes
 function Library.tabPattern(T)
-	if Library.TabPattern == false or not (T and T.bar) or not Build.IconAsset.fx_tabpattern then return end
+	if Library.TabPattern ~= true or not (T and T.bar) or not Build.IconAsset.fx_tabpattern then return end   -- off by default (user 2026-11-15: "remove the pattern from tab names"); Library.TabPattern = true brings it back
 	local pat = Instance.new("ImageLabel")
 	pat.Name = "pattern"
 	pat.BackgroundTransparency = 1
