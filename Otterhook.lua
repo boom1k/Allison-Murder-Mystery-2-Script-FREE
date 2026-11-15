@@ -1334,13 +1334,13 @@ function Library:MobileButton(title)
 	glyph.TextColor3 = self.Theme.Accent
 	Library.themed(glyph, "TextColor3", "Accent")
 	glyph.Parent = btn
-	-- the Allison logo over the letter when its image could be loaded
-	local logoId = Build.IconAsset.fx_allisonlogo
+	-- the Otterhook (otter) logo over the letter when its image could be loaded
+	local logoId = Build.IconAsset.otter
 	if logoId and logoId ~= "" then
 		local logo = Instance.new("ImageLabel")
 		logo.Name = "\0"
 		logo.BackgroundTransparency, logo.ZIndex, logo.ScaleType = 1, 9002, Enum.ScaleType.Fit
-		logo.AnchorPoint, logo.Position, logo.Size = Vector2.new(0.5, 0.5), UDim2.fromScale(0.5, 0.5), UDim2.fromOffset(36, 18)
+		logo.AnchorPoint, logo.Position, logo.Size = Vector2.new(0.5, 0.5), UDim2.fromScale(0.5, 0.5), UDim2.fromOffset(30, 24)   -- the otter is 22.5 x 18
 		logo.Image, logo.ImageColor3 = logoId, self.Theme.Accent
 		Library.themed(logo, "ImageColor3", "Accent")
 		logo.Parent = btn
@@ -1482,6 +1482,8 @@ function Library.tabPattern(T)
 	pat.Parent = T.bar
 	return pat
 end
+-- Otterhook: the otter logo image (white; tint it with ImageColor3) for scripts, e.g. their own mobile menu buttons; nil before the icons are written
+function Library.Logo() return Build.IconAsset.otter end
 -- ---- Window ----
 -- Aurora Hex: a double-edged flat window, the name centred in the top edge ("aurora hex" = the first word in the accent colour,
 -- the rest white), a search field top right, equal-width tabs across the top, the pages below. Dragged by the title row, resized
