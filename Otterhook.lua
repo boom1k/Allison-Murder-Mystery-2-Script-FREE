@@ -1526,7 +1526,7 @@ function Library:Window(Data)
 			local tag = Instance.new("Frame")
 			tag.Name = "menuTag"
 			tag.AnchorPoint = Vector2.new(0, 0)
-			tag.Position = UDim2.new(0, 0, 1, 6)
+			tag.Position = UDim2.new(0, 2, 1, 6)   -- +2: its 1 px border is drawn outside the frame; this lines it up with the window's grey edge (measured: 844 vs 846)
 			tag.Size = UDim2.new(0, 0, 0, 38)
 			tag.AutomaticSize = Enum.AutomaticSize.X
 			tag.BorderSizePixel = 0
@@ -5409,7 +5409,23 @@ function Library:EspPreview(Data)
 	local function fitBox()
 		local root = model and model:FindFirstChild("HumanoidRootPart")
 		local x0, y0, x1, y1 = math.huge, math.huge, -math.huge, -math.huge
-		if root then
+		-- Otterhook: Data.BoxParts(model) -> the parts the script's own ESP box is built from (a true preview of that box)
+		local custom
+		if model and type(Data.BoxParts) == "function" then
+			local okB, list = pcall(Data.BoxParts, model)
+			if okB and type(list) == "table" and #list > 0 then custom = list end
+		end
+		if custom then
+			for _, p in custom do
+				if typeof(p) == "Instance" and p:IsA("BasePart") then
+					local cf, h = p.CFrame, p.Size / 2
+					for i = 0, 7 do
+						local sp = project(cf * Vector3.new(i % 2 == 0 and -h.X or h.X, math.floor(i / 2) % 2 == 0 and -h.Y or h.Y, i < 4 and -h.Z or h.Z))
+						if sp then x0, y0, x1, y1 = math.min(x0, sp.X), math.min(y0, sp.Y), math.max(x1, sp.X), math.max(y1, sp.Y) end
+					end
+				end
+			end
+		elseif root then
 			local rcf, head = root.CFrame, model:FindFirstChild("Head")
 			local top = head and (rcf:PointToObjectSpace(head.Position).Y + head.Size.Y * 0.5 + 0.1) or 2.4
 			for _, cy in { -3.1, top } do
