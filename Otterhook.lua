@@ -7544,7 +7544,9 @@ do
 		return res
 	end
 	local function decode(s) local ok, v = pcall(function() return HttpService:JSONDecode(s) end) return ok and v or nil end
-	local function enc(s) return HttpService:UrlEncode(tostring(s)) end
+	-- RFC 3986 percent-encoding: unreserved characters (letters, digits, - . _ ~) stay as they are. HttpService:UrlEncode also encodes
+	-- the dots ("127%2E0%2E0%2E1"), and Spotify then rejects the redirect URI as "Not matching configuration".
+	local function enc(s) return (tostring(s):gsub("[^%w%-%._~]", function(c) return string.format("%%%02X", c:byte()) end)) end
 	local function form(t)
 		local out = {}
 		for k, v in t do out[#out + 1] = enc(k) .. "=" .. enc(v) end
