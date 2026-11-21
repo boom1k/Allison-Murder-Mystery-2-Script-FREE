@@ -7829,7 +7829,7 @@ do
 		Library.MakeDraggable(root, root)
 
 		-- ================= the lyrics panel =================
-		local LW, LH = 250, 122
+		local LW, LH = 290, 156
 		local lroot = panel(holder, UDim2.fromOffset(LW, LH), field(Data, "LyricsPosition", "lyricsPosition") or UDim2.new(1, -W - 14 - LW - 10, 1, -LH - 14), Z)
 		lroot.Name = "SpotifyLyrics"
 		if field(Data, "Glimmer", "glimmer") ~= false then glimmers[#glimmers + 1] = (fx.glimmerEdge(lroot, { ZIndex = Z })) end
@@ -7850,9 +7850,21 @@ do
 		local plus = smallBtn("+", -6)
 		local minus = smallBtn("-", -22)
 		local offsetLbl = label(lroot, { Name = "Offset", AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -40, 0, 4), Size = UDim2.fromOffset(60, 16), TextSize = 12, TextXAlignment = Enum.TextXAlignment.Right, Text = "+0.0 s", ZIndex = Z + 1 }, { TextColor3 = "Dim Text" })
-		local LINE, ROWS = 17, 6
-		local body = frame(lroot, { Name = "Body", BackgroundTransparency = 1, ClipsDescendants = true, Position = UDim2.fromOffset(8, 22), Size = UDim2.new(1, -16, 0, LINE * ROWS), ZIndex = Z + 1 })
-		local list = frame(body, { Name = "Lines", BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 0), ZIndex = Z + 1 })
+		-- the lines wrap (a long line takes two or three rows) and stack in a list; the body is a CanvasGroup so its top and bottom edge fade
+		local GAP = 5
+		local BODY_H = LH - 30
+		local body = Instance.new("CanvasGroup")
+		body.Name = "Body"
+		body.BackgroundTransparency, body.BorderSizePixel = 1, 0
+		body.Position, body.Size, body.ZIndex = UDim2.fromOffset(10, 24), UDim2.new(1, -20, 0, BODY_H), Z + 1
+		body.Parent = lroot
+		local bodyFade = Instance.new("UIGradient")
+		bodyFade.Rotation = 90
+		bodyFade.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.85), NumberSequenceKeypoint.new(0.14, 0), NumberSequenceKeypoint.new(0.8, 0), NumberSequenceKeypoint.new(1, 1) })
+		bodyFade.Parent = body
+		local list = frame(body, { Name = "Lines", BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, ZIndex = Z + 1 })
+		local ll = Library.listLayout(list, GAP)
+		ll.HorizontalAlignment = Enum.HorizontalAlignment.Left
 		local lineLabels, curIdx = {}, -1
 		local status = label(body, { Name = "Status", Size = UDim2.fromScale(1, 1), TextXAlignment = Enum.TextXAlignment.Center, Text = "", TextSize = 13, ZIndex = Z + 1 }, { TextColor3 = "Dim Text" })
 		Library.MakeDraggable(lroot, lroot)
@@ -7865,10 +7877,10 @@ do
 			for i, ln in P.Lyrics.lines do
 				local txt = ln.text
 				if txt == nil or txt == "" then txt = "..." end
-				lineLabels[i] = label(list, { Name = "L" .. i, Position = UDim2.fromOffset(0, (i - 1) * LINE), Size = UDim2.new(1, 0, 0, LINE), TextSize = 13,
+				lineLabels[i] = label(list, { Name = "L" .. i, LayoutOrder = i, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y,
+					TextSize = 13, TextWrapped = true, TextYAlignment = Enum.TextYAlignment.Top, LineHeight = 1.08,
 					Text = txt, TextColor3 = Library.Theme["Dim Text"], TextTransparency = 0.35, ZIndex = Z + 1 })
 			end
-			list.Size = UDim2.new(1, 0, 0, #lineLabels * LINE)
 			list.Position = UDim2.fromOffset(0, 0)
 			local k = P.Lyrics.kind
 			lSource.Text = (k == "synced" and "lrclib") or (k == "plain" and "lrclib  ·  plain") or "lrclib"
@@ -7890,9 +7902,17 @@ do
 				l.FontFace = on and Library.FontBold or Library.Font
 				fx.tween(l, { TextColor3 = on and bright or dim, TextTransparency = on and 0 or math.clamp(0.2 + d * 0.15, 0, 0.75) }, 0.25)
 			end
-			-- the sung line sits on the second row (one line of context above, the rest below)
-			local y = -math.max(i - 2, 0) * LINE
-			fx.tween(list, { Position = UDim2.fromOffset(0, y) }, 0.35, Enum.EasingStyle.Quint)
+			-- scroll so the sung line starts a quarter of the way down (the line before it stays readable above); measured after the
+			-- layout has re-wrapped it (bold is wider, so a line can gain a row when it becomes the current one)
+			local my = i
+			task.delay(0.03, function()
+				local l = lineLabels[my]
+				if curIdx ~= my or not l or not l.Parent then return end
+				local top = l.AbsolutePosition.Y - list.AbsolutePosition.Y
+				local target = math.floor(BODY_H * 0.26)
+				if l.AbsoluteSize.Y > BODY_H - target then target = math.max(BODY_H - l.AbsoluteSize.Y - 4, 4) end
+				fx.tween(list, { Position = UDim2.fromOffset(0, math.min(0, target - top)) }, 0.4, Enum.EasingStyle.Quint)
+			end)
 		end
 
 		-- ================= state, rendering =================
