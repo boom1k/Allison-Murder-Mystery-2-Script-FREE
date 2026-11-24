@@ -3873,8 +3873,8 @@ function Library:Watermark(Text, Icon)
 	local root = Wm.Root
 	root.AnchorPoint = Vector2.new(1, 0)
 	root.Position = UDim2.new(1, -12, 0, cornerY())
-	root.AutomaticSize = Enum.AutomaticSize.X
-	root.Size = UDim2.new(0, 0, 0, 24)
+	root.AutomaticSize = Enum.AutomaticSize.None   -- Otterhook: sized from the text below (AutomaticSize also counted the shadows' overhang)
+	root.Size = UDim2.new(0, 220, 0, 24)
 	root.ZIndex = 1500
 	local pad = Instance.new("UIPadding", root)
 	pad.PaddingRight = UDim.new(0, 8)
@@ -3891,6 +3891,10 @@ function Library:Watermark(Text, Icon)
 	Wm.text.ZIndex = 1502
 	Wm.logo.ZIndex = 1502
 	if Icon and Icon ~= "" then pcall(function() Wm.logo.Image = tostring(Icon) end) end
+	-- the box = logo column (26) + the text's real width + the right padding (8): nothing else may widen it
+	local function fit() root.Size = UDim2.new(0, 26 + math.ceil(Wm.text.TextBounds.X) + 8, 0, 24) end
+	fit()
+	Wm.text:GetPropertyChangedSignal("TextBounds"):Connect(fit)
 	Library.MakeDraggable(root, root)
 	local wm = { Instance = root }
 	function wm:SetVisibility(b) root.Visible = b end
